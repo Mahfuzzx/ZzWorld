@@ -1,0 +1,9 @@
+{
+  "id": "core",
+  "name": { "tr": "ZzWorld Temel Paket", "en": "ZzWorld Core Pack" },
+  "version": "0.0.0",
+  "author": "ZzWorld contributors",
+  "license": "CC-BY-4.0",
+  "homepage": "https://github.com/Mahfuzzx/ZzWorld",
+  "defs": []
+}

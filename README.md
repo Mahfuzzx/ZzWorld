@@ -13,6 +13,7 @@ decorate homes and streets, explore the city, look after pets. Runs in the brows
 ## Dokümanlar / Docs
 
 - [Tasarım Dokümanı (TR)](docs/TASARIM.md)
+- [Geliştirme Ortamı (TR)](docs/GELISTIRME.md)
 
 ## Lisans / License
 

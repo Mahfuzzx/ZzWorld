@@ -1,0 +1,11 @@
+# Apache settings for local development (ignored by GitHub Pages).
+
+# Always serve over HTTPS (service worker and microphone require a secure context).
+RewriteEngine On
+RewriteCond %{HTTPS} off
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=302,L]
+
+# Never expose the git repository.
+RedirectMatch 404 /\.git
+
+AddType application/manifest+json .webmanifest

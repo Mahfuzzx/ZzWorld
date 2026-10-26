@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="112" fill="#f6e7c8"/>
+  <!-- planet -->
+  <path d="M256 102c88 2 150 66 152 154 2 90-64 154-152 156-90 2-154-66-156-154-2-90 66-158 156-156z"
+        fill="#8fc7a4" stroke="#3b2f2a" stroke-width="14" stroke-linejoin="round"/>
+  <path d="M150 210c30-14 56-6 72 14s44 26 64 10M300 330c22-12 50-10 70 6"
+        fill="none" stroke="#5f9f78" stroke-width="12" stroke-linecap="round"/>
+  <!-- sleepy face -->
+  <path d="M196 268c10 10 26 10 36 0M282 268c10 10 26 10 36 0"
+        fill="none" stroke="#3b2f2a" stroke-width="12" stroke-linecap="round"/>
+  <path d="M236 316c12 10 30 10 42 0" fill="none" stroke="#3b2f2a" stroke-width="12" stroke-linecap="round"/>
+  <circle cx="186" cy="300" r="14" fill="#e8735a" opacity=".55"/>
+  <circle cx="330" cy="300" r="14" fill="#e8735a" opacity=".55"/>
+  <!-- Zz -->
+  <path d="M352 96h46l-46 52h48M412 46h30l-30 34h32"
+        fill="none" stroke="#e8735a" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
