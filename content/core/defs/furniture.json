@@ -1,0 +1,98 @@
+[
+  {
+    "id": "core.table",
+    "extends": "core.furniture.base",
+    "name": { "tr": "Masa", "en": "Table" },
+    "size": [280, 150],
+    "colorSlots": { "wood": "#c98a4b" },
+    "surfaces": [{ "x": 6, "w": 268, "y": 4 }],
+    "art": {
+      "default": [
+        { "type": "rect", "x": 22, "y": 16, "w": 18, "h": 132, "r": 4, "fill": "$wood" },
+        { "type": "rect", "x": 240, "y": 16, "w": 18, "h": 132, "r": 4, "fill": "$wood" },
+        { "type": "rect", "x": 30, "y": 18, "w": 220, "h": 16, "fill": "$wood" },
+        { "type": "rect", "x": 0, "y": 2, "w": 280, "h": 20, "r": 8, "fill": "$wood" }
+      ]
+    },
+    "reactions": {
+      "tap": [{ "do": "PlayAnim", "clip": "shake", "amp": 4 }]
+    }
+  },
+  {
+    "id": "core.fridge",
+    "extends": "core.furniture.base",
+    "name": { "tr": "Buzdolabı", "en": "Fridge" },
+    "size": [170, 330],
+    "colorSlots": { "body": "#dfe9ef" },
+    "behaviors": [
+      { "type": "Toggle", "states": ["closed", "open"] },
+      { "type": "Container", "slots": 6, "rows": 3, "area": [18, 30, 134, 279], "visibleIn": "open" }
+    ],
+    "art": {
+      "closed": [
+        { "type": "rect", "x": 0, "y": 0, "w": 170, "h": 330, "r": 16, "fill": "$body" },
+        { "type": "path", "d": "M0 100 L170 100" },
+        { "type": "rect", "x": 144, "y": 36, "w": 10, "h": 44, "r": 5, "fill": "#9aa7ae" },
+        { "type": "rect", "x": 144, "y": 120, "w": 10, "h": 80, "r": 5, "fill": "#9aa7ae" }
+      ],
+      "open": [
+        { "type": "rect", "x": 0, "y": 0, "w": 170, "h": 330, "r": 16, "fill": "$body" },
+        { "type": "rect", "x": 14, "y": 14, "w": 142, "h": 302, "r": 8, "fill": "#fffbe6" },
+        { "type": "path", "d": "M14 123 L156 123 M14 216 L156 216", "lw": 5, "stroke": "#b9c8cf" },
+        { "type": "rect", "x": -6, "y": 0, "w": 16, "h": 330, "r": 6, "fill": "$body" }
+      ]
+    },
+    "reactions": {
+      "stateEnter:open": [{ "do": "PlaySound", "sound": "creak", "pitch": [1.2, 1.4] }],
+      "stateEnter:closed": [
+        { "do": "PlayAnim", "clip": "shake", "amp": 3 },
+        { "do": "PlaySound", "sound": "thud", "volume": 0.6, "pitch": 1.4 }
+      ]
+    }
+  },
+  {
+    "id": "core.lamp",
+    "extends": "core.furniture.base",
+    "name": { "tr": "Lambader", "en": "Floor Lamp" },
+    "size": [120, 300],
+    "colorSlots": { "shade": "#f2c14e" },
+    "behaviors": [{ "type": "Toggle", "states": ["off", "on"] }],
+    "art": {
+      "off": [
+        { "type": "rect", "x": 56, "y": 70, "w": 8, "h": 220, "fill": "#6b5b53" },
+        { "type": "ellipse", "cx": 60, "cy": 292, "rx": 40, "ry": 8, "fill": "#6b5b53" },
+        { "type": "path", "d": "M30 6 L90 6 L114 80 L6 80 Z", "fill": "$shade" }
+      ],
+      "on": [
+        { "type": "ellipse", "cx": 60, "cy": 110, "rx": 62, "ry": 50, "fill": "#fff3b0", "alpha": 0.6, "stroke": null },
+        { "type": "rect", "x": 56, "y": 70, "w": 8, "h": 220, "fill": "#6b5b53" },
+        { "type": "ellipse", "cx": 60, "cy": 292, "rx": 40, "ry": 8, "fill": "#6b5b53" },
+        { "type": "path", "d": "M30 6 L90 6 L114 80 L6 80 Z", "fill": "$shade" },
+        { "type": "path", "d": "M30 6 L90 6 L114 80 L6 80 Z", "fill": "#ffffff", "alpha": 0.35, "stroke": null }
+      ]
+    },
+    "reactions": {
+      "stateEnter:on": [{ "do": "PlaySound", "sound": "click" }],
+      "stateEnter:off": [{ "do": "PlaySound", "sound": "click", "pitch": 0.8 }]
+    }
+  },
+  {
+    "id": "core.window",
+    "extends": "core.decor.base",
+    "name": { "tr": "Pencere", "en": "Window" },
+    "size": [260, 220],
+    "colorSlots": { "frame": "#ffffff", "sky": "#9fd3f2" },
+    "art": {
+      "default": [
+        { "type": "rect", "x": 0, "y": 0, "w": 260, "h": 220, "r": 10, "fill": "$frame" },
+        { "type": "rect", "x": 16, "y": 16, "w": 228, "h": 188, "r": 4, "fill": "$sky" },
+        { "type": "circle", "cx": 196, "cy": 60, "r": 22, "fill": "#ffd166", "stroke": null },
+        { "type": "path", "d": "M40 90 C40 74 64 70 70 82 C76 70 100 74 98 90 Z", "fill": "#ffffff", "stroke": null },
+        { "type": "path", "d": "M130 16 L130 204 M16 110 L244 110", "lw": 10, "stroke": "$frame" }
+      ]
+    },
+    "reactions": {
+      "tap": [{ "do": "PlayAnim", "clip": "pulse", "amp": 0.04 }]
+    }
+  }
+]

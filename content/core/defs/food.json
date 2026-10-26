@@ -1,0 +1,23 @@
+[
+  {
+    "id": "core.apple",
+    "extends": "core.item.base",
+    "name": { "tr": "Elma", "en": "Apple" },
+    "size": [60, 66],
+    "colorSlots": { "body": "#e04f3a" },
+    "art": {
+      "default": [
+        { "type": "path", "d": "M30 18 C14 8 2 22 4 38 C6 56 18 66 30 62 C42 66 54 56 56 38 C58 22 46 8 30 18 Z", "fill": "$body" },
+        { "type": "path", "d": "M30 18 C30 12 32 6 35 3" },
+        { "type": "path", "d": "M33 10 C40 2 50 4 52 8 C46 14 38 14 33 10 Z", "fill": "#6aa84f", "lw": 3 },
+        { "type": "ellipse", "cx": 17, "cy": 33, "rx": 4, "ry": 8, "fill": "#ffffff", "alpha": 0.5, "stroke": null }
+      ]
+    },
+    "reactions": {
+      "tap": [
+        { "do": "PlayAnim", "clip": "bounce" },
+        { "do": "PlaySound", "sound": "boing", "pitch": [0.95, 1.2] }
+      ]
+    }
+  }
+]

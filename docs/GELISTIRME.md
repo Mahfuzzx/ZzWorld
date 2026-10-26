@@ -9,6 +9,21 @@ Proje, Apache'nin `htdocs` klasöründen doğrudan servis edilir; build adımı 
 
 `.htaccess` HTTP isteklerini HTTPS'e yönlendirir ve `.git` klasörünü dışarıya kapatır.
 
+## Testler
+
+Motor (`src/engine/`) DOM'a bağımlı olmayan kısımları Node ile test edilir
+(Node 22+ gerekir, bağımlılık yok):
+
+```
+npm test
+```
+
+Testler `content/core` paketindeki gerçek tanımları kullanır; bir tanım bozulursa
+testler de yakalar.
+
+Tarayıcı konsolunda `zz` nesnesi hata ayıklama için açıktır (ör. `zz.scene`,
+`zz.save()`).
+
 ## Neden HTTPS?
 
 Service worker (çevrimdışı oyun, cihaza kurma) ve mikrofon yalnızca güvenli bağlamda

@@ -5,6 +5,7 @@
       "insecure": "Çevrimdışı mod için HTTPS gerekli",
       "unsupported": "Bu tarayıcı çevrimdışı modu desteklemiyor",
       "failed": "Çevrimdışı mod başlatılamadı"
-    }
+    },
+    "error": "Oyun başlatılamadı"
   }
 }

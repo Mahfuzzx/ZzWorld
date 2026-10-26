@@ -172,7 +172,8 @@ nesnenin ne olduğunu bilmeden onu çalıştırır.
 ```
 Entity        ortak arayüz: render, onTap, onDragStart, onDrop, onTick, serialize
  ├─ Item        taşınabilir: elma, oyuncak, telefon
- ├─ Furniture   yerleştirilir: yatak, buzdolabı, masa
+ ├─ Furniture   yerleştirilir: yatak, buzdolabı, masa (sadece zemine oturur)
+ ├─ Decor       duvar nesneleri: pencere, tablo (yerçekimi yok)
  ├─ Agent       beyni olan nesne (bkz. §11)
  │   ├─ Character   oyuncu karakterleri (beyin: oyuncu kontrolü / serbest)
  │   └─ Animal      evcil ve ortam hayvanları
@@ -222,7 +223,10 @@ defterinden (registry)** ilgili sınıfa bağlanır.
 ```
 
 - **Kimlikler** paket adıyla başlar (`core.`, `ayse.`), paketler birbirini ezmez.
-- **Renk yuvaları** (`colorSlots`): çocuk oyun içinde nesneyi bu bölgelerden boyar.
+- **Renk yuvaları** (`colorSlots`): yuva adı → varsayılan renk. Çizimde `"$body"` gibi
+  başvurulur; çocuk oyun içinde nesneyi bu bölgelerden boyar.
+- **Yüzeyler** (`surfaces`): üstüne eşya konabilen alanlar (masa üstü, raf).
+- **Ön çizim** (`artFront`): kabın içindekilerin önüne çizilen kısım (sepetin ön yüzü).
 - **Çapa noktaları** (`anchors`): eşyanın konacağı, karakterin oturacağı, elin tutacağı
   yerler.
 - Yeni bir davranış = tek bir sınıf + kayıt. ZzStudio onu otomatik listeler.
@@ -537,9 +541,10 @@ Okuma bilmeyen çocuk geçemez.
 
 Önerilen sıra (taslak):
 
-0. **Altyapı:** repo, klasör yapısı, Apache üzerinde HTTPS (mkcert), PWA iskeleti.
-1. **Motor çekirdeği:** sahne, Entity/Behavior kayıt defteri, sürükle-bırak,
-   Olay → Tepki sistemi, IndexedDB kayıt.
+0. ✅ **Altyapı:** repo, klasör yapısı, Apache üzerinde HTTPS (mkcert), PWA iskeleti.
+1. ✅ **Motor çekirdeği:** sahne, Entity/Behavior kayıt defteri, sürükle-bırak,
+   Olay → Tepki sistemi, IndexedDB kayıt. (Çizimler şimdilik düz vektör; el çizimi
+   görünüm 2. adımda gelecek.)
 2. **ZzStudio v1:** el çizimi, durumlar, çapa noktaları, tepki editörü, dışa aktarma.
 3. **Animasyon:** hazır hareketler, parça animasyonu, kare kare çizim, line boil.
 4. **Ses ve müzik:** ses üretici, döngü/melodi yapıcı, oyun içi ses motoru.

@@ -1,9 +1,10 @@
 {
   "id": "core",
   "name": { "tr": "ZzWorld Temel Paket", "en": "ZzWorld Core Pack" },
-  "version": "0.0.0",
+  "version": "0.1.0",
   "author": "ZzWorld contributors",
   "license": "CC-BY-4.0",
   "homepage": "https://github.com/Mahfuzzx/ZzWorld",
-  "defs": []
+  "defs": ["base.json", "food.json", "toys.json", "furniture.json"],
+  "scenes": ["room.json"]
 }

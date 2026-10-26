@@ -5,6 +5,7 @@
       "insecure": "HTTPS is required for offline mode",
       "unsupported": "This browser does not support offline mode",
       "failed": "Offline mode could not start"
-    }
+    },
+    "error": "The game could not start"
   }
 }

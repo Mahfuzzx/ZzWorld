@@ -1,0 +1,73 @@
+[
+  {
+    "id": "core.ball",
+    "extends": "core.item.base",
+    "name": { "tr": "Top", "en": "Ball" },
+    "size": [72, 72],
+    "colorSlots": { "body": "#4f8fe0", "stripe": "#ffd166" },
+    "art": {
+      "default": [
+        { "type": "circle", "cx": 36, "cy": 36, "r": 33, "fill": "$body" },
+        { "type": "path", "d": "M6 30 C24 40 48 40 66 30 L67 42 C48 52 24 52 5 42 Z", "fill": "$stripe", "lw": 3 },
+        { "type": "ellipse", "cx": 24, "cy": 18, "rx": 8, "ry": 5, "fill": "#ffffff", "alpha": 0.5, "stroke": null, "rotation": -0.5 }
+      ]
+    },
+    "reactions": {
+      "tap": [
+        { "do": "PlayAnim", "clip": "bounce", "amp": 60, "duration": 0.9 },
+        { "do": "PlaySound", "sound": "boing" }
+      ]
+    }
+  },
+  {
+    "id": "core.basket",
+    "extends": "core.item.base",
+    "name": { "tr": "Sepet", "en": "Basket" },
+    "size": [130, 100],
+    "colorSlots": { "body": "#d9a05b" },
+    "behaviors": [
+      { "type": "Container", "slots": 3, "area": [8, 0, 114, 74] }
+    ],
+    "art": {
+      "default": [
+        { "type": "path", "d": "M22 48 C24 6 106 6 108 48", "lw": 6, "stroke": "#8a5a2b" },
+        { "type": "ellipse", "cx": 65, "cy": 50, "rx": 58, "ry": 8, "fill": "#8a5a2b" }
+      ]
+    },
+    "artFront": {
+      "default": [
+        { "type": "path", "d": "M6 48 L124 48 L110 98 L20 98 Z", "fill": "$body" },
+        { "type": "path", "d": "M14 64 L116 64 M18 80 L112 80", "alpha": 0.5 },
+        { "type": "path", "d": "M40 48 L44 98 M65 48 L65 98 M90 48 L86 98", "alpha": 0.5 }
+      ]
+    },
+    "reactions": {
+      "tap": [{ "do": "PlayAnim", "clip": "wobble" }],
+      "received": [{ "do": "PlayAnim", "clip": "pulse" }]
+    }
+  },
+  {
+    "id": "core.plant",
+    "extends": "core.item.base",
+    "name": { "tr": "Saksı Çiçeği", "en": "Potted Plant" },
+    "size": [96, 140],
+    "colorSlots": { "pot": "#c8643b", "flower": "#f28dbb" },
+    "art": {
+      "default": [
+        { "type": "path", "d": "M48 92 C46 70 50 50 48 30", "lw": 5, "stroke": "#4e8a3a" },
+        { "type": "path", "d": "M48 72 C30 70 18 58 16 46 C32 46 44 56 48 72 Z", "fill": "#6aa84f" },
+        { "type": "path", "d": "M48 62 C64 58 76 46 80 36 C64 36 52 46 48 62 Z", "fill": "#6aa84f" },
+        { "type": "circle", "cx": 48, "cy": 24, "r": 18, "fill": "$flower" },
+        { "type": "circle", "cx": 48, "cy": 24, "r": 7, "fill": "#ffd166" },
+        { "type": "path", "d": "M16 92 L80 92 L72 138 L24 138 Z", "fill": "$pot" },
+        { "type": "rect", "x": 10, "y": 88, "w": 76, "h": 14, "r": 4, "fill": "$pot" }
+      ]
+    },
+    "reactions": {
+      "tap": [
+        { "do": "PlayAnim", "clip": "wobble", "amp": 0.2 },
+        { "do": "PlaySound", "sound": "ding", "volume": 0.6, "pitch": [0.9, 1.3] }
+      ]
+    }
+  }
+]

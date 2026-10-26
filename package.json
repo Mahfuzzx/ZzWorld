@@ -1,0 +1,9 @@
+{
+  "name": "zzworld",
+  "private": true,
+  "description": "Development scripts only; the game itself needs no build step.",
+  "type": "module",
+  "scripts": {
+    "test": "node --test \"tests/**/*.test.js\""
+  }
+}

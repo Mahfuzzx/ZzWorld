@@ -1,0 +1,40 @@
+[
+  {
+    "id": "core.base",
+    "abstract": true,
+    "reactions": {
+      "pickUp": [
+        { "do": "PlayAnim", "clip": "squash" },
+        { "do": "PlaySound", "sound": "pop", "pitch": [0.9, 1.15] }
+      ],
+      "land": [
+        { "do": "PlayAnim", "clip": "squash" },
+        { "do": "PlaySound", "sound": "thud", "volume": 0.5, "pitch": [0.9, 1.1] }
+      ]
+    }
+  },
+  {
+    "id": "core.item.base",
+    "abstract": true,
+    "extends": "core.base",
+    "class": "Item"
+  },
+  {
+    "id": "core.furniture.base",
+    "abstract": true,
+    "extends": "core.base",
+    "class": "Furniture",
+    "reactions": {
+      "land": [
+        { "do": "PlayAnim", "clip": "squash", "amp": 0.08 },
+        { "do": "PlaySound", "sound": "thud", "pitch": [0.6, 0.7] }
+      ]
+    }
+  },
+  {
+    "id": "core.decor.base",
+    "abstract": true,
+    "extends": "core.base",
+    "class": "Decor"
+  }
+]

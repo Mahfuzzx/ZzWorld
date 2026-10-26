@@ -1,0 +1,24 @@
+{
+  "id": "core.scene.room",
+  "name": { "tr": "Oda", "en": "Room" },
+  "width": 2000,
+  "height": 1000,
+  "floorY": 740,
+  "background": { "wall": "#f3dcb4", "floor": "#d9a66b" },
+  "entities": [
+    { "def": "core.window", "x": 820, "y": 520 },
+    {
+      "def": "core.fridge", "x": 300, "y": 800,
+      "contains": [
+        { "def": "core.apple" },
+        { "def": "core.apple", "colors": { "body": "#9bcf53" } }
+      ]
+    },
+    { "def": "core.table", "x": 820, "y": 820 },
+    { "def": "core.apple", "x": 740, "y": 670 },
+    { "def": "core.basket", "x": 880, "y": 670 },
+    { "def": "core.lamp", "x": 1200, "y": 790 },
+    { "def": "core.ball", "x": 1460, "y": 900 },
+    { "def": "core.plant", "x": 1720, "y": 780 }
+  ]
+}
