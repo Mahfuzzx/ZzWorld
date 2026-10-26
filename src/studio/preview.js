@@ -3,6 +3,7 @@
 import { t } from '../shared/i18n.js';
 import { DefStore, Scene, Animator, DayNight } from '../engine/index.js';
 import { Renderer } from '../engine/renderer.js';
+import { hitArt } from '../engine/art.js';
 import { Input } from '../engine/input.js';
 import { createHud } from '../game/hud.js';
 import { addUserDefs } from '../shared/pack.js';
@@ -50,7 +51,7 @@ export async function openPreview(app) {
   dialog.addEventListener('close', () => app.music.stopAll(), { once: true });
 
   const dayNight = new DayNight();
-  const services = { audio: app.audio, music: app.music, view: { panOf: () => 0 }, animator: new Animator(), dayNight };
+  const services = { audio: app.audio, music: app.music, view: { panOf: () => 0 }, hitArt, animator: new Animator(), dayNight };
   let scene;
   try {
     scene = Scene.fromTemplate(defs, template, services);

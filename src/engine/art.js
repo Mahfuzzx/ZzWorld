@@ -198,6 +198,25 @@ export function drawArt(ctx, shapes, color, { seed = 1, rough: roughOn = true, b
   });
 }
 
+// Is (x, y) on the drawing? Tests the shapes' real outlines (with a little
+// tolerance around lines), so empty space inside an object's box doesn't count.
+let hitCtx = null;
+export function hitArt(shapes, x, y, tolerance = 8) {
+  hitCtx ??= document.createElement('canvas').getContext('2d');
+  hitCtx.lineWidth = tolerance * 2;
+  for (let i = shapes.length - 1; i >= 0; i--) {
+    const s = shapes[i];
+    if ((s.alpha ?? 1) < 0.15) continue; // faint glows and highlights are see-through
+    const path = shapePath(s);
+    if (!path) continue;
+    const px = x - (s.tx ?? 0);
+    const py = y - (s.ty ?? 0);
+    if (hitCtx.isPointInPath(path, px, py, s.rule ?? 'nonzero')) return true;
+    if (s.stroke !== null && hitCtx.isPointInStroke(path, px, py)) return true;
+  }
+  return false;
+}
+
 // Seed for an entity's art, so every object of a kind looks the same but
 // different kinds wobble differently.
 export function seedFor(id) {

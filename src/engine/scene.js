@@ -1,4 +1,5 @@
 import { lookup } from './registry.js';
+import { partGroups } from './compose.js';
 
 const GRAVITY = 3200; // scene units / s²
 const SNAP = 30;      // an item dropped this far below a surface still lands on it
@@ -140,7 +141,25 @@ export class Scene {
     return this.drawPasses().filter((p) => !p.front).map((p) => p.entity);
   }
 
+  // What is under (x, y)? The frontmost drawn thing wins: drawing passes are
+  // checked front to back, container fronts included (touching the front of a
+  // basket picks the basket, not what is inside). services.hitArt (browser)
+  // tests the real drawing; without it boxes are used. If nothing is hit
+  // exactly, small things still catch touches close to them.
   hitTest(x, y) {
+    const hitArt = this.services.hitArt;
+    const passes = this.drawPasses();
+    for (let i = passes.length - 1; i >= 0; i--) {
+      const { entity: e, front } = passes[i];
+      if (!e.containsPoint(x, y)) continue;
+      if (!hitArt) return e;
+      const shapes = partGroups(e.def, e.state, front ? 'artFront' : 'art', e.frames).flatMap((g) => g.shapes);
+      if (!shapes.length) {
+        if (!front) return e; // no drawing: the box counts
+        continue;
+      }
+      if (hitArt(shapes, x - (e.x - e.width / 2), y - (e.y - e.height))) return e;
+    }
     const list = this.renderList();
     for (let i = list.length - 1; i >= 0; i--) {
       if (list[i].containsPoint(x, y, MIN_TOUCH)) return list[i];

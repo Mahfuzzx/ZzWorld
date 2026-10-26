@@ -1,5 +1,6 @@
 import { DefStore, loadPack, fetchJson, Scene, Animator, DayNight } from '../engine/index.js';
 import { Renderer } from '../engine/renderer.js';
+import { hitArt } from '../engine/art.js';
 import { Input } from '../engine/input.js';
 import { AudioEngine } from '../audio/engine.js';
 import { MusicPlayer } from '../audio/music.js';
@@ -32,7 +33,7 @@ export async function startGame(root) {
   const dayNight = new DayNight();
   // view.panOf is filled in once the renderer exists (sounds follow positions on screen)
   const view = { panOf: () => 0 };
-  const services = { audio, music, view, dayNight, animator: new Animator() };
+  const services = { audio, music, view, dayNight, hitArt, animator: new Animator() };
 
   let world = null;
   let scene = null;

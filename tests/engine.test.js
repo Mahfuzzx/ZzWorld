@@ -314,3 +314,23 @@ test('part groups keep drawing order and swap in flipbook frames', async () => {
   assert.deepEqual(swapped[1].shapes, [{ id: 9 }]);
   assert.notEqual(swapped[1].key, groups[1].key);
 });
+
+test('touching the front of a basket picks the basket, not what is inside', () => {
+  // a fake drawing test that understands plain rectangles
+  const hitArt = (shapes, x, y) => shapes.some((s) => s.type === 'rect' && x >= s.x && x <= s.x + s.w && y >= s.y && y <= s.y + s.h);
+  const defs = coreDefs();
+  defs.add({
+    id: 'x.box', extends: 'core.item.base', size: [100, 100],
+    behaviors: [{ type: 'Container', slots: 1, area: [0, 0, 100, 100] }],
+    art: { default: [{ type: 'rect', x: 0, y: 0, w: 100, h: 100 }] },
+    artFront: { default: [{ type: 'rect', x: 0, y: 60, w: 100, h: 40 }] },
+  });
+  defs.add({ id: 'x.toy', extends: 'core.item.base', size: [40, 80], art: { default: [{ type: 'rect', x: 0, y: 0, w: 40, h: 80 }] } });
+  const scene = new Scene(defs, { id: 't' }, { ...fakeServices(), hitArt });
+  const box = scene.spawn('x.box', { x: 500, y: 800 });
+  const toy = scene.spawn('x.toy');
+  scene.putInto(box, toy); // toy stands at the bottom of the box: y 720…800
+  assert.equal(scene.hitTest(500, 780), box, 'the front of the box is in front of the toy');
+  assert.equal(scene.hitTest(500, 740), toy, 'the part of the toy above the front');
+  assert.equal(scene.hitTest(460, 710), box, 'the box behind, where the toy is not');
+});
