@@ -36,12 +36,13 @@ function hudButton(className, icon, label) {
   return el;
 }
 
-export function createCatalog(root, { defs, userIds, scene, renderer, input, hud, onGesture, onNewCharacter }) {
+// Always works on the scene being shown (renderer.scene), which changes between rooms.
+export function createCatalog(root, { defs, userIds, renderer, input, hud, onGesture, onNewCharacter }) {
   const drawer = document.createElement('div');
   drawer.className = 'catalog';
   drawer.hidden = true;
 
-  const spawn = (id) => scene.spawn(id, { x: 0, y: 0 });
+  const spawn = (id) => renderer.scene.spawn(id, { x: 0, y: 0 });
 
   // First tile: open ZzStudio to draw something new.
   const studio = document.createElement('a');
@@ -93,6 +94,7 @@ export function createCatalog(root, { defs, userIds, scene, renderer, input, hud
       press = null;
       // A plain tap drops a new one into the middle of the view.
       const e = spawn(id);
+      const { scene } = renderer;
       scene.moveTo(e, renderer.viewLeft + renderer.visibleWidth / 2, e.prop('gravity') ? e.height + 40 : scene.floorY / 2 + e.height / 2);
       scene.pickUp(e);
       scene.drop(e);
@@ -123,7 +125,7 @@ export function createCatalog(root, { defs, userIds, scene, renderer, input, hud
       add.classList.remove('active');
     }
   };
-  setMode(scene.mode);
+  setMode(renderer.scene.mode);
 
   return {
     setMode,

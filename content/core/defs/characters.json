@@ -245,6 +245,30 @@
      ]
     }
    },
+   "sleep": {
+    "type": "keyframe",
+    "duration": 3,
+    "loop": true,
+    "tracks": {
+     "": [
+      {
+       "t": 0,
+       "rot": -90,
+       "sy": 1
+      },
+      {
+       "t": 1.5,
+       "rot": -90,
+       "sy": 1.025
+      },
+      {
+       "t": 3,
+       "rot": -90,
+       "sy": 1
+      }
+     ]
+    }
+   },
    "dangle": {
     "type": "keyframe",
     "duration": 0.6,
@@ -389,12 +413,6 @@
      "do": "PlaySound",
      "sound": "thud",
      "volume": 0.4
-    }
-   ],
-   "dropInto": [
-    {
-     "do": "SetState",
-     "to": "happy"
     }
    ],
    "dressed": [

@@ -122,14 +122,20 @@ export class Container extends Behavior {
   }
 }
 
-// A chair, sofa or bed: characters dropped on it sit (or lie) there.
-//   { "type": "Seat", "area": [x, y, w, h], "pose": "sit" } — y + h is the seat surface
+// A chair, bed or bathtub: characters dropped on it sit (or lie) there.
+//   { "type": "Seat", "area": [x, y, w, h], "pose": "sit" | "sleep", "expression": "happy" }
+// y + h is the seat surface (or the mattress).
 export class Seat extends Container {
   static type = 'Seat';
 
   accepts(item) {
     if (!item.isCharacter || item.isAncestorOf(this.entity)) return false;
     return this.contents().length < this.slots;
+  }
+
+  receive(item) {
+    super.receive(item);
+    item.setState(this.config.expression ?? 'happy');
   }
 
   layout() {
@@ -139,8 +145,41 @@ export class Seat extends Container {
     const surface = e.y - e.height + ay + ah;
     const people = this.contents().sort((a, b) => a.order - b.order);
     people.forEach((c, i) => {
-      // hips on the seat surface; the sit pose folds the legs
-      e.scene.moveTo(c, left + (aw * (i + 0.5)) / people.length, surface + c.legHeight);
+      const x = left + (aw * (i + 0.5)) / people.length;
+      if (this.config.pose === 'sleep') {
+        // lying on the side: the sleep pose turns the character around its centre,
+        // so its width becomes its height; it sinks a little into the bed so the
+        // blanket (the bed's front art) covers it
+        e.scene.moveTo(c, x, surface + c.height / 2 - c.width / 2 + c.width * 0.4);
+      } else {
+        // hips on the seat surface; the sit pose folds the legs
+        e.scene.moveTo(c, x, surface + c.legHeight);
+      }
     });
+  }
+}
+
+// Makes a Portal usable: tapping the open door goes through it, and things
+// dropped on the open door travel to the other side. The game provides
+// services.travel(entity | null, portal).
+export class Doorway extends Behavior {
+  static type = 'Doorway';
+
+  get open() {
+    return this.entity.state === (this.config.openState ?? 'open');
+  }
+
+  handle(event, data) {
+    if (event !== 'tap' || !this.open || !this.entity.target) return;
+    data.handled = true; // don't close the door, go through it
+    this.entity.scene.services.travel?.(null, this.entity);
+  }
+
+  accepts(item) {
+    return this.open && !!this.entity.target && item.mobility === 'free' && !!this.entity.scene.services.travel;
+  }
+
+  receive(item) {
+    this.entity.scene.services.travel(item, this.entity);
   }
 }

@@ -3,7 +3,7 @@
 // During development changes show up on a normal reload; offline the last cached
 // copy is served. Bump VERSION when the precache list changes.
 
-const VERSION = 'v8';
+const VERSION = 'v9';
 const CACHE = `zzworld-${VERSION}`;
 
 const PRECACHE = [
@@ -36,9 +36,12 @@ const PRECACHE = [
   './content/core/defs/songs.json',
   './content/core/defs/food.json',
   './content/core/defs/furniture.json',
+  './content/core/defs/house.json',
   './content/core/defs/toys.json',
   './content/core/manifest.json',
   './content/core/scenes/room.json',
+  './content/core/scenes/bedroom.json',
+  './content/core/scenes/bathroom.json',
   './icons/apple-touch-icon.png',
   './icons/icon-192.png',
   './icons/icon-512.png',

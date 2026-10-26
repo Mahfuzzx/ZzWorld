@@ -21,6 +21,7 @@ export const PRESETS = {
   sparkle: { type: 'synth', wave: 'triangle', from: 1100, to: 1100, dur: 0.45, volume: 0.25, arp: { steps: 4, ratio: 1.26 }, bell: true },
   slide: { type: 'synth', wave: 'sine', from: 900, to: 250, dur: 0.35, volume: 0.35, vibrato: { rate: 9, depth: 0.03 } },
   zap: { type: 'synth', wave: 'sawtooth', from: 1600, to: 120, dur: 0.18, volume: 0.15 },
+  squeak: { type: 'synth', wave: 'square', from: 900, to: 1500, dur: 0.14, volume: 0.1, vibrato: { rate: 30, depth: 0.05 } },
 };
 
 export const PRESET_NAMES = Object.keys(PRESETS);

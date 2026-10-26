@@ -1,0 +1,19 @@
+{
+  "id": "core.scene.bathroom",
+  "name": { "tr": "Banyo", "en": "Bathroom" },
+  "width": 1400,
+  "height": 1000,
+  "floorY": 740,
+  "interior": { "wall": "#dff1ee", "floor": "#b9d3d6" },
+  "music": "core.song.room",
+  "entities": [
+    { "def": "core.door", "x": 130, "y": 740, "door": "toBedroom", "target": { "scene": "core.scene.bedroom", "door": "toBathroom" } },
+    { "def": "core.sign.bed", "x": 130, "y": 440 },
+    { "def": "core.window", "x": 640, "y": 470 },
+    { "def": "core.bathtub", "x": 600, "y": 840 },
+    { "def": "core.sink", "x": 1100, "y": 800 },
+    { "def": "core.mirror", "x": 1100, "y": 560 },
+    { "def": "core.duck", "x": 860, "y": 900 },
+    { "def": "core.duck", "x": 920, "y": 930, "colors": { "body": "#9fd3f2" } }
+  ]
+}

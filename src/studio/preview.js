@@ -70,7 +70,7 @@ export async function openPreview(app) {
   renderer.setScene(scene, { backdropId: 'core.backdrop.city' });
   const unlock = () => app.audio.unlock();
   const input = new Input(canvas, renderer, { onFirstGesture: unlock });
-  createHud(stage, { scene, dayNight, onGesture: unlock });
+  createHud(stage, { getScene: () => scene, dayNight, onGesture: unlock });
 
   let last = performance.now();
   const frame = (now) => {

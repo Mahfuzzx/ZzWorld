@@ -1,6 +1,6 @@
 {
   "id": "core.scene.room",
-  "name": { "tr": "Oda", "en": "Room" },
+  "name": { "tr": "Salon", "en": "Living room" },
   "width": 2000,
   "height": 1000,
   "floorY": 740,
@@ -9,6 +9,8 @@
   "music": "core.song.room",
   "entities": [
     { "def": "core.window", "x": 820, "y": 520 },
+    { "def": "core.door", "x": 1910, "y": 740, "door": "toBedroom", "target": { "scene": "core.scene.bedroom", "door": "toLiving" } },
+    { "def": "core.sign.bed", "x": 1910, "y": 440 },
     {
       "def": "core.wardrobe", "x": 110, "y": 790,
       "contains": [

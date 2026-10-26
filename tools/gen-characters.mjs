@@ -224,6 +224,10 @@ const character = {
       legR: [{ t: 0, sy: 0.42 }, { t: 2.4, sy: 0.42 }],
       head: [{ t: 0, rot: 0 }, { t: 1.2, rot: 3 }, { t: 2.4, rot: 0 }],
     } },
+    // lying in bed: turned on the side, slowly breathing
+    sleep: { type: 'keyframe', duration: 3, loop: true, tracks: {
+      '': [{ t: 0, rot: -90, sy: 1 }, { t: 1.5, rot: -90, sy: 1.025 }, { t: 3, rot: -90, sy: 1 }],
+    } },
     dangle: { type: 'keyframe', duration: 0.6, tracks: {
       legL: [{ t: 0, rot: 0 }, { t: 0.15, rot: 12 }, { t: 0.3, rot: -8 }, { t: 0.45, rot: 5 }, { t: 0.6, rot: 0 }],
       legR: [{ t: 0, rot: 0 }, { t: 0.15, rot: -10 }, { t: 0.3, rot: 9 }, { t: 0.45, rot: -4 }, { t: 0.6, rot: 0 }],
@@ -236,7 +240,6 @@ const character = {
     tapBody: [{ do: 'PlayAnim', clip: 'wave' }, { do: 'PlaySound', sound: 'sparkle', volume: 0.4 }],
     pickUp: [{ do: 'SetState', to: 'surprised' }, { do: 'PlayAnim', clip: 'dangle' }, { do: 'PlaySound', sound: 'pop', pitch: [1.2, 1.4] }],
     land: [{ do: 'SetState', to: 'happy' }, { do: 'PlayAnim', clip: 'squash', amp: 0.1 }, { do: 'PlaySound', sound: 'thud', volume: 0.4 }],
-    dropInto: [{ do: 'SetState', to: 'happy' }],
     dressed: [{ do: 'SetState', to: 'laugh' }, { do: 'PlayAnim', clip: 'jump' }, { do: 'PlaySound', sound: 'sparkle' }],
   },
 };

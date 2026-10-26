@@ -17,19 +17,21 @@ function button(className) {
   return el;
 }
 
-export function createHud(root, { scene, dayNight, onGesture, onModeChange }) {
+// getScene() returns the scene being shown (it changes when going to another room).
+export function createHud(root, { getScene, dayNight, onGesture, onModeChange }) {
   const hud = document.createElement('div');
   hud.className = 'hud';
 
   const mode = button('hud-mode');
   const renderMode = () => {
-    const editing = scene.mode === 'edit';
+    const editing = getScene().mode === 'edit';
     mode.innerHTML = editing ? ICONS.play : ICONS.edit;
     mode.setAttribute('aria-label', t(editing ? 'hud.play' : 'hud.edit'));
     mode.classList.toggle('active', editing);
   };
   mode.addEventListener('click', () => {
     onGesture?.();
+    const scene = getScene();
     scene.mode = scene.mode === 'edit' ? 'play' : 'edit';
     renderMode();
     onModeChange?.(scene.mode);

@@ -189,6 +189,25 @@ Sokaktaki kapı bir `Portal` nesnesidir; dokununca veya karakter kapıya bırak�
 bina sahnesi açılır. Bina içinde odalar yan yana dizilir; katlar arası geçiş merdiven
 veya asansör (yine `Portal`) ile olur.
 
+**Uygulanan (6. adım):** ilk ev üç odadır — salon (`core.scene.room`), yatak odası ve
+banyo — ve her oda ayrı bir sahnedir.
+
+- **Kapı** (`class: "Portal"`, `Doorway` davranışı): her kapının odasında tek bir
+  anahtarı (`door`) ve karşı odadaki kapıyı gösteren hedefi (`target`) vardır. Kapalı
+  kapıya dokununca açılır; açık kapıya dokununca o odaya geçilir. Açık kapıya bırakılan
+  eşya karşı odaya gider; karakter giderse görüntü onu takip eder. Karakterin elindeki
+  ve üstündekiler de birlikte taşınır. Kapılar duvar boyunca kayar, çöpe atılamaz.
+- Kapıların üstünde odayı resimle anlatan **levhalar** vardır (yatak, küvet, koltuk).
+- **Kayıt:** gezilen her oda dünyada ayrı saklanır; oyun en son kalınan odada açılır.
+  Eski kayıtlarda eksik olan kapılar şablondan eklenir, hiçbir oda ulaşılamaz kalmaz.
+- Odadan çıkınca o odadaki döngüler ve radyolar durur; girilen odadaki lambalar günün
+  zamanına uyar.
+- **Yatak** (`Seat`, `pose: "sleep"`): karakter battaniyenin altına yan yatar, uykulu
+  olur. **Küvet:** karakterler köpüklerin arasında oturup güler; ördek ve oyuncaklar
+  suda yüzer. Lavabo açılıp kapanır, su akar.
+- Yeni eşyalar: yatak, oyuncak sandığı, ayıcık, resim, küvet, lavabo, ayna, lastik
+  ördek (`tools/gen-house.mjs`).
+
 ### 4.7 İlk mahalle
 İlk sürümdeki mahallede iki mekân türü bulunur:
 - **Evler:** karakterlerin yaşadığı, odaları olan binalar. İlk sürümün merkezi.
@@ -824,7 +843,8 @@ Okuma bilmeyen çocuk geçemez.
    motoru, radyo ve ksilofon (§10.3). Oyun içi mikrofon 10. adımda (ebeveyn kapısıyla).
 5. ✅ **Karakterler:** parçalı karakter, 4 yaş, ifadeler, kıyafet ve aksesuarlar, giydirme,
    oturma, elde tutma ve karakter oluşturucu (§14.7).
-6. **İlk ev:** 2–3 oda, 15–20 core nesne.
+6. ✅ **İlk ev:** salon, yatak odası, banyo; kapılarla oda geçişi, yatak, küvet ve yeni
+   eşyalar (§4.6).
 7. **Sokak ve mahalle:** yan kaydırma, kavşaklar, portal, şehir haritası.
 8. **Ajanlar:** evcil ve ortam hayvanları.
 9. **Araçlar.**

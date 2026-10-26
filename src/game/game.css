@@ -139,6 +139,20 @@ body {
   pointer-events: none;
 }
 
+/* going through a door */
+.fade {
+  position: absolute;
+  inset: 0;
+  background: var(--paper);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+
+.fade.on {
+  opacity: 1;
+}
+
 /* ---------- character creator ---------- */
 
 .creator {

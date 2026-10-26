@@ -122,8 +122,13 @@ export class Entity {
     this.scene.changed();
   }
 
+  // A behaviour may set data.handled to take over an event completely
+  // (e.g. tapping an open door goes through it instead of closing it).
   emit(event, data = {}) {
-    for (const b of this.behaviors) b.handle(event, data);
+    for (const b of this.behaviors) {
+      b.handle(event, data);
+      if (data.handled) return;
+    }
     const reactions = this.def.reactions?.[event];
     if (reactions?.length) runActions(reactions, { entity: this, scene: this.scene, event, data });
   }
@@ -199,5 +204,28 @@ export class Structure extends Decor {
 
   canDelete() {
     return false;
+  }
+}
+
+// A door (or stairs) to another scene. Each door has a key, unique in its
+// scene, and points to a door in the target scene:
+//   { "def": "core.door", "door": "toBedroom", "target": { "scene": "core.scene.bedroom", "door": "toLiving" } }
+export class Portal extends Structure {
+  static type = 'Portal';
+
+  constructor(scene, def, data = {}) {
+    super(scene, def, data);
+    this.door = data.door ?? null;
+    this.target = data.target ?? null;
+  }
+
+  // Doors stand on the floor line and slide along the wall.
+  constrainDrag(x) {
+    const halfW = this.width / 2;
+    return { x: clamp(x, halfW, this.scene.width - halfW), y: this.y };
+  }
+
+  serialize() {
+    return { ...super.serialize(), door: this.door, target: this.target };
   }
 }

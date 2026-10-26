@@ -35,10 +35,11 @@ yeniden çalıştırın:
 
 ```
 node tools/gen-characters.mjs
+node tools/gen-house.mjs
 ```
 
 (`content/core/defs/characters.json`: karakter, saç/kıyafet/aksesuar parçaları,
-giysiler, gardırop, sandalye.)
+giysiler, gardırop, sandalye; `house.json`: kapı, levhalar, yatak odası ve banyo eşyaları.)
 
 ## Neden HTTPS?
 

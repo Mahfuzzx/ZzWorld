@@ -93,6 +93,51 @@ export class Scene {
     return this.entities.get(id) ?? null;
   }
 
+  // The entity and everything that moves with it (contents, things resting on
+  // it, recursively), parents first.
+  #family(entity) {
+    const out = [entity];
+    for (let i = 0; i < out.length; i++) {
+      for (const d of this.dependantsOf(out[i])) if (!out.includes(d)) out.push(d);
+    }
+    return out;
+  }
+
+  // Takes an entity and its family out of the scene, for moving it to another
+  // scene with insert(). Returns their saved data, the entity first.
+  extract(entity) {
+    entity.parent?.release(entity);
+    entity.restingOn = null;
+    const family = this.#family(entity);
+    const data = family.map((e) => e.serialize());
+    for (const e of family) {
+      this.entities.delete(e.id);
+      this.services.animator?.stop(e);
+      this.services.music?.stopSource(e.id);
+    }
+    this.changed();
+    return data;
+  }
+
+  // Adds extracted entities with fresh ids, the first one standing at (x, y).
+  insert(data, x, y) {
+    const ids = new Map(data.map((d) => [d.id, `e${this.nextId++}`]));
+    const added = data.map((d) => this.spawn(d.def, {
+      ...d,
+      id: ids.get(d.id),
+      order: undefined,
+      parent: ids.get(d.parent) ?? null,
+      restingOn: ids.get(d.restingOn) ?? null,
+    }));
+    const root = added[0];
+    root.parentId = null;
+    root.restingOn = null;
+    this.moveTo(root, x, y);
+    for (const e of added) for (const b of e.behaviors) b.layout?.();
+    this.changed();
+    return root;
+  }
+
   // Removes an entity. Its contents and whatever rests on it stay in the scene
   // and fall down instead of disappearing with it.
   remove(entity) {
@@ -151,20 +196,39 @@ export class Scene {
     const passes = this.drawPasses();
     for (let i = passes.length - 1; i >= 0; i--) {
       const { entity: e, front } = passes[i];
-      if (!e.containsPoint(x, y)) continue;
+      const local = this.#toLocal(e, x, y);
+      if (local.x < 0 || local.x > e.width || local.y < 0 || local.y > e.height) continue;
       if (!hitArt) return e;
       const shapes = partGroups(e.def, e.state, front ? 'artFront' : 'art', e.frames).flatMap((g) => g.shapes);
       if (!shapes.length) {
         if (!front) return e; // no drawing: the box counts
         continue;
       }
-      if (hitArt(shapes, x - (e.x - e.width / 2), y - (e.y - e.height))) return e;
+      if (hitArt(shapes, local.x, local.y)) return e;
     }
     const list = this.renderList();
     for (let i = list.length - 1; i >= 0; i--) {
-      if (list[i].containsPoint(x, y, MIN_TOUCH)) return list[i];
+      const e = list[i];
+      const local = this.#toLocal(e, x, y);
+      const padX = Math.max(0, (MIN_TOUCH - e.width) / 2);
+      const padY = Math.max(0, (MIN_TOUCH - e.height) / 2);
+      if (local.x >= -padX && local.x <= e.width + padX && local.y >= -padY && local.y <= e.height + padY) return e;
     }
     return null;
+  }
+
+  // A scene point in the entity's local box, undoing its current motion
+  // (a character lying in bed is turned on its side).
+  #toLocal(e, x, y) {
+    const fx = e.fx;
+    if (!fx) return { x: x - (e.x - e.width / 2), y: y - (e.y - e.height) };
+    const cx = e.x + fx.dx;
+    const cy = e.y + fx.dy - e.height / 2;
+    const cos = Math.cos(-fx.rot);
+    const sin = Math.sin(-fx.rot);
+    const rx = ((x - cx) * cos - (y - cy) * sin) / (fx.sx || 1);
+    const ry = ((x - cx) * sin + (y - cy) * cos) / (fx.sy || 1);
+    return { x: rx + e.width / 2, y: ry + e.height / 2 };
   }
 
   bringToFront(entity) {
