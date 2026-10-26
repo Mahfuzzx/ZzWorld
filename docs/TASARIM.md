@@ -1,0 +1,505 @@
+# ZzWorld — Tasarım Dokümanı
+
+> Durum: **Fikir aşaması** · Son güncelleme: 2026-10-26
+>
+> Bu doküman netleşen kararları ve önerilen mimariyi toplar. Kod henüz yazılmadı;
+> burada anlatılan teknik yapı, uygulama sırasında değişebilir. Kesinleşmiş ürün
+> kararları [Karar Günlüğü](#22-karar-günlüğü) bölümünde ayrıca listelenir.
+
+## İçindekiler
+
+1. [Vizyon](#1-vizyon)
+2. [Temel İlkeler](#2-temel-i̇lkeler)
+3. [Platform ve Teknoloji](#3-platform-ve-teknoloji)
+4. [Dünya Yapısı](#4-dünya-yapısı)
+5. [Nesne Modeli (Polimorfizm)](#5-nesne-modeli-polimorfizm)
+6. [Olay → Tepki → Eylem Sistemi](#6-olay--tepki--eylem-sistemi)
+7. [Görsel Tarz: El Çizimi](#7-görsel-tarz-el-çizimi)
+8. [Animasyon](#8-animasyon)
+9. [Ses](#9-ses)
+10. [Müzik](#10-müzik)
+11. [Ajanlar (Hayvanlar)](#11-ajanlar-hayvanlar)
+12. [Araçlar](#12-araçlar)
+13. [Gece / Gündüz](#13-gece--gündüz)
+14. [Karakterler](#14-karakterler)
+15. [ZzStudio — Nesne Üretici](#15-zzstudio--nesne-üretici)
+16. [İçerik Paketleri](#16-i̇çerik-paketleri)
+17. [Dil Desteği](#17-dil-desteği)
+18. [Gizlilik, Güvenlik ve Ebeveyn Bölümü](#18-gizlilik-güvenlik-ve-ebeveyn-bölümü)
+19. [Kayıt Sistemi](#19-kayıt-sistemi)
+20. [Yol Haritası](#20-yol-haritası)
+21. [Açık Sorular](#21-açık-sorular)
+22. [Karar Günlüğü](#22-karar-günlüğü)
+
+---
+
+## 1. Vizyon
+
+ZzWorld; Toca Boca World ve Avatar World tarzında, çocuklara yönelik bir **serbest
+oyun (sandbox) dünyasıdır**. Çocuk karakter oluşturur, evleri ve sokakları düzenler,
+şehirde gezer, hayvanlarla ilgilenir ve kendi hikâyelerini kurar.
+
+- **Tamamen ücretsiz ve açık kaynak.** GitHub'da herkese açık geliştirilir.
+- **Reklam yok, veri toplama yok, hesap yok, uygulama içi satın alma yok.**
+- **Tarayıcıda çalışır**, PWA olarak cihaza kurulur ve çevrimdışı oynanır.
+- **Yaratıcılığa açık:** oyundaki her şey, oyunla birlikte gelen ZzStudio aracıyla
+  üretilir. Kullanıcılar da aynı araçla kendi nesnelerini, hayvanlarını, seslerini
+  ve müziklerini yapabilir.
+
+## 2. Temel İlkeler
+
+1. **Kaybetme ve ceza yok.** Hiçbir şey ölmez, hastalanmaz, kaçmaz, kalıcı olarak
+   bozulmaz. Puan, para, kilit yok. Çocuk hiçbir şeyi "yanlış" yapamaz.
+2. **Yazısız arayüz.** Oyun içi arayüz ikonlarla çalışır; okuma bilmeyen çocuk da
+   oynayabilir. (Ebeveyn bölümü ve ZzStudio bu kuralın dışındadır.)
+3. **Dokunmatik öncelikli.** Ana hedef tablettir; büyük dokunma alanları, sürükle-bırak
+   etkileşimi. PC (fare) ikinci hedeftir.
+4. **Veri cihazdan çıkmaz.** Kayıtlar, ses kayıtları ve kullanıcı içerikleri yalnızca
+   cihazda saklanır. Paylaşım sadece kullanıcının elle dışa aktardığı dosyalarla olur.
+5. **Her şey veridir.** Nesneler, sahneler, davranışlar JSON tanımlarıdır. Motor bu
+   tanımları yorumlar; yeni içerik kod yazmadan eklenir.
+6. **Kendi aracımızı kullanırız (dogfooding).** Core içerik, kullanıcılara sunulan
+   ZzStudio ile üretilir.
+
+## 3. Platform ve Teknoloji
+
+| Konu | Karar / Öneri |
+|---|---|
+| Çalışma ortamı | Tarayıcı, PWA (manifest + service worker) |
+| Dil | Sade JavaScript (ES modules), build adımı yok. İhtiyaç olursa Vite'a geçilir. |
+| Çizim | Önerilen: Canvas 2D + vektör verinin bitmap önbelleğe çizilmesi. Sahneler ağırlaşırsa PixiJS değerlendirilir. |
+| El çizimi | [perfect-freehand](https://github.com/steveruizok/perfect-freehand) (MIT) çizgiler, [Rough.js](https://github.com/rough-stuff/rough) (MIT) dolgular |
+| Ses / müzik | Web Audio API (sentez, efekt, kayıt oynatma) |
+| Mikrofon | `getUserMedia` + `MediaRecorder` |
+| Yerel kayıt | IndexedDB |
+| Girdi | Pointer Events (dokunma, kalem, fare tek API) |
+
+### Barındırma
+
+- **Lokal geliştirme:** Apache, `http://192.168.1.102/ZzWorld/` (dosyalar
+  `C:\Apache24\htdocs\ZzWorld` klasöründen doğrudan servis edilir).
+- **HTTPS zorunluluğu:** Service worker (çevrimdışı/kurulum) ve mikrofon erişimi
+  yalnızca HTTPS veya `localhost` üzerinde çalışır. Lokal ağdaki tabletlerden test
+  için Apache'ye **mkcert** ile yerel sertifika eklenecek ve kök sertifika test
+  cihazlarına yüklenecek.
+- **Herkese açık sürüm:** GitHub Pages (HTTPS hazır gelir).
+
+## 4. Dünya Yapısı
+
+```
+Şehir Haritası ──dokun──► Mahalle ──► Sokak (yan kaydırmalı) ──kapı──► Bina ──► Odalar
+                                         ▲  kavşakta ileri/geri  ▼
+                                       Yan sokak
+```
+
+### 4.1 Şehir haritası
+El çizimi, kuşbakışı bir harita. Mahalleler büyük, dokunulabilir alanlardır. Dokunulan
+mahalleye girilir. Mahalleler arası geçiş her zaman harita üzerinden yapılır.
+
+### 4.2 Mahalle ve sokaklar
+- Mahalle bir **sokak grafıdır**: düğümler sokaklar, kenarlar kavşaklardır.
+- Her sokak, **iki boyutlu, sağa-sola kaydırılan** uzun bir sahnedir.
+- Sokak üzerindeki **kavşak noktalarında** ileri/geri hareketle (yukarı/aşağı kaydırma
+  veya yerdeki ok işareti) yan sokağa geçilir. Geçişte kısa bir "derinliğe dönme"
+  kamera animasyonu oynar.
+- Mahallenin bir veya birkaç **çıkış noktası** vardır (otoyol tabelası, köprü);
+  buradan şehir haritasına çıkılır.
+
+### 4.3 Sokak katmanları (paralaks)
+1. Uzak arka plan: gökyüzü, uzak binalar
+2. Bina cepheleri (kapılar, pencereler)
+3. Kaldırım: karakterler, hayvanlar
+4. Yol: araçlar
+5. Ön plan: ağaç, direk, çit
+
+### 4.4 Binalar ve odalar
+Sokaktaki kapı bir `Portal` nesnesidir; dokununca veya karakter kapıya bırakılınca
+bina sahnesi açılır. Bina içinde odalar yan yana dizilir; katlar arası geçiş merdiven
+veya asansör (yine `Portal`) ile olur.
+
+### 4.5 Sahneler arası taşıma
+Karakterler, eşyalar ve hayvanlar sahneler arasında taşınabilir (karakterin elinde,
+araçta veya ekran kenarındaki bir "çanta" alanında).
+
+## 5. Nesne Modeli (Polimorfizm)
+
+Oyundaki her şey `Entity`'dir. Derin sınıf ağacı yerine **az sayıda temel tür +
+takılıp çıkarılabilen davranışlar** kullanılır. Tümü ortak arayüze uyar; motor bir
+nesnenin ne olduğunu bilmeden onu çalıştırır.
+
+### 5.1 Temel türler
+
+```
+Entity        ortak arayüz: render, onTap, onDragStart, onDrop, onTick, serialize
+ ├─ Item        taşınabilir: elma, oyuncak, telefon
+ ├─ Furniture   yerleştirilir: yatak, buzdolabı, masa
+ ├─ Agent       beyni olan nesne (bkz. §11)
+ │   ├─ Character   oyuncu karakterleri (beyin: oyuncu kontrolü / serbest)
+ │   └─ Animal      evcil ve ortam hayvanları
+ ├─ Vehicle     binilir, hareket eder (bkz. §12)
+ └─ Portal      kapı, merdiven, asansör, mahalle çıkışı
+```
+
+### 5.2 Davranışlar (Behavior)
+
+Nesneye eklenen, aynı arayüzü paylaşan modüller:
+
+| Davranış | Görev |
+|---|---|
+| `Toggle` | durumlar arasında geçiş (açık/kapalı) |
+| `Container` | içine nesne konur (buzdolabı, bagaj, çanta) |
+| `Seat` | karakter/hayvan oturur, yatar, biner |
+| `Consumable` | yenir/içilir (ısırık izleri), geri gelir |
+| `Light` | ışık kaynağı (gece katmanında parlar) |
+| `Grow` | büyür, solar, sulanınca canlanır |
+| `Spawner` | nesne üretir (musluk → su damlası) |
+| `Motion` | kendi başına hareket (araç sürüşü) |
+| `Affordance` | ajanlara bir ihtiyacı karşıladığını ilan eder (bkz. §11) |
+| `SoundModifier` | içine atılan sesi değiştirir (papağan, robot) |
+
+### 5.3 Nesne tanımı
+
+Tanımlar saf JSON'dur. `extends` ile başka bir tanımdan miras alınır (veri düzeyinde
+prototip kalıtımı). `class` ve `behaviors[].type` alanları, koddaki bir **kayıt
+defterinden (registry)** ilgili sınıfa bağlanır.
+
+```json
+{
+  "id": "core.fridge",
+  "extends": "core.furniture.base",
+  "class": "Furniture",
+  "name": { "tr": "Buzdolabı", "en": "Fridge" },
+  "art": { "states": { "closed": "…", "open": "…" } },
+  "colorSlots": ["body", "handle"],
+  "anchors": { "shelf1": [12, 40], "shelf2": [12, 80] },
+  "behaviors": [
+    { "type": "Toggle", "states": ["closed", "open"] },
+    { "type": "Container", "slots": 6, "visibleIn": "open" }
+  ],
+  "reactions": { "…": "bkz. §6" }
+}
+```
+
+- **Kimlikler** paket adıyla başlar (`core.`, `ayse.`), paketler birbirini ezmez.
+- **Renk yuvaları** (`colorSlots`): çocuk oyun içinde nesneyi bu bölgelerden boyar.
+- **Çapa noktaları** (`anchors`): eşyanın konacağı, karakterin oturacağı, elin tutacağı
+  yerler.
+- Yeni bir davranış = tek bir sınıf + kayıt. ZzStudio onu otomatik listeler.
+
+## 6. Olay → Tepki → Eylem Sistemi
+
+Ses, animasyon ve etkileşim tek bir omurgaya bağlanır: nesne bir **olaya** karşılık
+bir **eylem listesi** çalıştırır.
+
+- **Olaylar:** `tap`, `pickUp`, `drop`, `dropInto`, `stateEnter:<durum>`, `collide`,
+  `idle`, `loop`, `timer`, `world:day`, `world:night`, `mood:<ruh hâli>`
+- **Eylemler** (polimorfik sınıflar): `PlaySound`, `PlayAnim`, `PlayMusic`, `SetState`,
+  `Spawn`, `Particles`, `Wait`, `Random`
+
+```json
+"reactions": {
+  "tap":             [{ "do": "SetState", "toggle": ["closed", "open"] }],
+  "stateEnter:open": [{ "do": "PlayAnim", "clip": "doorOpen" },
+                      { "do": "PlaySound", "sound": ["creak1", "creak2"], "pitch": [0.9, 1.1] }],
+  "loop":            [{ "do": "PlaySound", "sound": "hum", "volume": 0.2, "when": "closed" }],
+  "world:night":     [{ "do": "SetState", "to": "lightOn" }]
+}
+```
+
+ZzStudio'da bu yapı, kod gerektirmeyen Scratch benzeri bir **"…olunca → …yap"**
+editörüyle düzenlenir.
+
+## 7. Görsel Tarz: El Çizimi
+
+- Çizimler **vektör** olarak saklanır: çizgiler nokta + basınç dizisidir,
+  perfect-freehand ile mürekkep hissi verilir; dolgular Rough.js ile karakalem/pastel
+  dokusundadır. Rastgelelik **sabit seed** ile üretilir (kareler arasında titremez).
+- Vektör saklama sayesinde: her ekran çözünürlüğünde net görüntü, küçük dosyalar,
+  oyun içinde renk yuvalarıyla boyama.
+- Performans için vektörler sahne yüklenirken bir kez bitmap'e çizilip önbelleğe
+  alınır.
+- Kullanıcılar PNG/SVG çizimlerini de içe aktarabilir.
+
+## 8. Animasyon
+
+İlk sürümde **üç seviyenin hepsi** bulunur. Hepsi birer "animasyon klibi" türüdür;
+`PlayAnim` eylemi klibin türünü bilmeden çalıştırır.
+
+| Seviye | Açıklama | Örnek |
+|---|---|---|
+| 1. Hazır hareketler | Parametrik (genlik, süre, easing) | zıplama, sallanma, ezilip-uzama, dönme, titreme, nabız |
+| 2. Parça animasyonu | Pivot noktaları etrafında keyframe | kapı açılması, pervane, yürüyüş, el sallama |
+| 3. Kare kare (flipbook) | El çizimi kareler | alev, kanat çırpma, silkelenme |
+
+### 8.1 Kare kare çizim
+- ZzStudio'da kare şeridi, **soğan kabuğu (onion skin)**, kare başına süre
+  (önerilen 8–12 kare/sn), döngü tipi (bir kez / döngü / ileri-geri).
+- **Parça bazlı flipbook:** sadece bir parça (ör. kuyruk) kare kare çizilir, gövde
+  parça animasyonuyla hareket eder.
+- Renk yuvaları tüm karelerde korunur.
+- Oyunda kareler sprite sheet olarak önbelleğe alınır.
+
+### 8.2 Line boil
+Tek kareli çizimler, motor tarafından 2–3 farklı seed ile döngüsel çizilerek "canlı
+çizim" titreşimi kazanır. Oyunun imza görünümüdür.
+
+### 8.3 Klip olayları
+Klibin belirli bir karesine olay/ses bağlanabilir (ayak yere basınca "tık").
+
+## 9. Ses
+
+### 9.1 Kaynaklar
+1. **Sentez (ses üretici):** sfxr tarzı, hazır ayarlar (pop, zıplama, çan, damla, bip)
+   + sliderlar + "rastgele" butonu. Sadece parametreler saklanır; lisans sorunu yok.
+   Core efektlerin çoğu bununla üretilir.
+2. **Mikrofon kaydı:** kırpma, seviye eşitleme, efektler (perde, yankı, robot).
+3. **Dosyadan içe aktarma:** içe aktarılırken tek ortak formata dönüştürülür
+   (iPad Safari uyumluluğu gözetilir).
+
+### 9.2 Oyun içi davranış
+- Varyasyon: birden çok ses arasından rastgele seçim + hafif perde farkı.
+- Aynı anda çalan ses sayısına üst sınır.
+- Ayrı kanallar: efekt / ortam / müzik (ebeveyn bölümünden ayarlanır).
+
+### 9.3 Oyun içi mikrofon
+- Mikrofon **varsayılan olarak kapalıdır**; ebeveyn bölümünden açılır.
+- Mikrofon ayrı bir menü değil, dünyadaki bir **kayıt cihazı oyuncağıdır**: büyük
+  buton basılı tutulunca kayıt alır, bırakınca durur.
+- Kayıt bir **ses balonu** nesnesine dönüşür; bir nesnenin üstüne bırakılınca o
+  nesneye `tap → PlaySound` tepkisi eklenir (konuşan kedi, kapı zili).
+- **Ses değiştirici nesneler:** papağan (tekrarlar), telefon ahizesi, robot, mağara
+  (yankı).
+- Sınırlar: kayıt başına ~10 sn, toplam sayı/alan sınırı; silme çöp kutusu nesnesiyle.
+- Mikrofon yalnızca butona basılıyken açıktır.
+
+## 10. Müzik
+
+### 10.1 ZzStudio: Döngü/Melodi Yapıcı
+- **Adım ızgarası (step sequencer):** yatayda 8/16/32 adım, dikeyde notalar.
+- **Gama kilitli:** varsayılan pentatonik (yanlış nota olmaz); majör, minör ve
+  basitleştirilmiş makamlar (Hicaz, Uşşak…) seçilebilir.
+- **İzler:** melodi, bas, akor/ped, davul.
+- **Sentez enstrümanlar:** ksilofon, müzik kutusu, ukulele benzeri, flüt, marimba,
+  yumuşak davul. Örnek ses dosyası yok, şarkılar birkaç KB.
+- Mikrofon kayıtları enstrüman yapılabilir (perdelenmiş miyav).
+- Tempo, swing, ses seviyeleri, "rastgele melodi öner".
+- **Core müzikleri bu araçla üretilir.**
+
+### 10.2 Oyunda müzik
+- Her mahalle/iç mekân kendi döngüsünü tanımlar; sahne değişince yumuşak geçiş.
+- Her şarkının isteğe bağlı **gece varyasyonu** vardır; güneş/ay düğmesiyle ritim
+  bozulmadan geçilir.
+- Radyo, gramofon gibi nesneler `PlayMusic` ile çalar; kullanıcı kendi şarkısını
+  yükleyebilir.
+- Oyun içi enstrümanlar (piyano, ksilofon, davul) aynı sentez motorunu kullanır ve
+  çalan müziğin gamına otomatik uyar.
+
+## 11. Ajanlar (Hayvanlar)
+
+İlk sürümde **yalnızca hayvan ajanlar** vardır. İnsan NPC'ler sonraki sürümlere
+bırakılmıştır; mimari türden bağımsız kurulur, böylece insan NPC eklemek yeni bir
+gövde şablonu ve ihtiyaç tanımından ibaret olur.
+
+### 11.1 Beyin: ihtiyaç temelli seçim (utility AI)
+- Her ajanın ihtiyaçları vardır: `açlık`, `uyku`, `oyun`, `sevgi`, `merak`.
+- **Akıllı nesneler:** nesneler `Affordance` davranışıyla ne sunduklarını ilan eder
+  (mama kabı → açlık, top → oyun, minder → uyku). Ajan çevresindeki seçeneklerden o an
+  en yararlısını seçer. Yeni eşya eklemek, mevcut hayvanlara yeni davranış kazandırır.
+- **Kişilik** sliderları (meraklı, ürkek, oyuncu, tembel) seçimleri ağırlıklandırır.
+
+### 11.2 Ceza yok kuralı
+- İhtiyaçlar **yalnızca ruh hâlini ve davranışı** etkiler. Hastalık, ölüm, kaçma yok.
+- İhtiyaçlar bir alt sınırda durur ve kendiliğinden normale döner. Uzun süre
+  oynanmasa bile hayvan kötü durumda bulunmaz; en fazla "özlemiş" olarak karşılar.
+- Ruh hâli sayı/bar ile değil, görselle anlatılır: kulak, kuyruk, göz ifadesi,
+  düşünce balonunda ikon. Bunlar animasyon sisteminde "ruh hâli katmanı"dır.
+
+### 11.3 Hareket tipleri (polimorfik)
+
+| Tip | Örnek | Özellik |
+|---|---|---|
+| Yürüyen | kedi, köpek, tavşan | zeminde dolaşır, eşyalara zıplar |
+| Uçan | kuş, kelebek, güvercin | süzülür, tünek noktalarına konar |
+| Yüzen | balık, kaplumbağa | akvaryum/havuz sınırında kalır |
+| Tırmanan | sincap, kertenkele | ağaç ve duvar yüzeylerinde gezer |
+
+### 11.4 Ajan türleri
+- **Evcil hayvanlar:** bir haneye/karaktere aittir, adı vardır, kaydedilir. Sahibini
+  takip edebilir, kucağa alınır, beslenir, sevilir, giydirilir.
+- **Ortam ajanları:** kuş, güvercin, sincap, kelebek. Sahneye aittir, kendiliğinden
+  belirir, dokununca kaçar (sonra geri gelir), kırıntıya gelir.
+
+### 11.5 Simülasyon
+- Yalnızca aktif sahne simüle edilir. Bir sahneye dönülünce geçen süreye göre durum
+  hızlıca hesaplanır.
+- Sahne başına ajan sayısı sınırlıdır.
+
+### 11.6 Gelecek fikir
+Çocuğun kendi karakterini "kendi başına dolaşsın" moduna alması (aynı ajan beyniyle).
+
+## 12. Araçlar
+
+İlk sürümde vardır.
+
+- `Vehicle` = `Seat` (oturma çapaları) + `Motion` davranışı. Isteğe bağlı `Container`
+  ile bagaj.
+- **Binme/inme:** karakter araca sürüklenip bırakılır; dışarı sürüklenerek iner.
+- **Sürüş:** ekran kenarında büyük ileri/geri okları (basılı tut) veya aracı
+  sürükleme. Kamera aracı takip eder.
+- **Kavşaklar:** yolda yukarı/aşağı oklar belirir, dokununca yan sokağa dönülür.
+- **Ceza yok:** çarpışma, hasar, yakıt yok. Hayvanlar araçtan kenara çekilir.
+- Bırakılan araç olduğu yerde kalır ve kaydedilir.
+- **Mahalleler arası:** araç mahalle çıkışına varınca şehir haritası açılır; hedef
+  mahalleye dokununca araç haritada yolu izleyerek gider ve o mahallenin giriş
+  noktasına iner. İçindekiler araçla taşınır.
+- Örnek araçlar: bisiklet, scooter, aile arabası, minibüs, dondurma kamyonu,
+  itfaiye, at arabası.
+
+## 13. Gece / Gündüz
+
+- Çocuğun değiştirdiği bir **güneş/ay düğmesi** (gerçek saate bağlı değil).
+  Dünya geneli ortak durumdur.
+- Geçiş birkaç saniyelik yumuşak bir animasyondur.
+- `world:day` / `world:night` olayları yayınlanır: lambalar yanar, yıldızlar çıkar,
+  gece ajanları (ateş böceği, baykuş) belirir, ortam sesi ve müzik varyasyonu değişir.
+- Gece hayvanların uyku ihtiyacı daha hızlı artar; zorlama yoktur, uyandırılabilirler.
+- Gece hiçbir şeyi kilitlemez; çocuk lambaları elle yine açıp kapatabilir.
+- **Teknik:** sahneye üstten bir renk/ışık katmanı uygulanır; `Light` davranışlı
+  nesneler bu katmanda parlama oluşturur. İsteyen ZzStudio'da özel "gece durumu"
+  çizebilir.
+
+## 14. Karakterler
+
+> Bu bölüm henüz ayrıntılı konuşulmadı (bkz. [Açık Sorular](#21-açık-sorular)).
+
+Şimdilik öngörülen:
+- Parçalı (katmanlı) karakter: kafa, gövde, kollar, bacaklar; pivot noktalarıyla
+  parça animasyonu.
+- Karakter oluşturucu: ten rengi, saç, göz, ağız, kıyafet, aksesuar.
+- Standart animasyon klip seti (`idle`, `walk`, `sit`, `sleep`, `eat`, `wave`…); böylece
+  kullanıcı çizimi her karakter tüm eşyalarla uyumlu çalışır.
+- Karakter elinde nesne tutabilir, oturabilir, yatabilir, araca binebilir.
+
+## 15. ZzStudio — Nesne Üretici
+
+Oyundan ayrı bir PWA sayfası (`/ZzWorld/studio/`). Hem geliştirme ekibinin core içerik
+üretim aracı, hem de kendi setini oluşturmak isteyen kullanıcılar içindir. Arayüzünde
+yazı kullanılabilir (TR/EN).
+
+### 15.1 Editörler
+- **Nesne editörü:** el çizimi, katmanlar/parçalar, durumlar, renk yuvaları, pivot ve
+  çapa noktaları, dokunma alanı, davranış seçimi ve parametreleri, TR/EN isimler.
+- **Tepki editörü:** "…olunca → …yap" (kodsuz).
+- **Animasyon editörü:** hazır hareketler, keyframe zaman çizelgesi, kare kare çizim.
+- **Ses üretici:** sentez, mikrofon kaydı, içe aktarma, efektler.
+- **Döngü/melodi yapıcı:** bkz. §10.1.
+- **Ajan editörü:** gövde şablonu (dört ayaklı, kuş, balık, böcek…), parçaları çizme,
+  ihtiyaçlar, kişilik, sesler.
+- **Araç editörü:** araç şablonu, oturma çapaları, tekerlek animasyonu.
+- **Mahalle editörü:** sokakları uzatma, kavşak ekleme, bina cephesi yerleştirme,
+  cepheyi iç mekâna bağlama, çıkış noktaları.
+
+### 15.2 Test
+Her editörde canlı önizleme ve nesneyi bir test sahnesinde deneme.
+
+## 16. İçerik Paketleri
+
+- Paket biçimi: **`.zzpack`** (ZIP). İçinde `manifest.json` (kimlik, ad, yazar,
+  sürüm, lisans), tanımlar, çizimler, sesler, müzikler.
+- **`core` paketi** repoda durur ve oyunla gelir.
+- Kullanıcı paketleri IndexedDB'de saklanır, açılıp kapatılabilir.
+- **Paketler kod çalıştıramaz.** Sadece veri içerir; davranışlar yalnızca motorun
+  kayıt defterindeki sınıflara başvurabilir.
+- Paylaşım sunucu olmadan, dosya alışverişiyle olur.
+
+## 17. Dil Desteği
+
+- Türkçe ve İngilizce.
+- Oyun arayüzü büyük ölçüde ikon tabanlıdır; kalan metinler `locales/tr.json`,
+  `locales/en.json` dosyalarındadır.
+- Nesne isimleri tanımların içinde çok dilli tutulur (`{ "tr": …, "en": … }`).
+- Varsayılan dil cihaz dilinden alınır; ebeveyn bölümünden değiştirilir.
+
+## 18. Gizlilik, Güvenlik ve Ebeveyn Bölümü
+
+### 18.1 Güvenceler
+1. **Ağ erişimi kapalı:** sayfalar `Content-Security-Policy` ile dış adreslere bağlantı
+   kuramaz (ör. `connect-src 'self'`). Kod hatası veya kötü niyetli paket olsa bile
+   tarayıcı veri göndermeye izin vermez.
+2. Tüm veri (kayıtlar, ses kayıtları, paketler) yalnızca IndexedDB'de durur.
+3. Yedek dışa aktarımında **ses kayıtları varsayılan olarak dahil edilmez**; ebeveyn
+   isterse işaretler.
+4. Paketler kod çalıştırmaz (bkz. §16).
+5. Mikrofon yalnızca kayıt butonu basılıyken açıktır.
+6. Analitik, reklam, hesap, sunucu yok.
+
+### 18.2 Ebeveyn kapısı
+Yazı okuyamayan çocuğun geçemeyeceği basit bir kapı (ör. yazıyla sorulan bir işlem
+veya "üç parmakla 3 saniye basılı tut"). Kesin yöntem uygulamada belirlenecek.
+
+### 18.3 Ebeveyn bölümü içeriği
+- Mikrofon aç/kapa (varsayılan **kapalı**), tüm kayıtları silme
+- Ses seviyeleri: efekt / ortam / müzik
+- Dil: Türkçe / English
+- Yedekleme ve içe aktarma, kullanıcı paketlerini yönetme
+- "Bu oyun hiçbir veri göndermez" açıklaması, lisans ve kaynak kod bağlantısı
+
+## 19. Kayıt Sistemi
+
+- IndexedDB, otomatik kayıt.
+- Dünya durumu (sahneler, nesne konumları, karakterler, evcil hayvanlar, araçlar,
+  gece/gündüz) JSON olarak serileştirilir.
+- Dışa/içe aktarma ile yedekleme ve cihazlar arası taşıma.
+- Tek dünya mı, birden çok kayıt yuvası mı: **açık soru**.
+
+## 20. Yol Haritası
+
+Önerilen sıra (taslak):
+
+0. **Altyapı:** repo, klasör yapısı, Apache üzerinde HTTPS (mkcert), PWA iskeleti.
+1. **Motor çekirdeği:** sahne, Entity/Behavior kayıt defteri, sürükle-bırak,
+   Olay → Tepki sistemi, IndexedDB kayıt.
+2. **ZzStudio v1:** el çizimi, durumlar, çapa noktaları, tepki editörü, dışa aktarma.
+3. **Animasyon:** hazır hareketler, parça animasyonu, kare kare çizim, line boil.
+4. **Ses ve müzik:** ses üretici, döngü/melodi yapıcı, oyun içi ses motoru.
+5. **Karakterler:** parçalı karakter ve karakter oluşturucu.
+6. **İlk ev:** 2–3 oda, 15–20 core nesne.
+7. **Sokak ve mahalle:** yan kaydırma, kavşaklar, portal, şehir haritası.
+8. **Ajanlar:** evcil ve ortam hayvanları.
+9. **Araçlar.**
+10. **Gece/gündüz, ebeveyn bölümü, oyun içi mikrofon.**
+11. **Yayın:** GitHub Pages.
+
+## 21. Açık Sorular
+
+- Karakter oluşturucunun ayrıntıları (parçalar, kıyafet, yüz ifadeleri, yaş/beden).
+- Kayıt yapısı: tek dünya mı, birden çok dünya/kayıt yuvası mı?
+- Repo ve klasör yapısı.
+- Lisans: kod için MIT, core görseller/sesler için CC BY 4.0 önerildi — onay bekliyor.
+- Çizim katmanı: Canvas 2D mi, PixiJS mi (prototipte ölçülecek).
+- Ebeveyn kapısı yöntemi.
+- İlk mahallede hangi mekânlar olacak (ev, park, market, okul…)?
+
+## 22. Karar Günlüğü
+
+| Tarih | Karar |
+|---|---|
+| 2026-10-26 | Oyunun adı **ZzWorld**. Toca Boca World / Avatar World tarzı, çocuklara yönelik sandbox. |
+| 2026-10-26 | Tarayıcıda çalışan PWA, yerel veri kaydı. |
+| 2026-10-26 | Tamamen ücretsiz ve açık kaynak; GitHub'da public. Reklam ve veri toplama yok. |
+| 2026-10-26 | Ana hedef tablet, ardından PC. |
+| 2026-10-26 | Görsel tarz: el çizimi. |
+| 2026-10-26 | Nesne üretici araç (ZzStudio): hem geliştirme hem kullanıcıların kendi setleri için. |
+| 2026-10-26 | Diller: Türkçe ve İngilizce. |
+| 2026-10-26 | Nesneler polimorfizm ile üretilebilir olacak. |
+| 2026-10-26 | Nesneler ses üretebilecek ve animasyon uygulanabilecek. |
+| 2026-10-26 | Oyun içinde mikrofonla ses kaydı olacak; kayıtlar yalnızca cihazda kalacak. |
+| 2026-10-26 | Mikrofon varsayılan kapalı; ebeveyn kapısından geçilerek ayarlardan açılır. |
+| 2026-10-26 | Dünya: şehir haritası → mahalle → yan kaydırmalı sokaklar; kavşaklarda ileri/geri ile yan sokaklar. |
+| 2026-10-26 | Oyunda ajanlar olacak (evcil hayvanlar, kuşlar vb.). |
+| 2026-10-26 | Ajan ihtiyaçları yalnızca ruh hâli ve davranışı etkiler; cezalandırıcı sonuç yok. |
+| 2026-10-26 | İlk sürümde yalnızca hayvan ajanlar; insan NPC'ler sonraki sürümlerde. |
+| 2026-10-26 | Gece/gündüz, oyun içi güneş/ay düğmesiyle değişir. |
+| 2026-10-26 | Araçlar ilk sürümde: karakter biner, sokakta gider, kavşaklarda döner; mahalleler arası geçiş harita üzerinden. |
+| 2026-10-26 | Kare kare çizim animasyonu ilk sürümde (üç animasyon seviyesinin hepsi). |
+| 2026-10-26 | Arka plan müziği olacak; ZzStudio'da döngü/melodi yapıcı; core müzikleri onunla üretilecek. |

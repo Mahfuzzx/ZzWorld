@@ -1,0 +1,15 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# Local certificates (mkcert)
+*.pem
+*.key
+*.crt
+
+# Dependencies / builds (if ever added)
+node_modules/
+dist/
