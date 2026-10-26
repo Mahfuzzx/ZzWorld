@@ -4,7 +4,7 @@
 sounds, music and object definitions) is licensed under the
 [Creative Commons Attribution 4.0 International License (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/).
 
-Attribution: "ZzWorld contributors — https://github.com/<owner>/ZzWorld"
+Attribution: "ZzWorld contributors — https://github.com/Mahfuzzx/ZzWorld"
 
 The source code is licensed separately under the MIT License (see [LICENSE](LICENSE)).
 User-made content packs (`.zzpack`) carry their own license in their `manifest.json`.
@@ -14,7 +14,7 @@ sesler, müzikler ve nesne tanımları)
 [Creative Commons Atıf 4.0 Uluslararası Lisansı (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/deed.tr)
 ile lisanslanmıştır.
 
-Atıf: "ZzWorld katkıcıları — https://github.com/<owner>/ZzWorld"
+Atıf: "ZzWorld katkıcıları — https://github.com/Mahfuzzx/ZzWorld"
 
 Kaynak kod ayrıca MIT Lisansı ile lisanslanmıştır (bkz. [LICENSE](LICENSE)).
 Kullanıcıların yaptığı içerik paketleri (`.zzpack`) kendi lisanslarını
