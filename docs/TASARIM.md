@@ -84,6 +84,38 @@ oyun (sandbox) dünyasıdır**. Çocuk karakter oluşturur, evleri ve sokakları
   cihazlarına yüklenecek.
 - **Herkese açık sürüm:** GitHub Pages (HTTPS hazır gelir).
 
+### Dış bağımlılıklar
+CDN kullanılmaz. Kütüphaneler (perfect-freehand, Rough.js) `vendor/` altına kopyalanır.
+Sebepler: çevrimdışı çalışma, CSP ile dış bağlantıların kapalı olması (bkz. §18) ve
+sürümün sabit kalması.
+
+### Lisans
+- **Kod:** MIT ([LICENSE](../LICENSE)).
+- **Core içerik** (`content/core/` altındaki görseller, sesler, müzikler): CC BY 4.0
+  ([LICENSE-CONTENT.md](../LICENSE-CONTENT.md)).
+- **Kullanıcı paketleri:** kendi lisanslarını `manifest.json` içinde belirtir.
+
+### Klasör yapısı (öneri)
+
+```
+ZzWorld/
+├─ index.html               oyun
+├─ manifest.webmanifest
+├─ sw.js                    service worker
+├─ studio/index.html        ZzStudio
+├─ src/
+│  ├─ engine/               sahne, Entity, Behavior, Action, registry, girdi, çizim
+│  ├─ game/                 oyun ekranları: dünya seçimi, harita, sokak, bina,
+│  │                        karakter oluşturucu, ebeveyn bölümü
+│  ├─ studio/               ZzStudio editörleri
+│  ├─ audio/                ses motoru, sentez, sequencer
+│  └─ shared/               i18n, depolama (IndexedDB), paket biçimi
+├─ content/core/            core paketi: manifest.json, defs/, art/, sounds/, music/
+├─ locales/                 tr.json, en.json
+├─ vendor/                  üçüncü parti kütüphaneler
+└─ docs/
+```
+
 ## 4. Dünya Yapısı
 
 ```
@@ -117,7 +149,15 @@ Sokaktaki kapı bir `Portal` nesnesidir; dokununca veya karakter kapıya bırak�
 bina sahnesi açılır. Bina içinde odalar yan yana dizilir; katlar arası geçiş merdiven
 veya asansör (yine `Portal`) ile olur.
 
-### 4.5 Sahneler arası taşıma
+### 4.5 İlk mahalle
+İlk sürümdeki mahallede iki mekân türü bulunur:
+- **Evler:** karakterlerin yaşadığı, odaları olan binalar. İlk sürümün merkezi.
+- **Park:** ağaçlar, salıncak, havuz; ortam hayvanları (kuş, sincap, ördek) için
+  ana alan.
+
+Market, veteriner gibi diğer mekânlar sonraki sürümlere bırakılmıştır.
+
+### 4.6 Sahneler arası taşıma
 Karakterler, eşyalar ve hayvanlar sahneler arasında taşınabilir (karakterin elinde,
 araçta veya ekran kenarındaki bir "çanta" alanında).
 
@@ -155,6 +195,7 @@ Nesneye eklenen, aynı arayüzü paylaşan modüller:
 | `Spawner` | nesne üretir (musluk → su damlası) |
 | `Motion` | kendi başına hareket (araç sürüşü) |
 | `Affordance` | ajanlara bir ihtiyacı karşıladığını ilan eder (bkz. §11) |
+| `Wearable` | karaktere giyilir (bkz. §14.4) |
 | `SoundModifier` | içine atılan sesi değiştirir (papağan, robot) |
 
 ### 5.3 Nesne tanımı
@@ -370,14 +411,49 @@ gövde şablonu ve ihtiyaç tanımından ibaret olur.
 
 ## 14. Karakterler
 
-> Bu bölüm henüz ayrıntılı konuşulmadı (bkz. [Açık Sorular](#21-açık-sorular)).
+### 14.1 Görünüm
+- **Büyük kafalı, kısa gövdeli** sevimli oranlar. Yüz ifadeleri net görünür, tablette
+  dokunması kolaydır.
+- **Parçalı (katmanlı) yapı:** kafa, gövde, kollar, bacaklar; pivot noktalarıyla parça
+  animasyonu.
 
-Şimdilik öngörülen:
-- Parçalı (katmanlı) karakter: kafa, gövde, kollar, bacaklar; pivot noktalarıyla
-  parça animasyonu.
-- Karakter oluşturucu: ten rengi, saç, göz, ağız, kıyafet, aksesuar.
+### 14.2 Yaş grupları
+| Yaş | Özellik |
+|---|---|
+| Bebek | Taşınır; beşiğe, puset ya da araca konur; yürümez, emekler. |
+| Çocuk | Ana karakter tipi. |
+| Yetişkin | Araç kullanabilir. |
+| Yaşlı | Baston, gözlük gibi kendine özgü aksesuarlar. |
+
+Her yaş grubu kendi iskelet şablonunu ve standart klip setini kullanır.
+
+### 14.3 Kapsayıcılık
+- **Ten ve saç çeşitliliği:** serbest ten rengi paleti; düz, dalgalı, kıvırcık, afro
+  saç tipleri; çil, vitiligo.
+- **Baş örtüsü ve kültürel giysiler:** baş örtüsü, takke, sari gibi kategoriler.
+- **Yardımcı cihazlar:** gözlük, işitme cihazı, protez; tekerlekli sandalye `Vehicle`
+  gibi çalışır (karakter oturur, sokakta gider).
+
+Beden çeşitliliği (boy/kilo seçenekleri) ilk sürümde yoktur.
+
+### 14.4 Kıyafetler
+İki yol birlikte bulunur:
+1. **Karakter oluşturucuda** menüden seçim.
+2. **Dünyada nesne olarak:** kıyafetler dolapta durur, karaktere sürüklenip
+   bırakılınca giydirilir. Kıyafet bir `Item`'dır ve `Wearable` davranışı taşır
+   (hangi bölgeye giyildiği, hangi katmanda çizildiği).
+
+Katmanlar: iç giyim yok; üst, alt, tek parça (elbise), ayakkabı, şapka/baş örtüsü,
+gözlük, aksesuar.
+
+### 14.5 Yüz ifadeleri (öneri)
+- İfadeler (mutlu, şaşkın, üzgün, uykulu, kızgın, gülen) yüz parçalarının durumlarıdır.
+- Karakterin yüzüne dokununca ifade değişir; olaylar da ifadeyi değiştirir
+  (yemek yiyince mutlu, uyurken gözler kapalı).
+
+### 14.6 Davranış
 - Standart animasyon klip seti (`idle`, `walk`, `sit`, `sleep`, `eat`, `wave`…); böylece
-  kullanıcı çizimi her karakter tüm eşyalarla uyumlu çalışır.
+  kullanıcının çizdiği her karakter tüm eşyalarla uyumlu çalışır.
 - Karakter elinde nesne tutabilir, oturabilir, yatabilir, araca binebilir.
 
 ## 15. ZzStudio — Nesne Üretici
@@ -434,8 +510,9 @@ Her editörde canlı önizleme ve nesneyi bir test sahnesinde deneme.
 6. Analitik, reklam, hesap, sunucu yok.
 
 ### 18.2 Ebeveyn kapısı
-Yazı okuyamayan çocuğun geçemeyeceği basit bir kapı (ör. yazıyla sorulan bir işlem
-veya "üç parmakla 3 saniye basılı tut"). Kesin yöntem uygulamada belirlenecek.
+**Yazıyla sorulan bir işlem:** "Yedi artı beş kaç?" gibi bir soru, seçilen dilde yazıyla
+gösterilir ve rakamlı tuşlarla cevaplanır. Soru her seferinde rastgele seçilir.
+Okuma bilmeyen çocuk geçemez.
 
 ### 18.3 Ebeveyn bölümü içeriği
 - Mikrofon aç/kapa (varsayılan **kapalı**), tüm kayıtları silme
@@ -446,11 +523,15 @@ veya "üç parmakla 3 saniye basılı tut"). Kesin yöntem uygulamada belirlenec
 
 ## 19. Kayıt Sistemi
 
+- **Birden çok dünya:** açılışta el çizimi "dünya kartları" gösterilir (3–6 yuva).
+  Kardeşler aynı tablette ayrı dünyalarla oynayabilir. Kartta dünyanın küçük resmi
+  görünür, yazı yoktur.
 - IndexedDB, otomatik kayıt.
-- Dünya durumu (sahneler, nesne konumları, karakterler, evcil hayvanlar, araçlar,
-  gece/gündüz) JSON olarak serileştirilir.
-- Dışa/içe aktarma ile yedekleme ve cihazlar arası taşıma.
-- Tek dünya mı, birden çok kayıt yuvası mı: **açık soru**.
+- Her dünyanın durumu (sahneler, nesne konumları, karakterler, evcil hayvanlar,
+  araçlar, gece/gündüz) JSON olarak serileştirilir.
+- Kullanıcı paketleri ve ses kayıtları dünyalardan bağımsız, cihaz düzeyinde saklanır.
+- Dışa/içe aktarma ile yedekleme ve cihazlar arası taşıma (ebeveyn bölümünden).
+- Dünya silme yalnızca ebeveyn bölümünden yapılır.
 
 ## 20. Yol Haritası
 
@@ -472,13 +553,9 @@ veya "üç parmakla 3 saniye basılı tut"). Kesin yöntem uygulamada belirlenec
 
 ## 21. Açık Sorular
 
-- Karakter oluşturucunun ayrıntıları (parçalar, kıyafet, yüz ifadeleri, yaş/beden).
-- Kayıt yapısı: tek dünya mı, birden çok dünya/kayıt yuvası mı?
-- Repo ve klasör yapısı.
-- Lisans: kod için MIT, core görseller/sesler için CC BY 4.0 önerildi — onay bekliyor.
-- Çizim katmanı: Canvas 2D mi, PixiJS mi (prototipte ölçülecek).
-- Ebeveyn kapısı yöntemi.
-- İlk mahallede hangi mekânlar olacak (ev, park, market, okul…)?
+- Çizim katmanı: Canvas 2D mi, PixiJS mi (prototipte tablet üzerinde ölçülecek).
+- Yüz ifadeleri önerisi (§14.5) onay bekliyor.
+- "ZzStudio" adı onay bekliyor.
 
 ## 22. Karar Günlüğü
 
@@ -503,3 +580,11 @@ veya "üç parmakla 3 saniye basılı tut"). Kesin yöntem uygulamada belirlenec
 | 2026-10-26 | Araçlar ilk sürümde: karakter biner, sokakta gider, kavşaklarda döner; mahalleler arası geçiş harita üzerinden. |
 | 2026-10-26 | Kare kare çizim animasyonu ilk sürümde (üç animasyon seviyesinin hepsi). |
 | 2026-10-26 | Arka plan müziği olacak; ZzStudio'da döngü/melodi yapıcı; core müzikleri onunla üretilecek. |
+| 2026-10-26 | Lisans: kod MIT, core içerik (görsel, ses, müzik) CC BY 4.0. |
+| 2026-10-26 | Birden çok dünya (kayıt yuvası); açılışta dünya kartları. |
+| 2026-10-26 | Ebeveyn kapısı: yazıyla sorulan işlem, rakamlı tuşlarla cevap. |
+| 2026-10-26 | İlk mahallede evler ve park bulunur. |
+| 2026-10-26 | Karakterler büyük kafalı, sevimli oranlarda. |
+| 2026-10-26 | Yaş grupları: bebek, çocuk, yetişkin, yaşlı. |
+| 2026-10-26 | Kıyafetler hem karakter oluşturucuda hem dünyada nesne olarak (sürükle-giydir). |
+| 2026-10-26 | Kapsayıcılık: geniş ten/saç çeşitliliği, baş örtüsü ve kültürel giysiler, yardımcı cihazlar. Beden çeşitliliği ilk sürümde yok. |
