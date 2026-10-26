@@ -17,6 +17,7 @@ export class Scene {
     // Indoor scenes have a wall and floor; `background` is the pre-layers name.
     this.interior = data.interior ?? data.background ?? null;
     this.backdrop = data.backdrop ?? null;
+    this.music = data.music ?? null; // song id for the background music
     this.mode = 'play'; // 'play' | 'edit' — UI state, not saved
     this.camera = { x: data.camera?.x ?? 0 };
     this.nextId = data.nextId ?? 1;
@@ -102,6 +103,7 @@ export class Scene {
     }
     this.entities.delete(entity.id);
     this.services.animator?.stop(entity);
+    this.services.music?.stopSource(entity.id);
     this.changed();
   }
 
@@ -269,6 +271,7 @@ export class Scene {
       floorY: this.floorY,
       interior: this.interior,
       backdrop: this.backdrop,
+      music: this.music,
       camera: { x: Math.round(this.camera.x) },
       nextId: this.nextId,
       entities: [...this.entities.values()].map((e) => e.serialize()),

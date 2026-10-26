@@ -53,7 +53,8 @@
       "colors": "Renkler",
       "behavior": "Davranış",
       "reactions": "Tepkiler",
-      "animation": "Animasyon"
+      "animation": "Animasyon",
+      "sounds": "Sesler"
     },
     "general": {
       "id": "Kimlik",
@@ -125,7 +126,9 @@
         "PlayAnim": "Hareket et",
         "SetState": "Durum değiştir",
         "Wait": "Bekle (ms)",
-        "StopAnim": "Hareketi durdur"
+        "StopAnim": "Hareketi durdur",
+        "PlayMusic": "Müzik çal",
+        "StopMusic": "Müziği durdur"
       },
       "toggle": "(sıradaki)"
     },
@@ -146,7 +149,8 @@
       "newName": "Yeni nesne",
       "copySuffix": "(kopya)",
       "core": "Hazır nesneler",
-      "mine": "Benim nesnelerim"
+      "mine": "Benim nesnelerim",
+      "music": "♪ Müzik yapıcı"
     },
     "preview": {
       "title": "Deneme odası",
@@ -195,10 +199,95 @@
       "addFrame": "Kare",
       "removeFrame": "Kareyi sil",
       "onion": "Soğan kabuğu"
+    },
+    "sounds": {
+      "hint": "Nesnenin kendi sesleri. Tepkiler sekmesindeki \"Ses çal\" bunları da listeler.",
+      "synth": "Ses üret",
+      "record": "Mikrofonla kaydet",
+      "stop": "Kaydı bitir",
+      "file": "Dosyadan",
+      "privacy": "Kayıtlar sadece bu cihazda, nesnenin içinde saklanır; hiçbir yere gönderilmez. Mikrofon yalnızca kayıt sırasında açıktır (en fazla 10 sn).",
+      "recording": "Kayıt",
+      "preset": "Hazır sesten başla",
+      "random": "Rastgele",
+      "wave": "Dalga",
+      "waves": {
+        "sine": "Yumuşak",
+        "triangle": "Tatlı",
+        "square": "Bip bip",
+        "sawtooth": "Vızıltı",
+        "noise": "Hışırtı"
+      },
+      "from": "Başlangıç",
+      "to": "Bitiş",
+      "length": "Süre",
+      "attack": "Yumuşak giriş",
+      "volume": "Ses düzeyi",
+      "vibrato": "Titreme",
+      "arp": "Merdiven",
+      "bell": "Çan tınısı",
+      "echo": "Yankı",
+      "robot": "Robot",
+      "pitch": "Perde (incelik)",
+      "prefix": "ses",
+      "micError": "Mikrofon açılamadı:\n{error}",
+      "fileError": "Ses dosyası açılamadı:\n{error}"
     }
   },
   "catalog": {
     "open": "Eşya ekle",
     "trash": "Çöp kutusu"
+  },
+  "music": {
+    "songs": "Şarkılarım",
+    "newSong": "Yeni şarkı",
+    "mine": "Benim şarkılarım",
+    "core": "Hazır şarkılar (kopyala)",
+    "empty": "Henüz şarkın yok.",
+    "shareHint": "Şarkılar nesnelerle birlikte paket olarak dışa aktarılır (Nesne stüdyosu → Nesnelerim).",
+    "bpm": "Tempo",
+    "scale": "Gam",
+    "root": "Ton",
+    "steps": "Adım",
+    "swing": "Swing",
+    "night": "Gece versiyonu",
+    "objects": "Nesne stüdyosu",
+    "play": "Çal",
+    "stop": "Durdur",
+    "volume": "Ses",
+    "mute": "Sustur",
+    "addTrack": "Melodi",
+    "addDrums": "Davul",
+    "removeTrack": "Parçayı sil",
+    "random": "Rastgele melodi",
+    "clear": "Temizle",
+    "nightInstrument": "Gece enstrümanı",
+    "nightMute": "Gece sustur",
+    "hint": "Kutulara dokunarak nota koy. Notalar seçili gama kilitli: yanlış nota yok! Boşluk tuşu çalar/durdurur.",
+    "nightHint": "Gece versiyonu: tempo, enstrümanlar ve susturulan parçalar gece için ayrıdır. Oyunda güneş/ay düğmesiyle geçilir.",
+    "noteNames": "Do,Do#,Re,Re#,Mi,Fa,Fa#,Sol,Sol#,La,La#,Si",
+    "scales": {
+      "pentatonic": "Pentatonik (hep güzel)",
+      "major": "Majör (neşeli)",
+      "minor": "Minör (hüzünlü)",
+      "hicaz": "Hicaz",
+      "ussak": "Uşşak (basit)"
+    },
+    "instruments": {
+      "drums": "Davul",
+      "marimba": "Marimba",
+      "xylophone": "Ksilofon",
+      "musicbox": "Müzik kutusu",
+      "pluck": "Ukulele",
+      "flute": "Flüt",
+      "bass": "Bas",
+      "pad": "Yumuşak akor"
+    },
+    "drums": {
+      "kick": "Bum",
+      "snare": "Tak",
+      "hat": "Tıs",
+      "clap": "Alkış"
+    }
   }
 }

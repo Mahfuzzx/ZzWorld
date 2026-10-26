@@ -17,7 +17,7 @@ export function placeableIds(defs, firstIds = []) {
   return ordered.filter((id) => {
     try {
       const def = defs.get(id);
-      if (def.abstract || def.kind === 'backdrop') return false;
+      if (def.abstract || def.kind) return false; // backdrops, songs… are not things
       lookup('entity', def.class ?? 'Item');
       return true;
     } catch {

@@ -47,9 +47,10 @@ export async function openPreview(app) {
       h('button', { type: 'button', class: 'st-btn', text: t('studio.preview.close'), onclick: () => dialog.close() })),
     stage);
   dialog.showModal();
+  dialog.addEventListener('close', () => app.music.stopAll(), { once: true });
 
   const dayNight = new DayNight();
-  const services = { audio: app.audio, animator: new Animator(), dayNight };
+  const services = { audio: app.audio, music: app.music, view: { panOf: () => 0 }, animator: new Animator(), dayNight };
   let scene;
   try {
     scene = Scene.fromTemplate(defs, template, services);

@@ -53,7 +53,8 @@
       "colors": "Colours",
       "behavior": "Behaviour",
       "reactions": "Reactions",
-      "animation": "Animation"
+      "animation": "Animation",
+      "sounds": "Sounds"
     },
     "general": {
       "id": "Id",
@@ -125,7 +126,9 @@
         "PlayAnim": "Move",
         "SetState": "Change state",
         "Wait": "Wait (ms)",
-        "StopAnim": "Stop moving"
+        "StopAnim": "Stop moving",
+        "PlayMusic": "Play music",
+        "StopMusic": "Stop music"
       },
       "toggle": "(next one)"
     },
@@ -146,7 +149,8 @@
       "newName": "New object",
       "copySuffix": "(copy)",
       "core": "Ready-made objects",
-      "mine": "My objects"
+      "mine": "My objects",
+      "music": "♪ Music maker"
     },
     "preview": {
       "title": "Test room",
@@ -195,10 +199,95 @@
       "addFrame": "Frame",
       "removeFrame": "Delete frame",
       "onion": "Onion skin"
+    },
+    "sounds": {
+      "hint": "The object's own sounds. \"Play sound\" in the Reactions tab lists them too.",
+      "synth": "Make a sound",
+      "record": "Record with microphone",
+      "stop": "Stop recording",
+      "file": "From file",
+      "privacy": "Recordings are kept only on this device, inside the object; they are never sent anywhere. The microphone is only on while recording (10 s max).",
+      "recording": "Recording",
+      "preset": "Start from a preset",
+      "random": "Random",
+      "wave": "Wave",
+      "waves": {
+        "sine": "Soft",
+        "triangle": "Sweet",
+        "square": "Beepy",
+        "sawtooth": "Buzzy",
+        "noise": "Rustle"
+      },
+      "from": "Start",
+      "to": "End",
+      "length": "Length",
+      "attack": "Soft start",
+      "volume": "Volume",
+      "vibrato": "Wobble",
+      "arp": "Steps",
+      "bell": "Bell ring",
+      "echo": "Echo",
+      "robot": "Robot",
+      "pitch": "Pitch",
+      "prefix": "sound",
+      "micError": "The microphone could not be opened:\n{error}",
+      "fileError": "The audio file could not be opened:\n{error}"
     }
   },
   "catalog": {
     "open": "Add things",
     "trash": "Bin"
+  },
+  "music": {
+    "songs": "My songs",
+    "newSong": "New song",
+    "mine": "My songs",
+    "core": "Ready-made songs (copy)",
+    "empty": "No songs yet.",
+    "shareHint": "Songs are exported in packs together with objects (Object studio → My objects).",
+    "bpm": "Tempo",
+    "scale": "Scale",
+    "root": "Key",
+    "steps": "Steps",
+    "swing": "Swing",
+    "night": "Night version",
+    "objects": "Object studio",
+    "play": "Play",
+    "stop": "Stop",
+    "volume": "Volume",
+    "mute": "Mute",
+    "addTrack": "Melody",
+    "addDrums": "Drums",
+    "removeTrack": "Delete track",
+    "random": "Random melody",
+    "clear": "Clear",
+    "nightInstrument": "Night instrument",
+    "nightMute": "Mute at night",
+    "hint": "Tap boxes to place notes. Notes are locked to the scale: no wrong notes! Space plays/stops.",
+    "nightHint": "Night version: tempo, instruments and muted tracks are separate for the night. In the game the sun/moon button switches.",
+    "noteNames": "C,C#,D,D#,E,F,F#,G,G#,A,A#,B",
+    "scales": {
+      "pentatonic": "Pentatonic (always nice)",
+      "major": "Major (happy)",
+      "minor": "Minor (sad)",
+      "hicaz": "Hicaz",
+      "ussak": "Uşşak (simple)"
+    },
+    "instruments": {
+      "drums": "Drums",
+      "marimba": "Marimba",
+      "xylophone": "Xylophone",
+      "musicbox": "Music box",
+      "pluck": "Ukulele",
+      "flute": "Flute",
+      "bass": "Bass",
+      "pad": "Soft chords"
+    },
+    "drums": {
+      "kick": "Boom",
+      "snare": "Tak",
+      "hat": "Tss",
+      "clap": "Clap"
+    }
   }
 }

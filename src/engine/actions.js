@@ -66,11 +66,35 @@ export class StopAnim extends Action {
 export class PlaySound extends Action {
   static type = 'PlaySound';
 
-  async run({ scene }) {
+  // The entity's own sounds come first, then the built-in presets. Sounds come
+  // from where the entity is on screen (stereo).
+  async run({ entity, scene }) {
     scene.services.audio?.play(pick(this.config.sound), {
       volume: this.config.volume ?? 1,
       pitch: range(this.config.pitch, 1),
+      pan: scene.services.view?.panOf(entity.x) ?? 0,
+      sounds: entity.def.sounds,
     });
+  }
+}
+
+// { "do": "PlayMusic", "song": "core.song.radio" } — the entity plays a song
+// (a radio); the background music turns down meanwhile.
+export class PlayMusic extends Action {
+  static type = 'PlayMusic';
+
+  async run({ entity, scene }) {
+    const { music } = scene.services;
+    if (!music || !scene.defs.has(this.config.song)) return;
+    music.playSource(entity.id, scene.defs.get(this.config.song));
+  }
+}
+
+export class StopMusic extends Action {
+  static type = 'StopMusic';
+
+  async run({ entity, scene }) {
+    scene.services.music?.stopSource(entity.id);
   }
 }
 

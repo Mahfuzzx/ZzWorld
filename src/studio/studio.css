@@ -362,7 +362,40 @@ body.studio {
 }
 
 .st-tab {
+  padding: 8px 2px;
+  font-size: 11px;
+}
+
+.st-wrap {
+  flex-wrap: wrap;
+}
+
+.st-wrap > * {
+  flex: none;
+}
+
+.st-slider {
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 6px;
   font-size: 12px;
+  font-weight: 600;
+}
+
+.st-slider input {
+  width: 100%;
+}
+
+.st-btn.st-recording {
+  background: #e04f3a;
+  color: #fff;
+  animation: st-blink 1s infinite;
+}
+
+@keyframes st-blink {
+  50% { opacity: 0.6; }
 }
 
 .st-section {

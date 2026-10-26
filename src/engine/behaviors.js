@@ -1,4 +1,26 @@
 import { Behavior } from './behavior.js';
+import { degreeToMidi } from '../audio/theory.js';
+
+// Something you can play: tapping one of its keys plays a note. Notes come
+// from a scale, so whatever a child plays sounds fine.
+//   { "type": "Instrument", "instrument": "xylophone", "scale": "pentatonic",
+//     "root": 72, "keys": [{ "x": 10, "w": 20, "degree": 0 }, …] }
+export class Instrument extends Behavior {
+  static type = 'Instrument';
+
+  handle(event, data) {
+    if (event !== 'tap' || !data?.local) return;
+    const key = (this.config.keys ?? []).find((k) => data.local.x >= k.x && data.local.x <= k.x + k.w);
+    if (!key) return;
+    const { audio } = this.entity.scene.services;
+    audio?.note(this.config.instrument ?? 'xylophone', degreeToMidi(key.degree, this.config.scale, this.config.root ?? 72), {
+      volume: this.config.volume ?? 0.9,
+      length: 0.4,
+      out: audio.channels?.sfx,
+    });
+    this.entity.emit('note', { key });
+  }
+}
 
 // Cycles through states when an event (default: tap) happens.
 export class Toggle extends Behavior {

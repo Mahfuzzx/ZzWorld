@@ -433,6 +433,40 @@ Klibin belirli bir karesine olay/ses bağlanabilir (ayak yere basınca "tık").
 - Oyun içi enstrümanlar (piyano, ksilofon, davul) aynı sentez motorunu kullanır ve
   çalan müziğin gamına otomatik uyar.
 
+### 10.3 Uygulanan (4. adım)
+
+**Ses motoru** (`src/audio/`): efekt / ortam / müzik kanalları; ekrandaki konuma göre
+stereo; aynı anda en fazla 10 efekt sesi; yankı ve robot efektleri.
+
+**Nesne sesleri** (`def.sounds`), `PlaySound` önce bunlara, sonra hazır seslere bakar:
+
+```json
+"sounds": {
+  "miyav": { "type": "sample", "wav": "<base64 WAV>", "pitch": 1.3, "echo": true },
+  "bip":   { "type": "synth", "wave": "square", "from": 880, "to": 1200, "dur": 0.1 }
+}
+```
+
+- Kayıtlar ve içe aktarılan dosyalar 22 kHz mono 16-bit WAV'a çevrilir (her tarayıcıda
+  çalar), baştaki/sondaki sessizlik kesilir, ses düzeyi eşitlenir, en fazla 10 sn.
+- Hazır sesler (`pop`, `boing`, `ding`, `whoosh`, `sparkle`…) sentez parametreleridir.
+
+**Şarkılar** (`"kind": "song"`): `bpm`, `swing`, `steps`, `scale`, `root`, `tracks`
+(melodi: `[adım, derece, uzunluk]`, davul: `[adım, "kick"]`), isteğe bağlı `night`
+(tempo, enstrüman değişimi, susturma). Derece gama göre sayılır; yanlış nota yoktur.
+Gamlar: pentatonik, majör, minör, Hicaz, Uşşak (basitleştirilmiş).
+
+**Oyunda:** sahne `music` alanıyla fon müziği (ilk dokunuşta başlar), gece versiyonu
+ölçü başında devreye girer; `PlayMusic` / `StopMusic` (radyo) fon müziğini kısar;
+`Instrument` davranışı (ksilofon) dokunulan tuşa göre gamdaki notayı çalar.
+
+**ZzStudio:** Sesler sekmesi (ses üretici: dalga, frekans, süre, titreme, merdiven,
+çan, yankı, rastgele; mikrofonla kayıt; dosyadan içe aktarma; perde, yankı, robot) ve
+ayrı **müzik yapıcı** sayfası (`studio/music/`: parçalar, adım ızgarası, tempo, gam,
+ton, swing, gece versiyonu, rastgele melodi; şarkılar paketlerle birlikte dışa aktarılır).
+
+Core: `core.song.room` (oda, gece versiyonlu), `core.song.radio`, radyo ve ksilofon.
+
 ## 11. Ajanlar (Hayvanlar)
 
 İlk sürümde **yalnızca hayvan ajanlar** vardır. İnsan NPC'ler sonraki sürümlere
@@ -668,7 +702,8 @@ Her editörde canlı önizleme ve nesneyi bir test sahnesinde deneme.
   parçaya taşı) ve **Pivot** aracı; anahtar kare klipleri (iz başına anahtar kare
   tablosu: zaman, açı, x, y, ölçek); kare kare klipler (kare ekle/sil, soğan kabuğu,
   kareler arasında gezinme); duruma göre sürekli oynatma; ▶ ile tuvalde önizleme.
-- Henüz yok: ses editörü (4. adım), klip karelerine ses bağlama, iç içe parçalar.
+- **Sesler sekmesi** ve **müzik yapıcı**: bkz. §10.3.
+- Henüz yok: klip karelerine ses bağlama, iç içe parçalar.
 
 ### 15.4 Oyunda katalog ve çöp kutusu
 - Düzenleme modunda "+" düğmesi alttan bir katalog çekmecesi açar; ilk karo ZzStudio'yu
@@ -751,7 +786,8 @@ Okuma bilmeyen çocuk geçemez.
    Parça/pivot ve çapa noktaları animasyon adımına kaldı.
 3. ✅ **Animasyon:** hazır hareketler, parça/pivot ve anahtar kare animasyonu, kare kare
    çizim, line boil, sürekli döngüler; ZzStudio'da Animasyon sekmesi (§8.4, §15.3).
-4. **Ses ve müzik:** ses üretici, döngü/melodi yapıcı, oyun içi ses motoru.
+4. ✅ **Ses ve müzik:** ses üretici, mikrofon kaydı, döngü/melodi yapıcı, oyun içi ses
+   motoru, radyo ve ksilofon (§10.3). Oyun içi mikrofon 10. adımda (ebeveyn kapısıyla).
 5. **Karakterler:** parçalı karakter ve karakter oluşturucu.
 6. **İlk ev:** 2–3 oda, 15–20 core nesne.
 7. **Sokak ve mahalle:** yan kaydırma, kavşaklar, portal, şehir haritası.

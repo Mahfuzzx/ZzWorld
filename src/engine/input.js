@@ -92,7 +92,10 @@ export class Input {
     this.pointers.delete(ev.pointerId);
 
     if (ptr.mode === 'press' && !cancelled && performance.now() - ptr.time < TAP_MS) {
-      ptr.entity.emit('tap');
+      // where on the entity it was tapped (local box), e.g. which xylophone key
+      const e = ptr.entity;
+      const p = this.renderer.toScene(ev.clientX, ev.clientY);
+      e.emit('tap', { local: { x: p.x - (e.x - e.width / 2), y: p.y - (e.y - e.height) } });
     } else if (ptr.mode === 'drag') {
       const e = ptr.entity;
       const target = this.scene.dropTargetFor(e);

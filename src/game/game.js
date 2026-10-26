@@ -1,7 +1,8 @@
 import { DefStore, loadPack, fetchJson, Scene, Animator, DayNight } from '../engine/index.js';
 import { Renderer } from '../engine/renderer.js';
 import { Input } from '../engine/input.js';
-import { Sfx } from '../audio/sfx.js';
+import { AudioEngine } from '../audio/engine.js';
+import { MusicPlayer } from '../audio/music.js';
 import * as storage from '../shared/storage.js';
 import { createHud } from './hud.js';
 import { createCatalog } from './catalog.js';
@@ -11,6 +12,7 @@ const WORLD_ID = 'world-1'; // single slot until the world picker exists
 const START_TEMPLATE = 'scenes/room.json';
 // City-wide default; neighbourhoods and streets will override it once the map exists.
 const DEFAULT_BACKDROP = 'core.backdrop.city';
+const DEFAULT_MUSIC = 'core.song.room';
 const SAVE_DELAY_MS = 800;
 
 export async function startGame(root) {
@@ -25,9 +27,12 @@ export async function startGame(root) {
     console.warn('User objects could not be loaded:', err);
   }
 
-  const audio = new Sfx();
+  const audio = new AudioEngine();
+  const music = new MusicPlayer(audio);
   const dayNight = new DayNight();
-  const services = { audio, dayNight, animator: new Animator() };
+  // view.panOf is filled in once the renderer exists (sounds follow positions on screen)
+  const view = { panOf: () => 0 };
+  const services = { audio, music, view, dayNight, animator: new Animator() };
 
   let world = null;
   let scene = null;
@@ -46,6 +51,7 @@ export async function startGame(root) {
     dayNight.night = true;
     dayNight.amount = 1;
   }
+  music.setNight(dayNight.night);
   storage.requestPersistence();
 
   const canvas = document.createElement('canvas');
@@ -53,7 +59,13 @@ export async function startGame(root) {
   root.replaceChildren(canvas);
   const renderer = new Renderer(canvas);
   renderer.setScene(scene, { backdropId: scene.backdrop ?? world.backdrop ?? DEFAULT_BACKDROP });
+  view.panOf = (x) => Math.max(-1, Math.min(1, (x - (renderer.viewLeft + renderer.visibleWidth / 2)) / (renderer.visibleWidth / 2))) * 0.8;
   const unlockAudio = () => audio.unlock();
+  // Background music starts with the first touch (browsers block audio before).
+  audio.onUnlock(() => {
+    const songId = scene.music ?? DEFAULT_MUSIC;
+    if (defs.has(songId)) music.playBackground(defs.get(songId));
+  });
   let catalog = null;
   const input = new Input(canvas, renderer, {
     onFirstGesture: unlockAudio,
@@ -65,6 +77,7 @@ export async function startGame(root) {
   // The sun/moon button is world-wide: every entity hears world:day / world:night.
   dayNight.onChange((night) => {
     world.night = night;
+    music.setNight(night);
     for (const e of scene.entities.values()) e.emit(night ? 'world:night' : 'world:day');
     scene.changed();
   });
@@ -99,5 +112,5 @@ export async function startGame(root) {
   };
   requestAnimationFrame(frame);
 
-  return { defs, scene, world, renderer, input, dayNight, save };
+  return { defs, scene, world, renderer, input, dayNight, audio, music, save };
 }

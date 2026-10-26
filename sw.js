@@ -3,7 +3,7 @@
 // During development changes show up on a normal reload; offline the last cached
 // copy is served. Bump VERSION when the precache list changes.
 
-const VERSION = 'v5';
+const VERSION = 'v7';
 const CACHE = `zzworld-${VERSION}`;
 
 const PRECACHE = [
@@ -18,6 +18,9 @@ const PRECACHE = [
   './src/studio/editor.js',
   './src/studio/library.js',
   './src/studio/main.js',
+  './src/studio/music-main.js',
+  './src/studio/music.css',
+  './src/studio/recorder.js',
   './src/studio/panels.js',
   './src/studio/preview.js',
   './src/studio/studio.css',
@@ -27,6 +30,8 @@ const PRECACHE = [
   './content/core/defs/backdrops.json',
   './content/core/defs/animated.json',
   './content/core/defs/base.json',
+  './content/core/defs/music.json',
+  './content/core/defs/songs.json',
   './content/core/defs/food.json',
   './content/core/defs/furniture.json',
   './content/core/defs/toys.json',
@@ -39,7 +44,12 @@ const PRECACHE = [
   './icons/icon.svg',
   './locales/en.json',
   './locales/tr.json',
-  './src/audio/sfx.js',
+  './src/audio/engine.js',
+  './src/audio/instruments.js',
+  './src/audio/music.js',
+  './src/audio/synth.js',
+  './src/audio/theory.js',
+  './src/audio/wav.js',
   './src/engine/actions.js',
   './src/engine/animator.js',
   './src/engine/art.js',
@@ -62,6 +72,7 @@ const PRECACHE = [
   './src/shared/i18n.js',
   './src/shared/storage.js',
   './studio/',
+  './studio/music/',
 ];
 
 self.addEventListener('install', (event) => {

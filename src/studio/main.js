@@ -4,7 +4,8 @@
 import { initI18n, t, translatePage } from '../shared/i18n.js';
 import { DefStore, fetchJson, Animator, clipDuration } from '../engine/index.js';
 import { INK } from '../engine/art.js';
-import { Sfx } from '../audio/sfx.js';
+import { AudioEngine } from '../audio/engine.js';
+import { MusicPlayer } from '../audio/music.js';
 import * as storage from '../shared/storage.js';
 import { addUserDefs, slugify, PACK_ID_PATTERN } from '../shared/pack.js';
 import { ObjectDoc, CLASS_BASES } from './doc.js';
@@ -13,6 +14,7 @@ import { DRAW_TOOLS, AREA_TOOLS } from './tools.js';
 import { renderPanel, TABS, h } from './panels.js';
 import { openLibrary } from './library.js';
 import { openPreview } from './preview.js';
+import { Recorder, importAudioFile } from './recorder.js';
 
 const PALETTE = [INK, '#ffffff', '#e04f3a', '#f28c38', '#ffd166', '#9bcf53', '#3aa76d', '#9fd3f2', '#4f8fe0',
   '#8a6fd8', '#f28dbb', '#c98a4b', '#8a5a2b', '#9aa7ae', '#dfe9ef', null];
@@ -46,7 +48,10 @@ class Studio {
     this.selection = -1;
     this.tab = 'general';
     this.showAreas = true;
-    this.audio = new Sfx();
+    this.audio = new AudioEngine();
+    this.music = new MusicPlayer(this.audio);
+    this.recorder = new Recorder();
+    this.songs = []; // for the PlayMusic action
     this.packId = settings.get(PACK_KEY, 'benim');
     if (!PACK_ID_PATTERN.test(this.packId)) this.packId = 'benim';
     this.saveTimer = null;
@@ -55,6 +60,82 @@ class Studio {
     this.onion = true;       // show the previous flipbook frame
     this.previewEntity = null;
     this.t = t;
+  }
+
+  async refreshSongs() {
+    const user = (await storage.listDefs()).filter((d) => d.kind === 'song');
+    this.songs = [...user, ...this.coreRaw.filter((d) => d.kind === 'song')];
+  }
+
+  // ---------- sounds ----------
+
+  #uniqueSoundName() {
+    const sounds = this.doc.def.sounds ?? {};
+    let n = Object.keys(sounds).length + 1;
+    while (sounds[`${t('studio.sounds.prefix')}${n}`]) n++;
+    return `${t('studio.sounds.prefix')}${n}`;
+  }
+
+  addSound(sound) {
+    const name = this.#uniqueSoundName();
+    this.doc.change((d) => {
+      d.sounds = { ...d.sounds, [name]: sound };
+    });
+    this.playSound(name);
+    return name;
+  }
+
+  playSound(name) {
+    this.audio.unlock();
+    this.audio.onUnlock(() => this.audio.play(name, { sounds: this.doc.def.sounds }));
+  }
+
+  renameSound(from, to) {
+    to = slugify(to);
+    const sounds = this.doc.def.sounds;
+    if (!to || to === from || sounds[to]) {
+      this.#renderPanel();
+      return;
+    }
+    this.doc.change((d) => {
+      d.sounds = Object.fromEntries(Object.entries(d.sounds).map(([k, v]) => [k === from ? to : k, v]));
+      for (const list of Object.values(d.reactions ?? {})) {
+        for (const a of list) {
+          if (a.do === 'PlaySound' && a.sound === from) a.sound = to;
+        }
+      }
+    });
+  }
+
+  removeSound(name) {
+    this.doc.change((d) => {
+      delete d.sounds[name];
+      if (!Object.keys(d.sounds).length) delete d.sounds;
+    });
+  }
+
+  async toggleRecording() {
+    if (this.recorder.recording) {
+      this.recorder.stop();
+      return;
+    }
+    try {
+      const { done } = await this.recorder.start();
+      this.#renderPanel(); // the button turns into "stop"
+      const sound = await done;
+      this.addSound(sound);
+    } catch (err) {
+      this.toast(t('studio.sounds.micError', { error: err.message }));
+    }
+    this.#renderPanel();
+  }
+
+  async importSound(file) {
+    try {
+      this.addSound(await importAudioFile(file));
+    } catch (err) {
+      this.toast(t('studio.sounds.fileError', { error: err.message }));
+    }
   }
 
   // ---------- parts ----------
@@ -257,6 +338,7 @@ class Studio {
       .filter((d) => !d.abstract && d.kind !== 'backdrop')
       .map((d) => d.id);
 
+    await this.refreshSongs();
     this.editor = new Editor(document.getElementById('editor'), this);
     this.#buildTools();
     this.#buildTabs();

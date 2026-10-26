@@ -1,8 +1,8 @@
 // Side panel tabs of ZzStudio: general settings, colour slots, behaviours and
 // reactions. Each tab is rebuilt from the definition whenever it changes.
-import { t } from '../shared/i18n.js';
+import { t, pick } from '../shared/i18n.js';
 import { CLIPS } from '../engine/animator.js';
-import { SOUND_NAMES } from '../audio/sfx.js';
+import { PRESET_NAMES, PRESETS, WAVES, randomSynth } from '../audio/synth.js';
 import { CLASS_BASES } from './doc.js';
 
 export function h(tag, attrs = {}, ...children) {
@@ -28,7 +28,7 @@ const number = (value, onchange, attrs = {}) => h('input', { type: 'number', val
 const hint = (text) => h('p', { class: 'st-hint', text });
 const section = (text) => h('div', { class: 'st-section', text });
 
-export const TABS = ['general', 'colors', 'behavior', 'reactions', 'animation'];
+export const TABS = ['general', 'colors', 'behavior', 'reactions', 'animation', 'sounds'];
 
 export function renderPanel(app, root) {
   root.replaceChildren(...PANELS[app.tab](app));
@@ -271,7 +271,84 @@ function clipCard(app, name, clip, partOptions) {
       }) })) : null);
 }
 
-const ACTION_TYPES = ['PlaySound', 'PlayAnim', 'StopAnim', 'SetState', 'Wait'];
+PANELS.sounds = (app) => {
+  const { doc } = app;
+  const sounds = doc.def.sounds ?? {};
+  const fileInput = h('input', { type: 'file', accept: 'audio/*', hidden: true, onchange: (e) => {
+    if (e.target.files[0]) app.importSound(e.target.files[0]);
+  } });
+  return [
+    hint(t('studio.sounds.hint')),
+    ...Object.entries(sounds).map(([name, sound]) => soundCard(app, name, sound)),
+    h('div', { class: 'st-row st-wrap' },
+      h('button', { type: 'button', class: 'st-btn st-small', text: `+ ${t('studio.sounds.synth')}`, onclick: () => app.addSound({ ...PRESETS.pop }) }),
+      h('button', { type: 'button', class: `st-btn st-small${app.recorder.recording ? ' st-recording' : ''}`,
+        text: app.recorder.recording ? `■ ${t('studio.sounds.stop')}` : `● ${t('studio.sounds.record')}`, onclick: () => app.toggleRecording() }),
+      h('button', { type: 'button', class: 'st-btn st-small', text: t('studio.sounds.file'), onclick: () => fileInput.click() }),
+      fileInput),
+    hint(t('studio.sounds.privacy')),
+  ];
+};
+
+function slider(label, value, { min, max, step = 'any', log = false }, onchange) {
+  // log sliders (frequencies) move evenly through octaves
+  const toSlider = (v) => (log ? Math.log2(v) : v);
+  const fromSlider = (v) => (log ? Math.round(2 ** v) : Number(v));
+  return h('label', { class: 'st-slider' }, h('span', { text: label }),
+    h('input', { type: 'range', min: toSlider(min), max: toSlider(max), step, value: toSlider(value),
+      onchange: (e) => onchange(fromSlider(e.target.value)) }));
+}
+
+function soundCard(app, name, sound) {
+  const { doc } = app;
+  const set = (patch) => {
+    doc.change((d) => {
+      const s = d.sounds[name];
+      for (const [k, v] of Object.entries(patch)) {
+        if (v === undefined || v === false) delete s[k];
+        else s[k] = v;
+      }
+    });
+    app.playSound(name);
+  };
+  const head = h('div', { class: 'st-card-head' },
+    h('input', { type: 'text', class: 'st-input', value: name, onchange: (e) => app.renameSound(name, e.target.value) }),
+    h('button', { type: 'button', class: 'st-btn st-small st-primary', text: '▶', onclick: () => app.playSound(name) }),
+    h('button', { type: 'button', class: 'st-btn st-small', text: '×', onclick: () => app.removeSound(name) }));
+
+  if (sound.type === 'sample') {
+    return h('div', { class: 'st-card' }, head,
+      hint(t('studio.sounds.recording')),
+      slider(t('studio.sounds.pitch'), sound.pitch ?? 1, { min: 0.5, max: 2, step: 0.05 }, (v) => set({ pitch: v === 1 ? undefined : v })),
+      slider(t('studio.sounds.volume'), sound.volume ?? 1, { min: 0.1, max: 1.5, step: 0.05 }, (v) => set({ volume: v })),
+      check(t('studio.sounds.echo'), !!sound.echo, (on) => set({ echo: on })),
+      check(t('studio.sounds.robot'), !!sound.robot, (on) => set({ robot: on })));
+  }
+
+  return h('div', { class: 'st-card' }, head,
+    h('div', { class: 'st-row' },
+      select([['', `${t('studio.sounds.preset')}…`], ...PRESET_NAMES.map((p) => [p, p])], '', (v) => {
+        if (!v) return;
+        doc.change((d) => { d.sounds[name] = { ...PRESETS[v] }; });
+        app.playSound(name);
+      }, { class: 'st-input', title: t('studio.sounds.preset') }),
+      h('button', { type: 'button', class: 'st-btn st-small', text: t('studio.sounds.random'), onclick: () => {
+        doc.change((d) => { d.sounds[name] = randomSynth(); });
+        app.playSound(name);
+      } })),
+    field(t('studio.sounds.wave'), select(WAVES.map((w) => [w, t(`studio.sounds.waves.${w}`)]), sound.wave ?? 'sine', (v) => set({ wave: v }))),
+    slider(t('studio.sounds.from'), sound.from ?? 440, { min: 40, max: 5000, step: 0.05, log: true }, (v) => set({ from: v })),
+    slider(t('studio.sounds.to'), sound.to ?? sound.from ?? 440, { min: 40, max: 5000, step: 0.05, log: true }, (v) => set({ to: v })),
+    slider(t('studio.sounds.length'), sound.dur ?? 0.2, { min: 0.03, max: 1.5, step: 0.01 }, (v) => set({ dur: v })),
+    slider(t('studio.sounds.attack'), sound.attack ?? 0.005, { min: 0.002, max: 0.4, step: 0.002 }, (v) => set({ attack: v })),
+    slider(t('studio.sounds.volume'), sound.volume ?? 0.4, { min: 0.05, max: 1, step: 0.05 }, (v) => set({ volume: v })),
+    slider(t('studio.sounds.vibrato'), sound.vibrato?.depth ?? 0, { min: 0, max: 0.2, step: 0.01 }, (v) => set({ vibrato: v ? { rate: sound.vibrato?.rate ?? 10, depth: v } : undefined })),
+    slider(t('studio.sounds.arp'), sound.arp?.steps ?? 1, { min: 1, max: 6, step: 1 }, (v) => set({ arp: v > 1 ? { steps: v, ratio: sound.arp?.ratio ?? 1.26 } : undefined })),
+    check(t('studio.sounds.bell'), !!sound.bell, (on) => set({ bell: on })),
+    check(t('studio.sounds.echo'), !!sound.echo, (on) => set({ echo: on })));
+}
+
+const ACTION_TYPES = ['PlaySound', 'PlayAnim', 'StopAnim', 'SetState', 'PlayMusic', 'StopMusic', 'Wait'];
 
 function defaultAction(type, app) {
   switch (type) {
@@ -280,6 +357,7 @@ function defaultAction(type, app) {
     case 'StopAnim': return { do: type, clip: Object.keys(app.doc.def.clips ?? {})[0] ?? 'bounce' };
     case 'SetState': return { do: type, toggle: app.doc.states };
     case 'Wait': return { do: type, ms: 500 };
+    case 'PlayMusic': return { do: type, song: app.songs[0]?.id };
     default: return { do: type };
   }
 }
@@ -290,10 +368,10 @@ function actionRow(app, action, onchange) {
   let param;
   switch (action.do) {
     case 'PlaySound':
-      param = select(SOUND_NAMES.map((s) => [s, s]), action.sound, (v) => {
+      param = select([...Object.keys(app.doc.def.sounds ?? {}), ...PRESET_NAMES].map((s) => [s, s]), action.sound, (v) => {
         onchange({ ...action, sound: v });
         app.audio.unlock();
-        app.audio.play(v);
+        app.audio.play(v, { sounds: app.doc.def.sounds });
       });
       break;
     case 'PlayAnim':
@@ -312,6 +390,12 @@ function actionRow(app, action, onchange) {
     }
     case 'Wait':
       param = number(action.ms ?? 500, (v) => onchange({ ...action, ms: Math.max(0, v) }), { min: 0, max: 10000, step: 100 });
+      break;
+    case 'PlayMusic':
+      param = select(app.songs.map((s) => [s.id, pick(s.name) || s.id]), action.song, (v) => onchange({ ...action, song: v }));
+      break;
+    case 'StopMusic':
+      param = h('span');
       break;
     default:
       param = h('span', { text: action.do });

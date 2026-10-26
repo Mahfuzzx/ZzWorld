@@ -26,8 +26,9 @@ export function openLibrary(app) {
   const dialog = document.getElementById('library');
 
   const render = async () => {
-    const mine = (await storage.listDefs()).sort((a, b) => (pick(a.name) || a.id).localeCompare(pick(b.name) || b.id));
-    const packDefs = mine.filter((d) => d.id.startsWith(`${app.packId}.`));
+    const mine = (await storage.listDefs()).filter((d) => !d.kind).sort((a, b) => (pick(a.name) || a.id).localeCompare(pick(b.name) || b.id));
+    // packs carry the pack's songs too
+    const packDefs = (await storage.listDefs()).filter((d) => d.id.startsWith(`${app.packId}.`));
 
     const fileInput = h('input', {
       type: 'file',
@@ -83,6 +84,7 @@ export function openLibrary(app) {
           app.createNew();
           dialog.close();
         } }),
+        h('a', { class: 'st-btn', href: 'music/', text: t('studio.library.music') }),
         h('button', { type: 'button', class: 'st-btn', text: t('studio.library.close'), onclick: () => dialog.close() })),
       h('div', { class: 'st-dialog-body' },
         h('div', { class: 'st-row' },

@@ -1,0 +1,33 @@
+[
+  {
+    "id": "core.song.room",
+    "kind": "song",
+    "name": { "tr": "Odada", "en": "At Home" },
+    "bpm": 92,
+    "swing": 0.2,
+    "steps": 16,
+    "scale": "pentatonic",
+    "root": 60,
+    "tracks": [
+      { "instrument": "marimba", "volume": 0.7, "notes": [[0, 5, 1], [3, 7, 1], [6, 6, 1], [8, 5, 1], [10, 8, 1], [12, 7, 1], [14, 6, 1]] },
+      { "instrument": "bass", "volume": 0.6, "notes": [[0, 0, 3], [4, 3, 3], [8, 2, 3], [12, 0, 3]] },
+      { "instrument": "drums", "volume": 0.5, "hits": [[0, "kick"], [4, "hat"], [8, "kick"], [12, "hat"], [14, "hat"]] }
+    ],
+    "night": { "bpm": 72, "instruments": { "0": "musicbox" }, "mute": [2] }
+  },
+  {
+    "id": "core.song.radio",
+    "kind": "song",
+    "name": { "tr": "Radyo", "en": "Radio" },
+    "bpm": 118,
+    "swing": 0.1,
+    "steps": 16,
+    "scale": "major",
+    "root": 60,
+    "tracks": [
+      { "instrument": "pluck", "volume": 0.6, "notes": [[0, 7, 1], [2, 9, 1], [4, 11, 1], [6, 9, 1], [8, 7, 2], [11, 8, 1], [12, 9, 1], [14, 11, 2]] },
+      { "instrument": "bass", "volume": 0.55, "notes": [[0, 0, 2], [4, 4, 2], [8, 3, 2], [12, 4, 2]] },
+      { "instrument": "drums", "volume": 0.55, "hits": [[0, "kick"], [2, "hat"], [4, "snare"], [6, "hat"], [8, "kick"], [10, "hat"], [12, "snare"], [14, "hat"], [15, "kick"]] }
+    ]
+  }
+]

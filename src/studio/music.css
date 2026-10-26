@@ -1,0 +1,111 @@
+.mu-field {
+  display: grid;
+  gap: 2px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.mu-field input,
+.mu-field select {
+  min-height: 32px;
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.mu-field input[type="number"] {
+  width: 64px;
+}
+
+.mu-night {
+  margin: 0;
+}
+
+body.night-edit .st-top {
+  background: #2b3a6b;
+  color: #fff3c4;
+}
+
+.mu-main {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  min-height: 0;
+}
+
+.mu-tracks {
+  padding: 12px;
+  border-right: 3px solid var(--ink);
+  background: #fffaf0;
+  overflow-y: auto;
+}
+
+.mu-track {
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 3px solid #e6d6b8;
+  border-radius: 14px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.mu-track.active {
+  border-color: var(--ink);
+  box-shadow: 0 3px 0 var(--ink);
+}
+
+.mu-track.muted {
+  opacity: 0.55;
+}
+
+.mu-track .st-row {
+  margin-bottom: 6px;
+}
+
+.mu-track .st-row > button {
+  flex: none;
+}
+
+.mu-grid-wrap {
+  min-width: 0;
+  padding: 14px;
+  overflow: auto;
+  background: #f6e7c8;
+}
+
+.mu-grid {
+  display: grid;
+  gap: 4px;
+  width: max-content;
+}
+
+.mu-label {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 6px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.mu-cell {
+  width: 38px;
+  height: 34px;
+  border: 2px solid #d9c49c;
+  border-radius: 8px;
+  background: #fffdf6;
+  cursor: pointer;
+}
+
+.mu-cell.beat {
+  background: #f8eedb;
+}
+
+.mu-cell.on {
+  border-color: var(--ink);
+  background: var(--note, #e8735a);
+}
+
+.mu-cell.head {
+  outline: 3px solid #3a7bd5;
+  outline-offset: -1px;
+}

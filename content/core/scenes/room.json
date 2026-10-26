@@ -6,6 +6,7 @@
   "floorY": 740,
   "interior": { "wall": "#f3dcb4", "floor": "#d9a66b" },
   "backdrop": "core.backdrop.city",
+  "music": "core.song.room",
   "entities": [
     { "def": "core.window", "x": 820, "y": 520 },
     {
@@ -22,6 +23,8 @@
     { "def": "core.ball", "x": 1460, "y": 900 },
     { "def": "core.plant", "x": 1720, "y": 780 },
     { "def": "core.fan", "x": 1580, "y": 800 },
-    { "def": "core.candle", "x": 940, "y": 670 }
+    { "def": "core.candle", "x": 940, "y": 670 },
+    { "def": "core.radio", "x": 1040, "y": 880 },
+    { "def": "core.xylophone", "x": 1300, "y": 960 }
   ]
 }
