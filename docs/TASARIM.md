@@ -20,7 +20,7 @@
 10. [Müzik](#10-müzik)
 11. [Ajanlar (Hayvanlar)](#11-ajanlar-hayvanlar)
 12. [Araçlar](#12-araçlar)
-13. [Gece / Gündüz](#13-gece--gündüz)
+13. [Dünya Durumu: Zaman, Mevsim, Hava ve Işık](#13-dünya-durumu-zaman-mevsim-hava-ve-işık)
 14. [Karakterler](#14-karakterler)
 15. [ZzStudio — Nesne Üretici](#15-zzstudio--nesne-üretici)
 16. [İçerik Paketleri](#16-i̇çerik-paketleri)
@@ -137,19 +137,59 @@ mahalleye girilir. Mahalleler arası geçiş her zaman harita üzerinden yapıl�
 - Mahallenin bir veya birkaç **çıkış noktası** vardır (otoyol tabelası, köprü);
   buradan şehir haritasına çıkılır.
 
-### 4.3 Sokak katmanları (paralaks)
-1. Uzak arka plan: gökyüzü, uzak binalar
+### 4.3 Sahne katmanları
+
+Her sahne önden arkaya şu katmanlardan oluşur:
+
+```
+ 8  Ön plan        ağaç dalı, çit (yarı saydam olabilir)
+ 7  Eşyalar        serbest nesneler, karakterler, hayvanlar
+ 6  Mobilya
+ 5  Zemin + duvar  iç mekânda pencere/kapı yerlerinde açıklık (delik) var
+ ─────────── Arka Plan (backdrop) ───────────
+ 4  Yakın manzara  sokak, ağaçlar, evler        (paralaks ~0.5)
+ 3  Uzak manzara   dağlar / şehir silüeti       (paralaks ~0.2)
+ 2  Bulutlar       yavaşça süzülür              (paralaks ~0.1)
+ 1  Güneş / Ay     güneş/ay düğmesiyle doğar-batar
+ 0  Gökyüzü        gündüz mavi, gece yıldızlı
+```
+
+- **Pencereler gerçek açıklıktır:** duvar, pencerenin `opening` alanında delik bırakarak
+  çizilir; arkadan sahnenin arka planı paralaksla görünür. Pencere taşınınca görünen
+  manzara da doğru yerden görünür. Gece pencereden yıldızlar görünür.
+- **Sokak sahnelerinde** duvar yoktur; arka planın önünde bina cepheleri, kaldırım
+  ve yol katmanları bulunur.
+
+### 4.4 Arka planlar (backdrop)
+
+Arka plan ayrı bir içerik türüdür (`"kind": "backdrop"`); katmanlardan oluşur ve
+her katman türü polimorfik bir sınıftır (`Sky`, `Stars`, `SunMoon`, `Clouds`, `Art`…).
+
+- **ZzStudio'da Arka Plan Editörü:** katman ekleme, çizme, paralaks oranı,
+  gündüz/gece varyasyonu (ör. gece yanan pencereler), hareketli öğeler.
+- **Seçim kalıtımla otomatik, gerekirse elle:**
+  ```
+  Şehir varsayılanı → Mahalle teması → Sokak → Bina → Oda
+  ```
+  Sahnede arka plan seçilmemişse bir üst seviyeninki kullanılır. Bina içindeki odalar
+  binanın bulunduğu sokağın arka planını alır; pencereden doğru sokak görünür.
+  Harita ve mahalle editöründe her seviyede elle seçilebilir.
+- **Mahalle temaları:** sahil (deniz, martılar), dağ köyü (dağlar, çamlar),
+  şehir merkezi (gökdelen silüeti).
+
+### 4.5 Sokak katmanları
+1. Arka plan (yukarıdaki backdrop)
 2. Bina cepheleri (kapılar, pencereler)
 3. Kaldırım: karakterler, hayvanlar
 4. Yol: araçlar
 5. Ön plan: ağaç, direk, çit
 
-### 4.4 Binalar ve odalar
+### 4.6 Binalar ve odalar
 Sokaktaki kapı bir `Portal` nesnesidir; dokununca veya karakter kapıya bırakılınca
 bina sahnesi açılır. Bina içinde odalar yan yana dizilir; katlar arası geçiş merdiven
 veya asansör (yine `Portal`) ile olur.
 
-### 4.5 İlk mahalle
+### 4.7 İlk mahalle
 İlk sürümdeki mahallede iki mekân türü bulunur:
 - **Evler:** karakterlerin yaşadığı, odaları olan binalar. İlk sürümün merkezi.
 - **Park:** ağaçlar, salıncak, havuz; ortam hayvanları (kuş, sincap, ördek) için
@@ -157,7 +197,7 @@ veya asansör (yine `Portal`) ile olur.
 
 Market, veteriner gibi diğer mekânlar sonraki sürümlere bırakılmıştır.
 
-### 4.6 Sahneler arası taşıma
+### 4.8 Sahneler arası taşıma
 Karakterler, eşyalar ve hayvanlar sahneler arasında taşınabilir (karakterin elinde,
 araçta veya ekran kenarındaki bir "çanta" alanında).
 
@@ -173,7 +213,8 @@ nesnenin ne olduğunu bilmeden onu çalıştırır.
 Entity        ortak arayüz: render, onTap, onDragStart, onDrop, onTick, serialize
  ├─ Item        taşınabilir: elma, oyuncak, telefon
  ├─ Furniture   yerleştirilir: yatak, buzdolabı, masa (sadece zemine oturur)
- ├─ Decor       duvar nesneleri: pencere, tablo (yerçekimi yok)
+ ├─ Decor       duvar süsleri: tablo, saat, raf (yerçekimi yok, duvarda kalır)
+ │   └─ Structure   yapısal: pencere, kapı (duvarda açıklık bırakır, silinemez)
  ├─ Agent       beyni olan nesne (bkz. §11)
  │   ├─ Character   oyuncu karakterleri (beyin: oyuncu kontrolü / serbest)
  │   └─ Animal      evcil ve ortam hayvanları
@@ -230,6 +271,28 @@ defterinden (registry)** ilgili sınıfa bağlanır.
 - **Çapa noktaları** (`anchors`): eşyanın konacağı, karakterin oturacağı, elin tutacağı
   yerler.
 - Yeni bir davranış = tek bir sınıf + kayıt. ZzStudio onu otomatik listeler.
+
+### 5.4 Hareketlilik ve modlar
+
+Her nesnenin bir **hareketlilik** (`mobility`) değeri vardır; varsayılanı türünden gelir,
+tanım değiştirebilir.
+
+| Değer | Varsayılan türler | Oyun modu | Düzenleme modu |
+|---|---|---|---|
+| `free` | `Item` (elma, top, sepet) | taşınır | taşınır |
+| `edit` | `Furniture`, `Decor`, `Structure` | yerinde durur, dokunulur | taşınır |
+| `locked` | — | yerinde durur | yerinde durur |
+
+- **İki mod**, köşedeki yazısız bir düğmeyle değişir: **oyun modu** (dokun, aç-kapa,
+  eşya taşı) ve **düzenleme modu** (oda düzeni). Düzenleme modunda taşınabilen
+  büyük nesneler hafifçe sallanır.
+- Oyun modunda taşınamayan bir nesneyi sürüklemek kamerayı kaydırır.
+- `Decor` ve `Structure` duvarda kalır; duvar sınırları içinde taşınır.
+- `Structure` (kapı, pencere, merdiven) yapısaldır: silinemez, kapılar yalnızca aynı
+  duvar üzerinde kayar (`"slide": "x"`), çünkü başka sahnelere bağlantı noktasıdırlar.
+- Kaplar (buzdolabı, sepet) yalnızca `free` nesneleri kabul eder.
+- Düzenleme modunun sonraki parçaları: eşya kataloğu çekmecesi, çöp kutusu, boyama,
+  duvar kâğıdı ve zemin seçimi.
 
 ## 6. Olay → Tepki → Eylem Sistemi
 
@@ -400,18 +463,90 @@ gövde şablonu ve ihtiyaç tanımından ibaret olur.
 - Örnek araçlar: bisiklet, scooter, aile arabası, minibüs, dondurma kamyonu,
   itfaiye, at arabası.
 
-## 13. Gece / Gündüz
+## 13. Dünya Durumu: Zaman, Mevsim, Hava ve Işık
 
-- Çocuğun değiştirdiği bir **güneş/ay düğmesi** (gerçek saate bağlı değil).
-  Dünya geneli ortak durumdur.
-- Geçiş birkaç saniyelik yumuşak bir animasyondur.
-- `world:day` / `world:night` olayları yayınlanır: lambalar yanar, yıldızlar çıkar,
-  gece ajanları (ateş böceği, baykuş) belirir, ortam sesi ve müzik varyasyonu değişir.
-- Gece hayvanların uyku ihtiyacı daha hızlı artar; zorlama yoktur, uyandırılabilirler.
-- Gece hiçbir şeyi kilitlemez; çocuk lambaları elle yine açıp kapatabilir.
-- **Teknik:** sahneye üstten bir renk/ışık katmanı uygulanır; `Light` davranışlı
-  nesneler bu katmanda parlama oluşturur. İsteyen ZzStudio'da özel "gece durumu"
-  çizebilir.
+> Durum: ilk sürümü (gündüz/gece, tek ortam karartması, nokta ışık) motorda var.
+> Bu bölümün geri kalanı ZzStudio'dan sonra uygulanacak.
+
+### 13.1 Üç bağımsız eksen
+
+| Eksen | Değerler |
+|---|---|
+| **Günün zamanı** | sabah, öğle, akşam, gece (4 aşama) |
+| **Mevsim** | ilkbahar, yaz, sonbahar, kış |
+| **Hava** | açık, bulutlu, yağmurlu, karlı, fırtınalı |
+
+- Üçünü de **çocuk seçer**; gerçek saat ve tarihe bağlı değildir. Dünya geneli
+  ortak durumdur ve dünyayla birlikte kaydedilir.
+- Eksenler **birbirinden bağımsızdır**: yazın kar yağdırmak da serbesttir.
+- **Gökyüzü düğmesi:** köşedeki güneş/ay düğmesine basınca yazısız büyük ikonlardan
+  bir yelpaze açılır: 4 zaman, 4 mevsim ağacı (çiçekli, yeşil, turuncu, karlı),
+  hava ikonları.
+- Geçişler birkaç saniyelik yumuşak animasyondur.
+- **Olaylar:** `world:time:<zaman>`, `world:season:<mevsim>`, `world:weather:<hava>`,
+  `world:lightning` (ve geriye uyum için `world:day` / `world:night`). Nesneler
+  tepki verebilir: lambalar yanar, şimşekte köpek saklanır, yağmurda camda damlalar
+  belirir, sonbaharda ağaç yaprak döker, gece ajanları (ateş böceği, baykuş) belirir.
+- Gece hayvanların uyku ihtiyacı daha hızlı artar; zorlama yoktur.
+- Hiçbir durum bir şeyi kilitlemez; çocuk lambaları elle yine açıp kapatabilir.
+
+### 13.2 Varyantlar: "yoksa varsayılan" kuralı
+
+Nesneler ve arka planlar mevsime (ileride zamana/havaya) göre **varyant** taşıyabilir.
+Varyant, `extends` gibi yalnızca değişen kısmı içerir; tanımlanmamışsa varsayılan
+kullanılır. Tek tasarım varsa her mevsimde o görünür.
+
+```json
+{
+  "id": "core.tree",
+  "art": { "default": [ "...yeşil ağaç..." ] },
+  "seasons": {
+    "autumn": { "colorSlots": { "leaves": "#e8893a" } },
+    "winter": { "art": { "default": [ "...karlı dallar..." ] } }
+  }
+}
+```
+
+- `"onlyIn": ["winter"]` ile bir nesne ya da katman yalnızca belirli mevsimlerde var
+  olur (kardan adam, yılbaşı ışıkları, yaprak yığını).
+- Aynı kural arka plan katmanlarında da geçerlidir.
+
+### 13.3 Hareketli ve döngüsel katmanlar
+
+- **Kaydırma döngüsü:** her katmana `"scroll"` hızı verilebilir (bulutlar, uzakta
+  giden tren, akan nehir).
+- **Kare kare döngü:** bayrak, yel değirmeni, dalgalar (§8 flipbook sistemi).
+- **Hava katmanları** (polimorfik): `Rain` (rüzgâra göre eğik, yerde sıçrama), `Snow`
+  (salınarak düşen taneler), `Lightning` (kısa parlama, ortam ışığı bir an tam
+  gündüz; 0,5–2 sn sonra gök gürültüsü sesi), `Fog`.
+- Hava katmanları sahnenin önünde de çizilir: iç mekânda yalnızca pencereden görünür,
+  dışarıda her şeyin önünde yağar.
+- **`Props` katmanı:** arka plan, sahnedeki nesne tanımlarının aynısından nesneler
+  içerebilir (sokak lambası, yel değirmeni, kuş sürüsü). Işık ve ses üretir, varyant
+  taşır; paralaksla uzakta durur ve dokunulamaz.
+
+### 13.4 Işık modeli
+
+- **Ortam ışığı:** zamana ve havaya göre seviye ve renk. Sabah yumuşak sarı, öğle tam
+  beyaz, akşam turuncu-pembe, gece koyu mavi; bulutlu havada griye çalar; şimşekte
+  bir an tam beyaz.
+- **Işık kaynakları bir davranıştır (`Light`)**, ses üreten nesneler gibi:
+  - türler: nokta (lamba), koni (sokak lambası, el feneri), titrek (mum, şömine,
+    televizyon), renkli (disko topu, yılbaşı ışıkları)
+  - `when` ile duruma bağlanır (lamba açıkken)
+  - gündüz neredeyse görünmez, karanlık arttıkça belirginleşir: gündüz genel ışık,
+    gece yalnızca ışık kaynakları
+- **Katmanlı ışık:** her derinlik kendi ışığını alır; arka plandaki sokak lambası arka
+  planı, odadaki lamba odayı aydınlatır.
+- **Pencereden ışık:** gündüz pencereden yere eğik bir güneş lekesi düşer; gece
+  dışarıda sokak lambası varsa odaya soluk ışık girer.
+
+### 13.5 Ses
+
+- Sesler ekrandaki konuma göre sağa-sola kayar (stereo); uzaktaki arka plan nesneleri
+  daha kısık duyulur.
+- Ortam sesleri zamana ve havaya bağlıdır (yağmur, gece cırcır böcekleri, kış rüzgârı).
+  İç mekânda dış sesler boğuk duyulur, pencere/kapı açılınca netleşir.
 
 ## 14. Karakterler
 
@@ -545,6 +680,9 @@ Okuma bilmeyen çocuk geçemez.
 1. ✅ **Motor çekirdeği:** sahne, Entity/Behavior kayıt defteri, sürükle-bırak,
    Olay → Tepki sistemi, IndexedDB kayıt. (Çizimler şimdilik düz vektör; el çizimi
    görünüm 2. adımda gelecek.)
+   - ✅ Oyun/düzenleme modu, hareketlilik kuralları, katmanlı arka plan (gökyüzü,
+     yıldızlar, güneş/ay, bulutlar, manzara), pencere açıklıkları, güneş/ay düğmesi,
+     gece gölgesi ve ışıklar.
 2. **ZzStudio v1:** el çizimi, durumlar, çapa noktaları, tepki editörü, dışa aktarma.
 3. **Animasyon:** hazır hareketler, parça animasyonu, kare kare çizim, line boil.
 4. **Ses ve müzik:** ses üretici, döngü/melodi yapıcı, oyun içi ses motoru.
@@ -553,7 +691,7 @@ Okuma bilmeyen çocuk geçemez.
 7. **Sokak ve mahalle:** yan kaydırma, kavşaklar, portal, şehir haritası.
 8. **Ajanlar:** evcil ve ortam hayvanları.
 9. **Araçlar.**
-10. **Gece/gündüz, ebeveyn bölümü, oyun içi mikrofon.**
+10. **Dünya durumu (4 zaman, mevsim, hava), ışık modeli, Props katmanı, ebeveyn bölümü, oyun içi mikrofon.**
 11. **Yayın:** GitHub Pages.
 
 ## 21. Açık Sorular
@@ -593,3 +731,13 @@ Okuma bilmeyen çocuk geçemez.
 | 2026-10-26 | Yaş grupları: bebek, çocuk, yetişkin, yaşlı. |
 | 2026-10-26 | Kıyafetler hem karakter oluşturucuda hem dünyada nesne olarak (sürükle-giydir). |
 | 2026-10-26 | Kapsayıcılık: geniş ten/saç çeşitliliği, baş örtüsü ve kültürel giysiler, yardımcı cihazlar. Beden çeşitliliği ilk sürümde yok. |
+| 2026-10-26 | Oyun ve düzenleme modu; büyük eşyalar ve yapısal nesneler yalnızca düzenleme modunda taşınır. Küçük eşyalar her zaman serbest. |
+| 2026-10-26 | Sahne katmanlı: gökyüzü, güneş/ay, bulutlar, uzak/yakın manzara, duvar/zemin, mobilya, eşyalar, ön plan. |
+| 2026-10-26 | Pencereler gerçek açıklık; içeriden arka plan (dış dünya) görünür. |
+| 2026-10-26 | Arka planlar ayrı içerik türü; ZzStudio'da düzenlenir, harita kalıtımıyla otomatik seçilir, elle değiştirilebilir. |
+| 2026-10-26 | Katman sistemi ve modlar ZzStudio'dan önce motora eklenecek. |
+| 2026-10-26 | Dünya durumu üç bağımsız eksen: günün zamanı (4 aşama), mevsim, hava. Hepsini çocuk seçer; yazın kar da serbest. |
+| 2026-10-26 | Nesne ve arka planlarda mevsim varyantları; tanımlanmamışsa varsayılan görünür. |
+| 2026-10-26 | Döngüsel/hareketli katmanlar ve hava efektleri (yağmur, kar, şimşek, sis). |
+| 2026-10-26 | Işık modeli: ortam ışığı + `Light` davranışlı ışık kaynakları; arka planlar da ışık/ses üreten nesneler içerebilir. |
+| 2026-10-26 | Bu sistem önce dokümana; kodu ZzStudio'dan sonra. |

@@ -1,12 +1,15 @@
 import { lookup } from './registry.js';
 import { runActions } from './actions.js';
 
+const clamp = (v, min, max) => Math.min(Math.max(v, min), max);
+
 // Everything in a scene is an Entity. Subclasses only change defaults and
 // override the few rules that differ; the rest comes from the definition.
 // Position (x, y) is the bottom-centre of the entity, in scene units.
 export class Entity {
   static type = 'Entity';
-  static defaults = { size: [100, 100], draggable: false, gravity: true, layer: 1 };
+  // mobility: "free" (always movable), "edit" (only in edit mode), "locked" (never)
+  static defaults = { size: [100, 100], mobility: 'locked', gravity: true, layer: 1 };
 
   constructor(scene, def, data = {}) {
     this.scene = scene;
@@ -40,8 +43,18 @@ export class Entity {
     return this.prop('size')[1];
   }
 
-  get draggable() {
-    return this.prop('draggable');
+  get mobility() {
+    return this.prop('mobility');
+  }
+
+  canDrag(mode) {
+    return this.mobility === 'free' || (this.mobility === 'edit' && mode === 'edit');
+  }
+
+  // Where may this entity be dragged to? Returns the allowed position.
+  constrainDrag(x, y) {
+    const { width, height } = this.scene;
+    return { x: clamp(x, 0, width), y: clamp(y, this.height / 2, height) };
   }
 
   get layer() {
@@ -130,13 +143,13 @@ export class Entity {
 // Small things you carry around: food, toys.
 export class Item extends Entity {
   static type = 'Item';
-  static defaults = { ...Entity.defaults, draggable: true, layer: 2 };
+  static defaults = { ...Entity.defaults, mobility: 'free', layer: 2 };
 }
 
 // Bigger things that stand on the floor: tables, beds, fridges.
 export class Furniture extends Entity {
   static type = 'Furniture';
-  static defaults = { ...Entity.defaults, draggable: true, layer: 1 };
+  static defaults = { ...Entity.defaults, mobility: 'edit', layer: 1 };
 
   // Furniture stands on the floor, never on another piece of furniture.
   canRestOn(other) {
@@ -144,8 +157,24 @@ export class Furniture extends Entity {
   }
 }
 
-// Wall things: windows, pictures, shelves. They stay where they are put.
+// Wall things: pictures, clocks, shelves. No gravity; they stay on the wall.
 export class Decor extends Entity {
   static type = 'Decor';
-  static defaults = { ...Entity.defaults, draggable: true, gravity: false, layer: 0 };
+  static defaults = { ...Entity.defaults, mobility: 'edit', gravity: false, layer: 0 };
+
+  constrainDrag(x, y) {
+    const margin = 10;
+    const halfW = this.width / 2;
+    return {
+      x: clamp(x, halfW, this.scene.width - halfW),
+      // "slide": "x" keeps the entity at its height (doors slide along the wall)
+      y: this.def.slide === 'x' ? this.y : clamp(y, this.height + margin, this.scene.floorY - margin),
+    };
+  }
+}
+
+// Windows and doors. They cut an opening (def.opening) into the wall, and are
+// part of the building: they can be moved in edit mode but never removed.
+export class Structure extends Decor {
+  static type = 'Structure';
 }

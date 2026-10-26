@@ -57,6 +57,7 @@
     "size": [120, 300],
     "colorSlots": { "shade": "#f2c14e" },
     "behaviors": [{ "type": "Toggle", "states": ["off", "on"] }],
+    "light": { "x": 60, "y": 70, "r": 340, "when": "on" },
     "art": {
       "off": [
         { "type": "rect", "x": 56, "y": 70, "w": 8, "h": 220, "fill": "#6b5b53" },
@@ -73,26 +74,28 @@
     },
     "reactions": {
       "stateEnter:on": [{ "do": "PlaySound", "sound": "click" }],
-      "stateEnter:off": [{ "do": "PlaySound", "sound": "click", "pitch": 0.8 }]
+      "stateEnter:off": [{ "do": "PlaySound", "sound": "click", "pitch": 0.8 }],
+      "world:night": [{ "do": "SetState", "to": "on" }],
+      "world:day": [{ "do": "SetState", "to": "off" }]
     }
   },
   {
     "id": "core.window",
     "extends": "core.decor.base",
+    "class": "Structure",
     "name": { "tr": "Pencere", "en": "Window" },
     "size": [260, 220],
-    "colorSlots": { "frame": "#ffffff", "sky": "#9fd3f2" },
+    "colorSlots": { "frame": "#ffffff" },
+    "opening": [{ "type": "rect", "x": 16, "y": 16, "w": 228, "h": 188 }],
     "art": {
       "default": [
-        { "type": "rect", "x": 0, "y": 0, "w": 260, "h": 220, "r": 10, "fill": "$frame" },
-        { "type": "rect", "x": 16, "y": 16, "w": 228, "h": 188, "r": 4, "fill": "$sky" },
-        { "type": "circle", "cx": 196, "cy": 60, "r": 22, "fill": "#ffd166", "stroke": null },
-        { "type": "path", "d": "M40 90 C40 74 64 70 70 82 C76 70 100 74 98 90 Z", "fill": "#ffffff", "stroke": null },
-        { "type": "path", "d": "M130 16 L130 204 M16 110 L244 110", "lw": 10, "stroke": "$frame" }
+        { "type": "rect", "x": 16, "y": 16, "w": 228, "h": 188, "fill": "#ffffff", "alpha": 0.12, "stroke": null },
+        { "type": "path", "d": "M130 16 L130 204 M16 110 L244 110", "lw": 12, "stroke": "$frame" },
+        { "type": "path", "d": "M0 0 H260 V220 H0 Z M16 16 H244 V204 H16 Z", "rule": "evenodd", "fill": "$frame" }
       ]
     },
     "reactions": {
-      "tap": [{ "do": "PlayAnim", "clip": "pulse", "amp": 0.04 }]
+      "tap": [{ "do": "PlaySound", "sound": "ding", "volume": 0.4, "pitch": 1.5 }]
     }
   }
 ]

@@ -14,7 +14,10 @@ export class Scene {
     this.width = data.width ?? 2000;
     this.height = data.height ?? 1000;
     this.floorY = data.floorY ?? 760;
-    this.background = data.background ?? {};
+    // Indoor scenes have a wall and floor; `background` is the pre-layers name.
+    this.interior = data.interior ?? data.background ?? null;
+    this.backdrop = data.backdrop ?? null;
+    this.mode = 'play'; // 'play' | 'edit' — UI state, not saved
     this.camera = { x: data.camera?.x ?? 0 };
     this.nextId = data.nextId ?? 1;
     this.orderCounter = 0;
@@ -234,7 +237,8 @@ export class Scene {
       width: this.width,
       height: this.height,
       floorY: this.floorY,
-      background: this.background,
+      interior: this.interior,
+      backdrop: this.backdrop,
       camera: { x: Math.round(this.camera.x) },
       nextId: this.nextId,
       entities: [...this.entities.values()].map((e) => e.serialize()),

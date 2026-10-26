@@ -1,11 +1,14 @@
-import { DefStore, loadPack, fetchJson, Scene, Animator } from '../engine/index.js';
+import { DefStore, loadPack, fetchJson, Scene, Animator, DayNight } from '../engine/index.js';
 import { Renderer } from '../engine/renderer.js';
 import { Input } from '../engine/input.js';
 import { Sfx } from '../audio/sfx.js';
 import * as storage from '../shared/storage.js';
+import { createHud } from './hud.js';
 
 const WORLD_ID = 'world-1'; // single slot until the world picker exists
 const START_TEMPLATE = 'scenes/room.json';
+// City-wide default; neighbourhoods and streets will override it once the map exists.
+const DEFAULT_BACKDROP = 'core.backdrop.city';
 const SAVE_DELAY_MS = 800;
 
 export async function startGame(root) {
@@ -14,7 +17,8 @@ export async function startGame(root) {
   await loadPack(defs, coreUrl);
 
   const audio = new Sfx();
-  const services = { audio, animator: new Animator() };
+  const dayNight = new DayNight();
+  const services = { audio, dayNight, animator: new Animator() };
 
   let world = null;
   let scene = null;
@@ -27,7 +31,11 @@ export async function startGame(root) {
   }
   if (!scene) {
     scene = Scene.fromTemplate(defs, await fetchJson(new URL(START_TEMPLATE, coreUrl)), services);
-    world = { id: WORLD_ID, version: 1, createdAt: Date.now(), currentScene: scene.id, scenes: {} };
+    world = { id: WORLD_ID, version: 1, createdAt: Date.now(), currentScene: scene.id, night: false, scenes: {} };
+  }
+  if (world.night) {
+    dayNight.night = true;
+    dayNight.amount = 1;
   }
   storage.requestPersistence();
 
@@ -35,8 +43,17 @@ export async function startGame(root) {
   canvas.id = 'stage';
   root.replaceChildren(canvas);
   const renderer = new Renderer(canvas);
-  renderer.setScene(scene);
-  const input = new Input(canvas, renderer, { onFirstGesture: () => audio.unlock() });
+  renderer.setScene(scene, { backdropId: scene.backdrop ?? world.backdrop ?? DEFAULT_BACKDROP });
+  const unlockAudio = () => audio.unlock();
+  const input = new Input(canvas, renderer, { onFirstGesture: unlockAudio });
+  createHud(root, { scene, dayNight, onGesture: unlockAudio });
+
+  // The sun/moon button is world-wide: every entity hears world:day / world:night.
+  dayNight.onChange((night) => {
+    world.night = night;
+    for (const e of scene.entities.values()) e.emit(night ? 'world:night' : 'world:day');
+    scene.changed();
+  });
 
   let saveTimer = null;
   const save = () => {
@@ -61,11 +78,12 @@ export async function startGame(root) {
     const dt = Math.min((now - last) / 1000, 0.05);
     last = now;
     input.update(dt);
+    dayNight.update(dt);
     scene.tick(dt);
-    renderer.draw();
+    renderer.draw(dt);
     requestAnimationFrame(frame);
   };
   requestAnimationFrame(frame);
 
-  return { defs, scene, world, renderer, input, save };
+  return { defs, scene, world, renderer, input, dayNight, save };
 }

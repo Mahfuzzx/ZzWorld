@@ -44,11 +44,13 @@ export class Input {
     ptr.clientY = ev.clientY;
 
     if (ptr.mode === 'press' && Math.hypot(ev.clientX - ptr.startX, ev.clientY - ptr.startY) > DRAG_PX) {
-      if (ptr.entity.draggable) {
+      if (ptr.entity.canDrag(this.scene.mode)) {
         this.scene.pickUp(ptr.entity);
         ptr.mode = 'drag';
       } else {
-        ptr.mode = 'none';
+        // Things that can't move right now let the finger scroll the room instead.
+        ptr.mode = 'pan';
+        ptr.lastX = ptr.startX;
       }
     }
 
@@ -82,8 +84,7 @@ export class Input {
     const { scene } = this;
     const e = ptr.entity;
     const p = this.renderer.toScene(ptr.clientX, ptr.clientY);
-    const x = Math.min(Math.max(p.x + ptr.grabX, 0), scene.width);
-    const y = Math.min(Math.max(p.y + ptr.grabY, e.height / 2), scene.height);
+    const { x, y } = e.constrainDrag(p.x + ptr.grabX, p.y + ptr.grabY);
     scene.moveTo(e, x, y);
     this.#updateHighlights();
   }

@@ -3,7 +3,7 @@
 // During development changes show up on a normal reload; offline the last cached
 // copy is served. Bump VERSION when the precache list changes.
 
-const VERSION = 'v2';
+const VERSION = 'v3';
 const CACHE = `zzworld-${VERSION}`;
 
 const PRECACHE = [
@@ -27,12 +27,16 @@ const PRECACHE = [
   './src/engine/art.js',
   './src/engine/renderer.js',
   './src/engine/input.js',
+  './src/engine/backdrop.js',
+  './src/engine/daynight.js',
+  './src/game/hud.js',
   './src/audio/sfx.js',
   './content/core/manifest.json',
   './content/core/defs/base.json',
   './content/core/defs/food.json',
   './content/core/defs/toys.json',
   './content/core/defs/furniture.json',
+  './content/core/defs/backdrops.json',
   './content/core/scenes/room.json',
   './locales/tr.json',
   './locales/en.json',

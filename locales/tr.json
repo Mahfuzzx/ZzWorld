@@ -7,5 +7,11 @@
       "failed": "Çevrimdışı mod başlatılamadı"
     },
     "error": "Oyun başlatılamadı"
+  },
+  "hud": {
+    "edit": "Düzenleme modu",
+    "play": "Oyun modu",
+    "day": "Gündüz yap",
+    "night": "Gece yap"
   }
 }

@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { DefStore, Scene, Animator } from '../src/engine/index.js';
+import { DefStore, Scene, Animator, DayNight, Backdrop } from '../src/engine/index.js';
 
 const core = new URL('../content/core/', import.meta.url);
 const readJson = (path) => JSON.parse(readFileSync(new URL(path, core), 'utf8'));
@@ -151,4 +151,62 @@ test('unknown actions are reported without breaking the reaction list', async ()
     console.warn = warn;
   }
   assert.deepEqual(services.sounds, ['pop']);
+});
+
+test('mobility: small things always move, big ones only in edit mode', () => {
+  const scene = emptyScene();
+  const apple = scene.spawn('core.apple');
+  const fridge = scene.spawn('core.fridge');
+  const window_ = scene.spawn('core.window');
+  for (const mode of ['play', 'edit']) assert.ok(apple.canDrag(mode));
+  assert.equal(fridge.canDrag('play'), false);
+  assert.ok(fridge.canDrag('edit'));
+  assert.equal(window_.canDrag('play'), false);
+  assert.ok(window_.canDrag('edit'));
+});
+
+test('windows stay on the wall while dragged', () => {
+  const scene = emptyScene();
+  const window_ = scene.spawn('core.window', { x: 800, y: 500 });
+  assert.deepEqual(window_.constrainDrag(800, 950), { x: 800, y: 730 }, 'not below the floor line');
+  assert.deepEqual(window_.constrainDrag(-50, 100), { x: 130, y: 230 }, 'not off the wall');
+});
+
+test('containers only take free items', () => {
+  const defs = coreDefs();
+  defs.add({ id: 'x.stool', extends: 'core.furniture.base', size: [50, 50] });
+  const scene = new Scene(defs, { id: 't' }, fakeServices());
+  const fridge = scene.spawn('core.fridge', { state: 'open' });
+  assert.equal(fridge.accepts(scene.spawn('x.stool')), false);
+  assert.ok(fridge.accepts(scene.spawn('core.apple')));
+});
+
+test('day/night fades and lamps react to world events', async () => {
+  const dayNight = new DayNight();
+  const heard = [];
+  dayNight.onChange((night) => heard.push(night));
+  dayNight.toggle();
+  assert.deepEqual(heard, [true]);
+  dayNight.update(0.75);
+  assert.ok(dayNight.amount > 0.4 && dayNight.amount < 0.6);
+  dayNight.update(5);
+  assert.equal(dayNight.amount, 1);
+
+  const scene = emptyScene();
+  const lamp = scene.spawn('core.lamp');
+  lamp.emit('world:night');
+  await flush();
+  assert.equal(lamp.state, 'on');
+});
+
+test('backdrops resolve into registered layer classes', () => {
+  const backdrop = new Backdrop(coreDefs().get('core.backdrop.city'));
+  assert.deepEqual(backdrop.layers.map((l) => l.constructor.type), ['Sky', 'Stars', 'SunMoon', 'Clouds', 'Art', 'Art']);
+  assert.ok(backdrop.layers.at(-1).parallax > backdrop.layers[3].parallax, 'nearer layers move more');
+});
+
+test('scenes saved before layers keep their wall colours', () => {
+  const scene = Scene.deserialize(coreDefs(), { id: 'old', background: { wall: '#123456' }, entities: [] }, fakeServices());
+  assert.equal(scene.interior.wall, '#123456');
+  assert.equal(scene.serialize().interior.wall, '#123456');
 });

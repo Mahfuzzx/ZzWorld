@@ -4,7 +4,7 @@
 
 export const INK = '#3b2f2a';
 
-function shapePath(s) {
+export function shapePath(s) {
   const p = new Path2D();
   switch (s.type) {
     case 'rect':
@@ -35,7 +35,7 @@ export function drawArt(ctx, shapes, color) {
     const fill = resolve(s.fill);
     if (fill) {
       ctx.fillStyle = fill;
-      ctx.fill(path);
+      ctx.fill(path, s.rule ?? 'nonzero'); // "evenodd" cuts holes (window frames)
     }
     // Outlines are on by default (ink); "stroke": null turns them off.
     const stroke = s.stroke === undefined ? INK : resolve(s.stroke);

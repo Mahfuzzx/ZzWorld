@@ -1,0 +1,54 @@
+// On-screen buttons. Icons only; the labels are for screen readers.
+import { t } from '../shared/i18n.js';
+
+const ICONS = {
+  // edit mode: hammer
+  edit: '<svg viewBox="0 0 48 48"><path d="M10 38 L28 20" stroke-width="7"/><path d="M22 10 h14 a4 4 0 0 1 4 4 v6 l-8 -2 l-8 8 l-8 -8 z" fill="#f2c14e"/></svg>',
+  // play mode: hand
+  play: '<svg viewBox="0 0 48 48"><path d="M16 26 V12 a3 3 0 0 1 6 0 V22 V9 a3 3 0 0 1 6 0 V22 V11 a3 3 0 0 1 6 0 V24 V16 a3 3 0 0 1 6 0 V30 c0 8 -6 12 -13 12 c-6 0 -9 -3 -12 -8 l-6 -9 a3 3 0 0 1 5 -3 z" fill="#ffd9b8"/></svg>',
+  sun: '<svg viewBox="0 0 48 48"><g stroke-width="4"><path d="M24 4v6M24 38v6M4 24h6M38 24h6M10 10l4 4M34 34l4 4M38 10l-4 4M14 34l-4 4"/></g><circle cx="24" cy="24" r="9" fill="#ffd166"/></svg>',
+  moon: '<svg viewBox="0 0 48 48"><path d="M30 6 a18 18 0 1 0 12 28 a15 15 0 0 1 -12 -28 z" fill="#fff3c4"/><circle cx="14" cy="10" r="2" fill="#fff3c4" stroke="none"/><circle cx="40" cy="12" r="1.5" fill="#fff3c4" stroke="none"/></svg>',
+};
+
+function button(className) {
+  const el = document.createElement('button');
+  el.type = 'button';
+  el.className = `hud-btn ${className}`;
+  return el;
+}
+
+export function createHud(root, { scene, dayNight, onGesture }) {
+  const hud = document.createElement('div');
+  hud.className = 'hud';
+
+  const mode = button('hud-mode');
+  const renderMode = () => {
+    const editing = scene.mode === 'edit';
+    mode.innerHTML = editing ? ICONS.play : ICONS.edit;
+    mode.setAttribute('aria-label', t(editing ? 'hud.play' : 'hud.edit'));
+    mode.classList.toggle('active', editing);
+  };
+  mode.addEventListener('click', () => {
+    onGesture?.();
+    scene.mode = scene.mode === 'edit' ? 'play' : 'edit';
+    renderMode();
+  });
+
+  const sky = button('hud-sky');
+  const renderSky = () => {
+    sky.innerHTML = dayNight.night ? ICONS.moon : ICONS.sun;
+    sky.setAttribute('aria-label', t(dayNight.night ? 'hud.day' : 'hud.night'));
+    sky.classList.toggle('night', dayNight.night);
+  };
+  sky.addEventListener('click', () => {
+    onGesture?.();
+    dayNight.toggle();
+  });
+  dayNight.onChange(renderSky);
+
+  renderMode();
+  renderSky();
+  hud.append(sky, mode);
+  root.append(hud);
+  return hud;
+}

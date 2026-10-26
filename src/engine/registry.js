@@ -5,6 +5,7 @@ const tables = {
   entity: new Map(),
   behavior: new Map(),
   action: new Map(),
+  layer: new Map(),
 };
 
 export function register(kind, cls) {

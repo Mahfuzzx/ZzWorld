@@ -4,7 +4,8 @@
   "width": 2000,
   "height": 1000,
   "floorY": 740,
-  "background": { "wall": "#f3dcb4", "floor": "#d9a66b" },
+  "interior": { "wall": "#f3dcb4", "floor": "#d9a66b" },
+  "backdrop": "core.backdrop.city",
   "entities": [
     { "def": "core.window", "x": 820, "y": 520 },
     {

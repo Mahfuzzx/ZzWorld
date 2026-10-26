@@ -36,6 +36,54 @@ body {
   touch-action: none;
 }
 
+.hud {
+  position: absolute;
+  top: calc(env(safe-area-inset-top) + 14px);
+  right: calc(env(safe-area-inset-right) + 14px);
+  display: flex;
+  gap: 14px;
+}
+
+.hud-btn {
+  width: 68px;
+  height: 68px;
+  padding: 10px;
+  border: 4px solid var(--ink);
+  border-radius: 50%;
+  background: #fff8e6;
+  box-shadow: 0 4px 0 var(--ink);
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: transform 0.1s;
+}
+
+.hud-btn:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 var(--ink);
+}
+
+.hud-btn svg {
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.hud-btn.active {
+  background: #ffd166;
+}
+
+.hud-sky.night {
+  background: #2b3a6b;
+}
+
+.hud-sky.night svg {
+  stroke: #fff3c4;
+}
+
 .splash {
   height: 100%;
   display: flex;

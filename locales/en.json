@@ -7,5 +7,11 @@
       "failed": "Offline mode could not start"
     },
     "error": "The game could not start"
+  },
+  "hud": {
+    "edit": "Edit mode",
+    "play": "Play mode",
+    "day": "Make it day",
+    "night": "Make it night"
   }
 }

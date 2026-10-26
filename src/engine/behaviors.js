@@ -47,7 +47,7 @@ export class Container extends Behavior {
   }
 
   accepts(item, { force = false } = {}) {
-    if (item === this.entity || item.isAncestorOf(this.entity)) return false;
+    if (item === this.entity || item.mobility !== 'free' || item.isAncestorOf(this.entity)) return false;
     if (!force && !this.open) return false;
     const [, , w, h] = this.area;
     return item.width <= w && item.height <= h && this.contents().length < this.slots;
