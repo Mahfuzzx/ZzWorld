@@ -1,0 +1,82 @@
+[
+  {
+    "id": "core.fan",
+    "extends": "core.furniture.base",
+    "name": { "tr": "Vantilatör", "en": "Fan" },
+    "size": [140, 240],
+    "colorSlots": { "body": "#9fd3f2", "blade": "#ffffff" },
+    "parts": [{ "id": "blade", "pivot": [70, 70] }],
+    "behaviors": [{ "type": "Toggle", "states": ["off", "on"] }],
+    "art": {
+      "default": [
+        { "type": "ellipse", "cx": 70, "cy": 230, "rx": 50, "ry": 9, "fill": "#9aa7ae" },
+        { "type": "rect", "x": 64, "y": 110, "w": 12, "h": 120, "r": 4, "fill": "#9aa7ae" },
+        { "type": "circle", "cx": 70, "cy": 70, "r": 62, "fill": "$body" },
+        { "type": "ellipse", "cx": 70, "cy": 40, "rx": 13, "ry": 27, "fill": "$blade", "part": "blade" },
+        { "type": "ellipse", "cx": 96, "cy": 85, "rx": 13, "ry": 27, "rotation": 2.094, "fill": "$blade", "part": "blade" },
+        { "type": "ellipse", "cx": 44, "cy": 85, "rx": 13, "ry": 27, "rotation": -2.094, "fill": "$blade", "part": "blade" },
+        { "type": "circle", "cx": 70, "cy": 70, "r": 10, "fill": "#e8735a", "part": "blade" },
+        { "type": "path", "d": "M14 70 H126 M70 14 V126 M30 30 L110 110 M110 30 L30 110", "lw": 2, "alpha": 0.35, "rough": false },
+        { "type": "circle", "cx": 70, "cy": 70, "r": 62 }
+      ]
+    },
+    "clips": {
+      "spin": {
+        "type": "keyframe",
+        "duration": 0.45,
+        "loop": true,
+        "ease": "linear",
+        "tracks": { "blade": [{ "t": 0, "rot": 0 }, { "t": 0.45, "rot": 360 }] }
+      }
+    },
+    "idle": { "on": "spin" },
+    "reactions": {
+      "stateEnter:on": [{ "do": "PlaySound", "sound": "click" }],
+      "stateEnter:off": [{ "do": "PlaySound", "sound": "click", "pitch": 0.8 }]
+    }
+  },
+  {
+    "id": "core.candle",
+    "extends": "core.item.base",
+    "name": { "tr": "Mum", "en": "Candle" },
+    "size": [50, 110],
+    "colorSlots": { "wax": "#f7f1e3" },
+    "parts": [{ "id": "flame", "pivot": [25, 36] }],
+    "light": { "x": 25, "y": 24, "r": 220 },
+    "art": {
+      "default": [
+        { "type": "path", "d": "M25 6 C33 18 36 26 33 32 C30 38 20 38 17 32 C14 26 17 18 25 6 Z", "fill": "#ffb341", "stroke": "#e8735a", "lw": 2, "part": "flame" },
+        { "type": "ellipse", "cx": 25, "cy": 29, "rx": 5, "ry": 7, "fill": "#ffe08a", "stroke": null, "part": "flame" },
+        { "type": "path", "d": "M25 33 L25 41", "lw": 3 },
+        { "type": "rect", "x": 15, "y": 40, "w": 20, "h": 58, "r": 3, "fill": "$wax" },
+        { "type": "ellipse", "cx": 25, "cy": 100, "rx": 24, "ry": 8, "fill": "#c98a4b" }
+      ]
+    },
+    "clips": {
+      "flicker": {
+        "type": "frames",
+        "fps": 7,
+        "loop": true,
+        "part": "flame",
+        "frames": [
+          [
+            { "type": "path", "d": "M25 6 C33 18 36 26 33 32 C30 38 20 38 17 32 C14 26 17 18 25 6 Z", "fill": "#ffb341", "stroke": "#e8735a", "lw": 2, "part": "flame" },
+            { "type": "ellipse", "cx": 25, "cy": 29, "rx": 5, "ry": 7, "fill": "#ffe08a", "stroke": null, "part": "flame" }
+          ],
+          [
+            { "type": "path", "d": "M28 5 C35 17 36 26 33 32 C30 38 20 38 17 32 C14 25 20 17 28 5 Z", "fill": "#ffb341", "stroke": "#e8735a", "lw": 2, "part": "flame" },
+            { "type": "ellipse", "cx": 26, "cy": 29, "rx": 5, "ry": 6, "fill": "#ffe08a", "stroke": null, "part": "flame" }
+          ],
+          [
+            { "type": "path", "d": "M22 9 C31 18 35 26 33 32 C30 38 20 38 17 32 C14 26 15 19 22 9 Z", "fill": "#ffb341", "stroke": "#e8735a", "lw": 2, "part": "flame" },
+            { "type": "ellipse", "cx": 24, "cy": 30, "rx": 5, "ry": 6, "fill": "#ffe08a", "stroke": null, "part": "flame" }
+          ]
+        ]
+      }
+    },
+    "idle": "flicker",
+    "reactions": {
+      "tap": [{ "do": "PlayAnim", "clip": "wobble" }]
+    }
+  }
+]

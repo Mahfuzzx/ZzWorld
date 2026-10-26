@@ -353,6 +353,37 @@ Tek kareli çizimler, motor tarafından 2–3 farklı seed ile döngüsel çizil
 
 ### 8.3 Klip olayları
 Klibin belirli bir karesine olay/ses bağlanabilir (ayak yere basınca "tık").
+*(Henüz uygulanmadı.)*
+
+### 8.4 Veri biçimi (uygulandı)
+
+```json
+{
+  "parts": [{ "id": "blade", "pivot": [70, 70] }],
+  "art": { "default": [ { "type": "ellipse", "...": "...", "part": "blade" } ] },
+  "clips": {
+    "spin": { "type": "keyframe", "duration": 0.45, "loop": true, "ease": "linear",
+              "tracks": { "blade": [{ "t": 0, "rot": 0 }, { "t": 0.45, "rot": 360 }] } },
+    "flicker": { "type": "frames", "fps": 7, "loop": true, "part": "flame",
+                 "frames": [[ "...şekiller..." ], [ "..." ]] }
+  },
+  "idle": { "on": "spin" },
+  "boil": true
+}
+```
+
+- **Parçalar:** şekiller `part` alanıyla bir parçaya bağlanır; parçasız şekiller gövdedir.
+  Çizim sırası korunur (ardışık aynı parçalı şekiller bir grup olur).
+- **Anahtar kare izleri:** `tracks` parça adı → anahtar kareler (`t` saniye, `rot` derece,
+  `x`, `y`, `s` ölçek). `""` izi bütün nesneyi hareket ettirir.
+- **Kare kare:** `part` verilirse yalnızca o parçanın çizimi kare kare değişir; verilmezse
+  bütün çizim.
+- **`idle`:** sürekli dönen klip; tek bir ad ya da duruma göre (`{ "on": "spin" }`).
+- **`boil`:** line boil açık/kapalı.
+- `PlayAnim` hem hazır hareketleri hem nesnenin kendi kliplerini oynatır; `StopAnim`
+  döngüyü durdurur.
+- Core örnekleri: vantilatör (açıkken pervane döner), mum (alev kare kare titrer, ışık
+  verir), saksı çiçeği (line boil).
 
 ## 9. Ses
 
@@ -633,7 +664,11 @@ Her editörde canlı önizleme ve nesneyi bir test sahnesinde deneme.
 - **Dene:** nesne, gerçek oyun motoruyla çalışan bir deneme odasında açılır.
 - **Oyunla bağlantı:** Stüdyo'da kaydedilen nesneler oyunun düzenleme modundaki
   katalogda ilk sırada görünür.
-- Henüz yok: parça/pivot sistemi, animasyon ve ses editörleri (sonraki adımlar).
+- **Animasyon sekmesi:** line boil; parçalar (ekle, adlandır, kaldır; seçili şekli
+  parçaya taşı) ve **Pivot** aracı; anahtar kare klipleri (iz başına anahtar kare
+  tablosu: zaman, açı, x, y, ölçek); kare kare klipler (kare ekle/sil, soğan kabuğu,
+  kareler arasında gezinme); duruma göre sürekli oynatma; ▶ ile tuvalde önizleme.
+- Henüz yok: ses editörü (4. adım), klip karelerine ses bağlama, iç içe parçalar.
 
 ### 15.4 Oyunda katalog ve çöp kutusu
 - Düzenleme modunda "+" düğmesi alttan bir katalog çekmecesi açar; ilk karo ZzStudio'yu
@@ -714,7 +749,8 @@ Okuma bilmeyen çocuk geçemez.
 2. ✅ **ZzStudio v1:** el çizimi, durumlar, alanlar, tepki editörü, dışa/içe aktarma,
    deneme odası; oyunda katalog ve çöp kutusu; core nesnelere el çizimi efekti (§15.3).
    Parça/pivot ve çapa noktaları animasyon adımına kaldı.
-3. **Animasyon:** hazır hareketler, parça animasyonu, kare kare çizim, line boil.
+3. ✅ **Animasyon:** hazır hareketler, parça/pivot ve anahtar kare animasyonu, kare kare
+   çizim, line boil, sürekli döngüler; ZzStudio'da Animasyon sekmesi (§8.4, §15.3).
 4. **Ses ve müzik:** ses üretici, döngü/melodi yapıcı, oyun içi ses motoru.
 5. **Karakterler:** parçalı karakter ve karakter oluşturucu.
 6. **İlk ev:** 2–3 oda, 15–20 core nesne.

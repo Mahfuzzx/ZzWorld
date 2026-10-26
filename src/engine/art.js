@@ -119,12 +119,30 @@ function roughPaths(s, seed, fill, stroke) {
   return generator.toPaths(drawable);
 }
 
-export function drawArt(ctx, shapes, color, { seed = 1, rough: roughOn = true } = {}) {
+// Line boil: a slightly different copy of a freehand shape for each variant.
+function boiled(s, variant) {
+  if (!variant || (s.type !== 'ink' && s.type !== 'fill')) return s;
+  return cached(s, `boil|${variant}`, () => {
+    const amount = 0.9;
+    const noise = (k, axis) => {
+      const x = Math.sin((k + 1) * 12.9898 + variant * 78.233 + axis * 37.719) * 43758.5453;
+      return (x - Math.floor(x) - 0.5) * 2 * amount;
+    };
+    return { ...s, points: s.points.map((p, k) => [p[0] + noise(k, 0), p[1] + noise(k, 1), ...p.slice(2)]) };
+  });
+}
+
+// boil: line-boil variant (0 = the drawing as made); changes rough seeds and
+// nudges freehand points so the same drawing looks redrawn.
+export function drawArt(ctx, shapes, color, { seed = 1, rough: roughOn = true, boil = 0 } = {}) {
   const resolve = (c) => (typeof c === 'string' && c.startsWith('$') ? color(c.slice(1)) : c);
-  shapes.forEach((s, i) => {
+  seed += boil * 997;
+  const baseAlpha = ctx.globalAlpha; // callers may draw faded (onion skin, other layers)
+  shapes.forEach((original, i) => {
+    const s = boiled(original, boil);
     ctx.save();
     if (s.tx || s.ty) ctx.translate(s.tx ?? 0, s.ty ?? 0); // set when a shape is moved in ZzStudio
-    ctx.globalAlpha = s.alpha ?? 1;
+    ctx.globalAlpha = baseAlpha * (s.alpha ?? 1);
     // Outlines are on by default (ink); "stroke": null turns them off.
     const stroke = s.stroke === undefined ? INK : resolve(s.stroke);
     const fill = resolve(s.fill);

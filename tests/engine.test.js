@@ -128,7 +128,7 @@ test('room template settles and survives a save/load round trip', () => {
   const fridge = [...scene.entities.values()].find((e) => e.def.id === 'core.fridge');
   assert.equal(scene.childrenOf(fridge).length, 2);
   const onTable = [...scene.entities.values()].filter((e) => e.restingOn && scene.get(e.restingOn).def.id === 'core.table');
-  assert.equal(onTable.length, 2, 'apple and basket rest on the table');
+  assert.equal(onTable.length, 3, 'apple, basket and candle rest on the table');
 
   const data = JSON.parse(JSON.stringify(scene.serialize()));
   const restored = Scene.deserialize(defs, data, fakeServices());
@@ -264,4 +264,53 @@ test('saves with objects that no longer exist still load', () => {
   const lone = restored.get(apple.id);
   assert.equal(lone.parentId, null);
   assert.ok(restored.renderList().includes(lone), 'the apple is still visible');
+});
+
+test('keyframe tracks interpolate and loop', async () => {
+  const { sampleTrack } = await import('../src/engine/index.js');
+  const keys = [{ t: 0, rot: 0 }, { t: 1, rot: 90, x: 10 }];
+  assert.equal(sampleTrack(keys, -1).rot, 0);
+  assert.ok(Math.abs(sampleTrack(keys, 0.5, 'linear').rot - Math.PI / 4) < 1e-9);
+  assert.equal(sampleTrack(keys, 0.5, 'linear').dx, 5);
+  assert.ok(Math.abs(sampleTrack(keys, 2).rot - Math.PI / 2) < 1e-9);
+});
+
+test('a fan spins its blade only while it is on', () => {
+  const scene = emptyScene();
+  const fan = scene.spawn('core.fan', { x: 500, y: 800 });
+  scene.tick(0.1);
+  assert.equal(fan.partFx, null, 'off: still');
+  fan.emit('tap');
+  scene.tick(0.1);
+  scene.tick(0.1);
+  assert.ok(fan.partFx?.blade?.rot > 0, 'on: the blade turns');
+  fan.emit('tap');
+  scene.tick(0.1);
+  scene.tick(0.1);
+  assert.equal(fan.partFx, null, 'off again: stopped');
+});
+
+test('a candle flame flips through its frames', () => {
+  const scene = emptyScene();
+  const candle = scene.spawn('core.candle', { x: 500, y: 800 });
+  const seen = new Set();
+  for (let i = 0; i < 30; i++) {
+    scene.tick(1 / 20);
+    seen.add(candle.frames?.flame?.key);
+  }
+  assert.deepEqual([...seen].sort(), ['flicker:0', 'flicker:1', 'flicker:2']);
+});
+
+test('part groups keep drawing order and swap in flipbook frames', async () => {
+  const { partGroups } = await import('../src/engine/index.js');
+  const def = {
+    parts: [{ id: 'arm', pivot: [5, 5] }],
+    art: { default: [{ id: 1 }, { id: 2, part: 'arm' }, { id: 3 }] },
+  };
+  const groups = partGroups(def, 'default');
+  assert.deepEqual(groups.map((g) => g.part), ['', 'arm', '']);
+  assert.deepEqual(groups[1].pivot, [5, 5]);
+  const swapped = partGroups(def, 'default', 'art', { arm: { shapes: [{ id: 9 }], key: 'wave:1' } });
+  assert.deepEqual(swapped[1].shapes, [{ id: 9 }]);
+  assert.notEqual(swapped[1].key, groups[1].key);
 });

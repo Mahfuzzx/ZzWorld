@@ -2,7 +2,7 @@
 // in a test room and share them as .zzpack files. Everything is saved on the
 // device (IndexedDB) and shows up in the game's catalog.
 import { initI18n, t, translatePage } from '../shared/i18n.js';
-import { DefStore, fetchJson } from '../engine/index.js';
+import { DefStore, fetchJson, Animator, clipDuration } from '../engine/index.js';
 import { INK } from '../engine/art.js';
 import { Sfx } from '../audio/sfx.js';
 import * as storage from '../shared/storage.js';
@@ -51,6 +51,196 @@ class Studio {
     if (!PACK_ID_PATTERN.test(this.packId)) this.packId = 'benim';
     this.saveTimer = null;
     this.savedId = null;
+    this.part = '';          // part new shapes belong to ('' = body)
+    this.onion = true;       // show the previous flipbook frame
+    this.previewEntity = null;
+    this.t = t;
+  }
+
+  // ---------- parts ----------
+
+  // New shapes go to the part being drawn (or the flipbook's part).
+  tagPart(shape) {
+    const clip = this.doc.frame ? this.doc.def.clips[this.doc.frame.clip] : null;
+    const part = clip ? clip.part : this.part;
+    return part ? { ...shape, part } : shape;
+  }
+
+  setPart(part) {
+    this.part = part;
+    this.#renderPanel();
+    this.editor.requestRender();
+  }
+
+  addPart() {
+    const parts = this.doc.def.parts ?? [];
+    let n = parts.length + 1;
+    while (parts.some((p) => p.id === `${t('studio.animation.partPrefix')}${n}`)) n++;
+    const id = `${t('studio.animation.partPrefix')}${n}`;
+    const [w, h] = this.doc.def.size ?? [100, 100];
+    this.part = id;
+    this.doc.change((d) => {
+      d.parts = [...(d.parts ?? []), { id, pivot: [Math.round(w / 2), Math.round(h / 2)] }];
+    });
+    // the selected shape (if any) moves into the new part
+    if (this.selection >= 0) this.doc.updateShape(this.selection, (s) => { s.part = id; });
+  }
+
+  #renameEverywhere(d, from, to) {
+    for (const field of ['art', 'artFront']) {
+      for (const shapes of Object.values(d[field] ?? {})) {
+        for (const s of shapes) if (s.part === from) s.part = to;
+      }
+    }
+    for (const clip of Object.values(d.clips ?? {})) {
+      if (clip.part === from) clip.part = to;
+      if (clip.tracks?.[from]) {
+        if (to) clip.tracks[to] = clip.tracks[from];
+        delete clip.tracks[from];
+      }
+      for (const frame of clip.frames ?? []) {
+        for (const s of frame) if (s.part === from) s.part = to;
+      }
+    }
+  }
+
+  renamePart(from, to) {
+    to = slugify(to);
+    if (!to || to === from || this.doc.def.parts.some((p) => p.id === to)) {
+      this.#renderPanel();
+      return;
+    }
+    this.doc.change((d) => {
+      d.parts.find((p) => p.id === from).id = to;
+      this.#renameEverywhere(d, from, to);
+    });
+    this.part = to;
+    this.#renderPanel();
+  }
+
+  // Removing a part keeps its drawing: the shapes go back to the body.
+  removePart(id) {
+    this.doc.change((d) => {
+      d.parts = d.parts.filter((p) => p.id !== id);
+      if (!d.parts.length) delete d.parts;
+      this.#renameEverywhere(d, id, undefined);
+      for (const field of ['art', 'artFront']) {
+        for (const shapes of Object.values(d[field] ?? {})) for (const s of shapes) if (s.part === undefined) delete s.part;
+      }
+    });
+    this.part = '';
+    this.#renderPanel();
+  }
+
+  // ---------- clips ----------
+
+  addClip(type) {
+    const clips = this.doc.def.clips ?? {};
+    let n = Object.keys(clips).length + 1;
+    while (clips[`${t('studio.animation.clipPrefix')}${n}`]) n++;
+    const name = `${t('studio.animation.clipPrefix')}${n}`;
+    const part = this.part;
+    const clip = type === 'frames'
+      ? {
+        type: 'frames',
+        fps: 8,
+        loop: true,
+        ...(part ? { part } : {}),
+        // start from the current drawing (of the chosen part)
+        frames: [JSON.parse(JSON.stringify((this.doc.def.art[this.doc.state] ?? []).filter((s) => !part || s.part === part)))],
+      }
+      : { type: 'keyframe', duration: 0.6, loop: false, tracks: { [part]: [{ t: 0, rot: 0 }, { t: 0.3, rot: 12 }, { t: 0.6, rot: 0 }] } };
+    this.doc.change((d) => {
+      d.clips = { ...d.clips, [name]: clip };
+    });
+    if (type === 'frames') this.doc.setFrame({ clip: name, index: 0 });
+  }
+
+  renameClip(from, to) {
+    to = slugify(to);
+    const clips = this.doc.def.clips;
+    if (!to || to === from || clips[to]) {
+      this.#renderPanel();
+      return;
+    }
+    this.doc.change((d) => {
+      d.clips = Object.fromEntries(Object.entries(d.clips).map(([k, v]) => [k === from ? to : k, v]));
+      if (d.idle === from) d.idle = to;
+      else if (d.idle && typeof d.idle === 'object') for (const s of Object.keys(d.idle)) if (d.idle[s] === from) d.idle[s] = to;
+      for (const list of Object.values(d.reactions ?? {})) for (const a of list) if (a.clip === from) a.clip = to;
+    });
+    if (this.doc.frame?.clip === from) this.doc.setFrame({ ...this.doc.frame, clip: to });
+  }
+
+  removeClip(name) {
+    if (this.doc.frame?.clip === name) this.doc.setFrame(null);
+    this.doc.change((d) => {
+      delete d.clips[name];
+      if (!Object.keys(d.clips).length) delete d.clips;
+      if (d.idle === name) delete d.idle;
+      else if (d.idle && typeof d.idle === 'object') {
+        for (const s of Object.keys(d.idle)) if (d.idle[s] === name) delete d.idle[s];
+        if (!Object.keys(d.idle).length) delete d.idle;
+      }
+    });
+  }
+
+  // Plays a clip once in the editor, the same way the game would.
+  play(name) {
+    const animator = new Animator();
+    const entity = { def: this.doc.def, state: this.doc.state, fx: null, partFx: null, frames: null };
+    const clip = this.doc.def.clips?.[name];
+    if (!clip) return;
+    // looping clips play twice so the loop can be seen
+    const total = clipDuration(clip) * (clip.loop ? 2 : 1);
+    animator.play(entity, name, { loop: true });
+    this.previewEntity = entity;
+    let elapsed = 0;
+    let last = performance.now();
+    const frame = (now) => {
+      const dt = Math.min(Math.max(0, (now - last) / 1000), 0.05);
+      last = now;
+      elapsed += dt;
+      animator.update(dt);
+      this.editor.render();
+      if (elapsed >= total) {
+        this.previewEntity = null;
+        this.editor.render();
+      } else {
+        requestAnimationFrame(frame);
+      }
+    };
+    requestAnimationFrame(frame);
+  }
+
+  #frameBar() {
+    const doc = this.doc;
+    const clip = doc.def.clips[doc.frame.clip];
+    const { index } = doc.frame;
+    const go = (i) => doc.setFrame({ clip: doc.frame.clip, index: i });
+    return [
+      h('button', { type: 'button', class: 'st-btn st-small', text: '◀', disabled: index === 0, onclick: () => go(index - 1) }),
+      h('span', { class: 'st-frame-no', text: t('studio.animation.frameNo', { i: index + 1, n: clip.frames.length }) }),
+      h('button', { type: 'button', class: 'st-btn st-small', text: '▶', disabled: index >= clip.frames.length - 1, onclick: () => go(index + 1) }),
+      h('button', { type: 'button', class: 'st-btn st-small', text: `+ ${t('studio.animation.addFrame')}`, onclick: () => {
+        doc.change((d) => {
+          const frames = d.clips[doc.frame.clip].frames;
+          frames.splice(index + 1, 0, JSON.parse(JSON.stringify(frames[index])));
+        });
+        go(index + 1);
+      } }),
+      h('button', { type: 'button', class: 'st-btn st-small st-danger', text: t('studio.animation.removeFrame'), disabled: clip.frames.length < 2, onclick: () => {
+        doc.change((d) => d.clips[doc.frame.clip].frames.splice(index, 1));
+        go(Math.max(0, index - 1));
+      } }),
+      h('label', { class: 'st-check' },
+        h('input', { type: 'checkbox', checked: this.onion, onchange: (e) => {
+          this.onion = e.target.checked;
+          this.editor.requestRender();
+        } }), t('studio.animation.onion')),
+      h('button', { type: 'button', class: 'st-btn st-small st-primary', text: '▶▶', title: t('studio.animation.play'), onclick: () => this.play(doc.frame.clip) }),
+      h('button', { type: 'button', class: 'st-btn st-small', text: t('studio.animation.doneFrames'), onclick: () => doc.setFrame(null) }),
+    ];
   }
 
   async init() {
@@ -224,12 +414,10 @@ class Studio {
     this.paint = color;
     const shape = this.tool === this.tools.move ? this.doc.shapes[this.selection] : null;
     if (shape) {
-      const index = this.selection;
-      this.doc.change((def) => {
-        const s = def[this.doc.layer][this.doc.state][index];
+      this.doc.updateShape(this.selection, (s) => {
         if (s.type === 'ink') s.color = color ?? INK;
         else s.fill = color;
-      }, 'art');
+      });
     }
     this.#renderPalette();
   }
@@ -259,6 +447,7 @@ class Studio {
     if (kind === 'view') {
       this.#renderStates();
       this.#renderCanvasBar();
+      if (this.tab === 'animation') this.#renderPanel();
       return;
     }
     if (this.selection >= this.doc.shapes.length) this.selection = -1;
@@ -408,6 +597,10 @@ class Studio {
   #renderCanvasBar() {
     const doc = this.doc;
     if (!doc) return;
+    if (doc.frame) {
+      document.getElementById('canvas-bar').replaceChildren(...this.#frameBar());
+      return;
+    }
     const hasContainer = !!doc.behavior('Container');
     const items = [];
     if (hasContainer || doc.def.artFront) {
@@ -423,6 +616,15 @@ class Studio {
       } }), t('studio.canvas.areas')));
     if (this.tool === this.tools.move && this.selection >= 0) {
       const i = this.selection;
+      const parts = doc.def.parts ?? [];
+      if (parts.length) {
+        const current = doc.shapes[i]?.part ?? '';
+        items.push(h('select', { class: 'st-input', title: t('studio.animation.part'), onchange: (e) => doc.updateShape(i, (s) => {
+          if (e.target.value) s.part = e.target.value;
+          else delete s.part;
+        }) }, [['', t('studio.animation.body')], ...parts.map((p) => [p.id, p.id])]
+          .map(([v, l]) => h('option', { value: v, text: l, selected: v === current }))));
+      }
       items.push(
         h('button', { type: 'button', class: 'st-btn st-small', text: t('studio.canvas.toFront'), onclick: () => this.#reorderSelected(true) }),
         h('button', { type: 'button', class: 'st-btn st-small', text: t('studio.canvas.toBack'), onclick: () => this.#reorderSelected(false) }),

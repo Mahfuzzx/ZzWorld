@@ -101,6 +101,7 @@ export class Scene {
       this.drop(d);
     }
     this.entities.delete(entity.id);
+    this.services.animator?.stop(entity);
     this.changed();
   }
 
@@ -246,6 +247,7 @@ export class Scene {
         if (e.y >= e.fall.targetY - 0.01) this.#land(e);
       }
       e.tick(dt);
+      if (e.def.idle && e.visible) this.services.animator?.syncIdle(e);
     }
     this.services.animator?.update(dt);
   }

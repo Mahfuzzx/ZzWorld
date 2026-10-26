@@ -18,6 +18,7 @@ export class ObjectDoc {
     this.def.art ??= { default: [] };
     this.state = Object.keys(this.def.art)[0];
     this.layer = 'art'; // 'art' or 'artFront'
+    this.frame = null;  // { clip, index } while drawing flipbook frames
     this.undoStack = [];
     this.redoStack = [];
     this.listeners = new Set();
@@ -59,6 +60,9 @@ export class ObjectDoc {
 
   #fixState() {
     if (!this.def.art[this.state]) this.state = Object.keys(this.def.art)[0];
+    const frames = this.frame && this.def.clips?.[this.frame.clip]?.frames;
+    if (this.frame && !frames?.length) this.frame = null;
+    else if (this.frame) this.frame.index = Math.min(this.frame.index, frames.length - 1);
   }
 
   get states() {
@@ -72,27 +76,41 @@ export class ObjectDoc {
 
   setLayer(layer) {
     this.layer = layer;
+    this.frame = null;
     this.#emit('view');
   }
 
-  // Shapes of the state/layer currently being drawn on.
+  // Draw on a flipbook frame instead of a state (null goes back to states).
+  setFrame(frame) {
+    this.frame = frame;
+    this.#emit('view');
+  }
+
+  // The array being drawn on: a frame of a flipbook clip, or a state's art.
+  #target(def, create = false) {
+    if (this.frame) return def.clips?.[this.frame.clip]?.frames?.[this.frame.index] ?? [];
+    if (!create) return def[this.layer]?.[this.state] ?? [];
+    def[this.layer] ??= {};
+    return (def[this.layer][this.state] ??= []);
+  }
+
   get shapes() {
-    const art = this.def[this.layer] ?? {};
-    return art[this.state] ?? [];
+    return this.#target(this.def);
   }
 
   addShape(shape) {
-    this.change((def) => {
-      def[this.layer] ??= {};
-      (def[this.layer][this.state] ??= []).push(shape);
-    }, 'art');
+    this.change((def) => this.#target(def, true).push(shape), 'art');
   }
 
   replaceShapes(shapes) {
     this.change((def) => {
-      def[this.layer] ??= {};
-      def[this.layer][this.state] = shapes;
+      const list = this.#target(def, true);
+      list.splice(0, list.length, ...shapes);
     }, 'art');
+  }
+
+  updateShape(index, fn) {
+    this.change((def) => fn(this.#target(def)[index]), 'art');
   }
 
   addState(name) {

@@ -2,6 +2,7 @@
 // layer, the special areas (surfaces, container area, opening, light) and the
 // active tool's preview. Pointer input is forwarded to the active tool.
 import { drawArt, seedFor } from '../engine/art.js';
+import { partGroups, applyPartFx } from '../engine/compose.js';
 import { shapeBounds } from './doc.js';
 
 const PAD = 36; // CSS px around the box
@@ -102,14 +103,52 @@ export class Editor {
     ctx.strokeRect(0, 0, w, h);
     ctx.setLineDash([]);
 
-    // the other layer, faded, for reference
-    const other = doc.layer === 'art' ? def.artFront : def.art;
-    if (other?.[doc.state]?.length) {
-      ctx.globalAlpha = doc.layer === 'art' ? 0.3 : 0.45;
-      drawArt(ctx, other[doc.state], color, { seed });
+    const faded = (shapes, alpha) => {
+      if (!shapes?.length) return;
+      ctx.globalAlpha = alpha;
+      drawArt(ctx, shapes, color, { seed });
       ctx.globalAlpha = 1;
+    };
+    const preview = this.app.previewEntity;
+
+    if (preview) {
+      // Playing a clip: draw like the game does, parts moving around their pivots.
+      ctx.save();
+      const fx = preview.fx;
+      if (fx) {
+        ctx.translate(w / 2 + fx.dx, h + fx.dy);
+        ctx.translate(0, -h / 2);
+        ctx.rotate(fx.rot);
+        ctx.translate(0, h / 2);
+        ctx.scale(fx.sx, fx.sy);
+        ctx.translate(-w / 2, -h);
+      }
+      for (const group of partGroups(def, doc.state, 'art', preview.frames)) {
+        ctx.save();
+        applyPartFx(ctx, group.pivot, group.part ? preview.partFx?.[group.part] : null);
+        drawArt(ctx, group.shapes, color, { seed, boil: def.boil ? Math.floor(performance.now() / 140) % 3 : 0 });
+        ctx.restore();
+      }
+      ctx.restore();
+    } else if (doc.frame) {
+      // Flipbook frame: the object faded behind, the previous frame as onion skin.
+      const clip = def.clips[doc.frame.clip];
+      const base = (def.art[doc.state] ?? []).filter((s) => clip.part && s.part !== clip.part);
+      faded(base, 0.35);
+      if (this.app.onion && doc.frame.index > 0) faded(clip.frames[doc.frame.index - 1], 0.25);
+      drawArt(ctx, doc.shapes, color, { seed });
+    } else {
+      // the other layer, faded, for reference
+      const other = doc.layer === 'art' ? def.artFront : def.art;
+      faded(other?.[doc.state], doc.layer === 'art' ? 0.3 : 0.45);
+      if (this.app.part) {
+        // other parts faded, the part being drawn on top
+        faded(doc.shapes, 0.35);
+        drawArt(ctx, doc.shapes.filter((s) => s.part === this.app.part), color, { seed });
+      } else {
+        drawArt(ctx, doc.shapes, color, { seed });
+      }
     }
-    drawArt(ctx, doc.shapes, color, { seed });
     this.#drawAreas(ctx, scale);
 
     const selected = doc.shapes[this.app.selection];
@@ -149,6 +188,19 @@ export class Editor {
     for (const o of def.opening ?? []) {
       line('#8a4fd8');
       ctx.strokeRect(o.x, o.y, o.w, o.h);
+    }
+    for (const part of def.parts ?? []) {
+      if (!part.pivot) continue;
+      const [x, y] = part.pivot;
+      const r = 10 / scale;
+      line(part.id === this.app.part ? '#e8735a' : '#b9a58a', false);
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, Math.PI * 2);
+      ctx.moveTo(x - r * 1.8, y);
+      ctx.lineTo(x + r * 1.8, y);
+      ctx.moveTo(x, y - r * 1.8);
+      ctx.lineTo(x, y + r * 1.8);
+      ctx.stroke();
     }
     if (def.light) {
       line('#e0a100');

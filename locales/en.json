@@ -30,7 +30,8 @@
       "surface": "Surface (things can be put on it)",
       "area": "Container area (contents sit here)",
       "opening": "Opening (window glass)",
-      "light": "Light source"
+      "light": "Light source",
+      "pivot": "Pivot (where a part turns)"
     },
     "states": {
       "add": "Add state",
@@ -51,7 +52,8 @@
       "general": "General",
       "colors": "Colours",
       "behavior": "Behaviour",
-      "reactions": "Reactions"
+      "reactions": "Reactions",
+      "animation": "Animation"
     },
     "general": {
       "id": "Id",
@@ -122,7 +124,8 @@
         "PlaySound": "Play sound",
         "PlayAnim": "Move",
         "SetState": "Change state",
-        "Wait": "Wait (ms)"
+        "Wait": "Wait (ms)",
+        "StopAnim": "Stop moving"
       },
       "toggle": "(next one)"
     },
@@ -148,6 +151,50 @@
     "preview": {
       "title": "Test room",
       "close": "Close"
+    },
+    "animation": {
+      "boil": "Living lines (line boil)",
+      "boilHint": "The drawing keeps wobbling slightly, as if redrawn.",
+      "parts": "Parts",
+      "partsHint": "Pieces that move on their own (blade, tail, flame). What you draw goes to the selected part; place its pivot with the \"Pivot\" tool.",
+      "body": "Body (no part)",
+      "whole": "Whole object",
+      "addPart": "Add part",
+      "partName": "Part name",
+      "removePart": "Remove part (drawing stays)",
+      "pivotAt": "Pivot: {x}, {y}",
+      "noPivot": "No pivot",
+      "pickPart": "Pick a part in the Animation tab first.",
+      "part": "Part",
+      "partPrefix": "part",
+      "clips": "Clips",
+      "clipsHint": "Keyframe: turn, move and scale parts. Frame by frame: draw every frame.",
+      "newKeyframe": "Keyframe clip",
+      "newFrames": "Frame-by-frame clip",
+      "clipPrefix": "clip",
+      "play": "Play",
+      "removeClip": "Delete clip",
+      "loop": "Loop",
+      "duration": "Duration (s)",
+      "fps": "Frames/s",
+      "framesOf": "Frame by frame: {part}",
+      "frameCount": "{n} frames",
+      "drawFrames": "Draw frames",
+      "doneFrames": "Done",
+      "addTrack": "Add track",
+      "addKey": "Keyframe",
+      "keyT": "time",
+      "keyRot": "angle°",
+      "keyX": "x",
+      "keyY": "y",
+      "keyScale": "scale",
+      "idle": "Keep playing",
+      "idleHint": "While the object is in this state the clip loops by itself (e.g. the blade spins when on).",
+      "none": "None",
+      "frameNo": "Frame {i}/{n}",
+      "addFrame": "Frame",
+      "removeFrame": "Delete frame",
+      "onion": "Onion skin"
     }
   },
   "catalog": {

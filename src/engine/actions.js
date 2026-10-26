@@ -55,6 +55,14 @@ export class PlayAnim extends Action {
   }
 }
 
+export class StopAnim extends Action {
+  static type = 'StopAnim';
+
+  async run({ entity, scene }) {
+    scene.services.animator?.stop(entity, this.config.clip);
+  }
+}
+
 export class PlaySound extends Action {
   static type = 'PlaySound';
 

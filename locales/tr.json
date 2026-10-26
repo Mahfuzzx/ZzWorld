@@ -30,7 +30,8 @@
       "surface": "Yüzey (üstüne eşya konur)",
       "area": "Kap alanı (içindekiler burada durur)",
       "opening": "Açıklık (pencere camı)",
-      "light": "Işık kaynağı"
+      "light": "Işık kaynağı",
+      "pivot": "Pivot (parçanın döndüğü nokta)"
     },
     "states": {
       "add": "Durum ekle",
@@ -51,7 +52,8 @@
       "general": "Genel",
       "colors": "Renkler",
       "behavior": "Davranış",
-      "reactions": "Tepkiler"
+      "reactions": "Tepkiler",
+      "animation": "Animasyon"
     },
     "general": {
       "id": "Kimlik",
@@ -122,7 +124,8 @@
         "PlaySound": "Ses çal",
         "PlayAnim": "Hareket et",
         "SetState": "Durum değiştir",
-        "Wait": "Bekle (ms)"
+        "Wait": "Bekle (ms)",
+        "StopAnim": "Hareketi durdur"
       },
       "toggle": "(sıradaki)"
     },
@@ -148,6 +151,50 @@
     "preview": {
       "title": "Deneme odası",
       "close": "Kapat"
+    },
+    "animation": {
+      "boil": "Canlı çizgi (line boil)",
+      "boilHint": "Çizim sürekli hafifçe yeniden çizilmiş gibi titreşir.",
+      "parts": "Parçalar",
+      "partsHint": "Ayrı hareket edecek kısımlar (pervane, kuyruk, alev). Seçili parçaya çizilenler o parçaya ait olur; pivotu \"Pivot\" aracıyla yerleştir.",
+      "body": "Gövde (parçasız)",
+      "whole": "Bütün nesne",
+      "addPart": "Parça ekle",
+      "partName": "Parçanın adı",
+      "removePart": "Parçayı kaldır (çizim kalır)",
+      "pivotAt": "Pivot: {x}, {y}",
+      "noPivot": "Pivot yok",
+      "pickPart": "Önce Animasyon sekmesinden bir parça seç.",
+      "part": "Parça",
+      "partPrefix": "parca",
+      "clips": "Klipler",
+      "clipsHint": "Anahtar kare: parçaları döndür, kaydır, büyüt. Kare kare: her kareyi ayrı çiz.",
+      "newKeyframe": "Anahtar kare klip",
+      "newFrames": "Kare kare klip",
+      "clipPrefix": "klip",
+      "play": "Oynat",
+      "removeClip": "Klibi sil",
+      "loop": "Döngü",
+      "duration": "Süre (sn)",
+      "fps": "Kare/sn",
+      "framesOf": "Kare kare: {part}",
+      "frameCount": "{n} kare",
+      "drawFrames": "Kareleri çiz",
+      "doneFrames": "Bitti",
+      "addTrack": "İz ekle",
+      "addKey": "Anahtar kare",
+      "keyT": "zaman",
+      "keyRot": "açı°",
+      "keyX": "x",
+      "keyY": "y",
+      "keyScale": "ölçek",
+      "idle": "Sürekli oynat",
+      "idleHint": "Nesne bu durumdayken klip kendiliğinden döner (ör. açıkken pervane döner).",
+      "none": "Yok",
+      "frameNo": "Kare {i}/{n}",
+      "addFrame": "Kare",
+      "removeFrame": "Kareyi sil",
+      "onion": "Soğan kabuğu"
     }
   },
   "catalog": {

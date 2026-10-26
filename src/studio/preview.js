@@ -73,7 +73,7 @@ export async function openPreview(app) {
   let last = performance.now();
   const frame = (now) => {
     if (!dialog.open) return;
-    const dt = Math.min((now - last) / 1000, 0.05);
+    const dt = Math.min(Math.max(0, (now - last) / 1000), 0.05);
     last = now;
     input.update(dt);
     dayNight.update(dt);

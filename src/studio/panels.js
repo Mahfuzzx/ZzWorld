@@ -28,7 +28,7 @@ const number = (value, onchange, attrs = {}) => h('input', { type: 'number', val
 const hint = (text) => h('p', { class: 'st-hint', text });
 const section = (text) => h('div', { class: 'st-section', text });
 
-export const TABS = ['general', 'colors', 'behavior', 'reactions'];
+export const TABS = ['general', 'colors', 'behavior', 'reactions', 'animation'];
 
 export function renderPanel(app, root) {
   root.replaceChildren(...PANELS[app.tab](app));
@@ -167,12 +167,117 @@ const PANELS = {
   },
 };
 
-const ACTION_TYPES = ['PlaySound', 'PlayAnim', 'SetState', 'Wait'];
+PANELS.animation = (app) => {
+  const { doc } = app;
+  const def = doc.def;
+  const parts = def.parts ?? [];
+  const clips = def.clips ?? {};
+  const partOptions = [['', t('studio.animation.whole')], ...parts.map((p) => [p.id, p.id])];
+  const clipOptions = [['', t('studio.animation.none')], ...Object.keys(clips).map((c) => [c, c])];
+  const out = [
+    check(t('studio.animation.boil'), !!def.boil, (on) => doc.change((d) => {
+      if (on) d.boil = true;
+      else delete d.boil;
+    })),
+    hint(t('studio.animation.boilHint')),
+
+    section(t('studio.animation.parts')),
+    hint(t('studio.animation.partsHint')),
+    h('div', { class: 'st-row' },
+      select(partOptions.map(([v, l]) => [v, v ? l : t('studio.animation.body')]), app.part, (v) => app.setPart(v), { class: 'st-input' }),
+      h('button', { type: 'button', class: 'st-btn st-small', text: `+ ${t('studio.animation.addPart')}`, onclick: () => app.addPart() })),
+  ];
+  if (app.part) {
+    const part = parts.find((p) => p.id === app.part);
+    out.push(
+      field(t('studio.animation.partName'), h('input', { type: 'text', value: part.id, onchange: (e) => app.renamePart(part.id, e.target.value) })),
+      hint(part.pivot ? t('studio.animation.pivotAt', { x: part.pivot[0], y: part.pivot[1] }) : t('studio.animation.noPivot')),
+      h('button', { type: 'button', class: 'st-btn st-small st-danger', text: t('studio.animation.removePart'), onclick: () => app.removePart(part.id) }),
+    );
+  }
+
+  out.push(section(t('studio.animation.clips')), hint(t('studio.animation.clipsHint')));
+  for (const [name, clip] of Object.entries(clips)) out.push(clipCard(app, name, clip, partOptions));
+  out.push(h('div', { class: 'st-row' },
+    h('button', { type: 'button', class: 'st-btn st-small', text: `+ ${t('studio.animation.newKeyframe')}`, onclick: () => app.addClip('keyframe') }),
+    h('button', { type: 'button', class: 'st-btn st-small', text: `+ ${t('studio.animation.newFrames')}`, onclick: () => app.addClip('frames') })));
+
+  out.push(section(t('studio.animation.idle')), hint(t('studio.animation.idleHint')));
+  for (const state of doc.states) {
+    const current = typeof def.idle === 'string' ? def.idle : def.idle?.[state] ?? '';
+    out.push(field(state, select(clipOptions, current, (v) => doc.change((d) => {
+      const map = typeof d.idle === 'string' ? Object.fromEntries(doc.states.map((s) => [s, d.idle])) : { ...d.idle };
+      if (v) map[state] = v;
+      else delete map[state];
+      if (Object.keys(map).length) d.idle = map;
+      else delete d.idle;
+    }))));
+  }
+  return out;
+};
+
+function clipCard(app, name, clip, partOptions) {
+  const { doc } = app;
+  const update = (fn) => doc.change((d) => fn(d.clips[name]));
+  const head = h('div', { class: 'st-card-head' },
+    h('input', { type: 'text', class: 'st-input', value: name, onchange: (e) => app.renameClip(name, e.target.value) }),
+    h('button', { type: 'button', class: 'st-btn st-small st-primary', text: '▶', title: t('studio.animation.play'), onclick: () => app.play(name) }),
+    h('button', { type: 'button', class: 'st-btn st-small', text: '×', title: t('studio.animation.removeClip'), onclick: () => app.removeClip(name) }));
+  const loop = check(t('studio.animation.loop'), !!clip.loop, (on) => update((c) => { c.loop = on; }));
+
+  if (clip.type === 'frames') {
+    const editing = doc.frame?.clip === name;
+    return h('div', { class: 'st-card' }, head,
+      hint(`${t('studio.animation.framesOf', { part: clip.part || t('studio.animation.whole') })} · ${t('studio.animation.frameCount', { n: clip.frames.length })}`),
+      h('div', { class: 'st-row' },
+        field(t('studio.animation.fps'), number(clip.fps ?? 8, (v) => update((c) => { c.fps = Math.min(30, Math.max(1, v)); }), { min: 1, max: 30 })),
+        loop),
+      h('button', { type: 'button', class: `st-btn st-small${editing ? ' st-primary' : ''}`, text: editing ? t('studio.animation.doneFrames') : t('studio.animation.drawFrames'),
+        onclick: () => doc.setFrame(editing ? null : { clip: name, index: 0 }) }));
+  }
+
+  const tracks = clip.tracks ?? {};
+  const trackEls = Object.entries(tracks).map(([part, keys]) => h('div', { class: 'st-track' },
+    h('div', { class: 'st-card-head' },
+      h('span', { text: part ? `${t('studio.animation.part')}: ${part}` : t('studio.animation.whole') }),
+      h('button', { type: 'button', class: 'st-btn st-small', text: '×', onclick: () => update((c) => { delete c.tracks[part]; }) })),
+    h('div', { class: 'st-keys st-keys-head' }, ['keyT', 'keyRot', 'keyX', 'keyY', 'keyScale'].map((k) => h('span', { text: t(`studio.animation.${k}`) })), h('span')),
+    keys.map((key, i) => {
+      const num = (prop, fallback, attrs) => number(key[prop] ?? fallback, (v) => update((c) => {
+        c.tracks[part][i][prop] = v;
+        c.tracks[part].sort((a, b) => a.t - b.t);
+      }), { step: 'any', ...attrs });
+      return h('div', { class: 'st-keys' },
+        num('t', 0, { min: 0, step: 0.05 }), num('rot', 0), num('x', 0), num('y', 0), num('s', 1, { step: 0.05 }),
+        h('button', { type: 'button', class: 'st-btn st-small', text: '×', onclick: () => update((c) => { c.tracks[part].splice(i, 1); }) }));
+    }),
+    h('button', { type: 'button', class: 'st-btn st-small', text: `+ ${t('studio.animation.addKey')}`, onclick: () => update((c) => {
+      const last = c.tracks[part].at(-1);
+      c.tracks[part].push({ ...last, t: Math.round(((last?.t ?? 0) + 0.25) * 100) / 100 });
+    }) })));
+
+  const free = partOptions.filter(([p]) => !tracks[p]);
+  let chosen = free[0]?.[0];
+  return h('div', { class: 'st-card' }, head,
+    h('div', { class: 'st-row' },
+      field(t('studio.animation.duration'), number(clip.duration ?? 1, (v) => update((c) => { c.duration = Math.max(0.05, v); }), { min: 0.05, step: 0.05 })),
+      loop),
+    trackEls,
+    free.length ? h('div', { class: 'st-row' },
+      select(free, chosen, (v) => { chosen = v; }, { class: 'st-input' }),
+      h('button', { type: 'button', class: 'st-btn st-small', text: `+ ${t('studio.animation.addTrack')}`, onclick: () => update((c) => {
+        c.tracks ??= {};
+        c.tracks[chosen] = [{ t: 0, rot: 0 }, { t: (c.duration ?? 1) / 2, rot: 15 }, { t: c.duration ?? 1, rot: 0 }];
+      }) })) : null);
+}
+
+const ACTION_TYPES = ['PlaySound', 'PlayAnim', 'StopAnim', 'SetState', 'Wait'];
 
 function defaultAction(type, app) {
   switch (type) {
     case 'PlaySound': return { do: type, sound: 'pop' };
     case 'PlayAnim': return { do: type, clip: 'bounce' };
+    case 'StopAnim': return { do: type, clip: Object.keys(app.doc.def.clips ?? {})[0] ?? 'bounce' };
     case 'SetState': return { do: type, toggle: app.doc.states };
     case 'Wait': return { do: type, ms: 500 };
     default: return { do: type };
@@ -192,8 +297,12 @@ function actionRow(app, action, onchange) {
       });
       break;
     case 'PlayAnim':
-      param = select(CLIPS.map((c) => [c, c]), action.clip, (v) => onchange({ ...action, clip: v }));
+    case 'StopAnim': {
+      const own = Object.keys(app.doc.def.clips ?? {});
+      const names = action.do === 'PlayAnim' ? [...own, ...CLIPS] : own;
+      param = select(names.map((c) => [c, c]), action.clip, (v) => onchange({ ...action, clip: v }));
       break;
+    }
     case 'SetState': {
       const options = [['*', t('studio.reactions.toggle')], ...app.doc.states.map((s) => [s, s])];
       param = select(options, action.toggle ? '*' : action.to, (v) => onchange(v === '*'

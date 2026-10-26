@@ -1,8 +1,10 @@
 import { drawArt, shapePath, seedFor, INK } from './art.js';
 import { Backdrop } from './backdrop.js';
 import { matchesWhen } from './actions.js';
+import { partGroups, applyPartFx } from './compose.js';
 
 const MARGIN = 8; // room around cached art for outlines and squash
+const BOIL_SECONDS = 0.14;
 const NIGHT_SHADE = [24, 32, 90];
 const NIGHT_ALPHA = 0.45;
 
@@ -203,8 +205,10 @@ export class Renderer {
 
   #drawEntity(e, front) {
     const { ctx } = this;
-    const bitmap = this.#bitmap(e, front ? 'artFront' : 'art');
-    if (front && !bitmap) return;
+    const groups = partGroups(e.def, e.state, front ? 'artFront' : 'art', e.frames);
+    if (front && !groups.length) return;
+    // Line boil: cycle through slightly different redraws of the same drawing.
+    const boil = e.def.boil ? Math.floor(this.time / BOIL_SECONDS) % 3 : 0;
     const w = e.width;
     const h = e.height;
     const fx = e.fx;
@@ -226,20 +230,25 @@ export class Renderer {
       ctx.shadowColor = '#ffcf4a';
       ctx.shadowBlur = 28 * this.scale * this.dpr;
     }
-    if (bitmap) {
-      ctx.drawImage(bitmap, -w / 2 - MARGIN, -h - MARGIN, w + MARGIN * 2, h + MARGIN * 2);
-    } else {
+    if (!groups.length) {
       ctx.strokeStyle = INK;
       ctx.strokeRect(-w / 2, -h, w, h);
+    }
+    // Each group is a cached bitmap of the whole box; parts move around their pivot.
+    ctx.translate(-w / 2, -h);
+    for (const group of groups) {
+      if (!Array.isArray(group.shapes)) continue; // a broken frame must not stop the game
+      const fxPart = group.part ? e.partFx?.[group.part] : null;
+      ctx.save();
+      applyPartFx(ctx, group.pivot, fxPart);
+      ctx.drawImage(this.#bitmap(e, group, boil), -MARGIN, -MARGIN, w + MARGIN * 2, h + MARGIN * 2);
+      ctx.restore();
     }
     ctx.restore();
   }
 
-  // `field` is "art" or "artFront"; both map state → shapes, with "default" as fallback.
-  #bitmap(e, field) {
-    const art = e.def[field]?.[e.state] ?? e.def[field]?.default;
-    if (!art) return null;
-    const key = `${e.def.id}|${field}|${e.state}|${JSON.stringify(e.colors)}`;
+  #bitmap(e, group, boil) {
+    const key = `${e.def.id}|${group.key}|${boil}|${JSON.stringify(e.colors)}`;
     let bitmap = this.cache.get(key);
     if (!bitmap) {
       const px = this.scale * this.dpr;
@@ -249,7 +258,7 @@ export class Renderer {
       const ctx = bitmap.getContext('2d');
       ctx.scale(px, px);
       ctx.translate(MARGIN, MARGIN);
-      drawArt(ctx, art, (slot) => e.color(slot), { seed: seedFor(e.def.id) });
+      drawArt(ctx, group.shapes, (slot) => e.color(slot), { seed: seedFor(e.def.id), boil });
       this.cache.set(key, bitmap);
     }
     return bitmap;

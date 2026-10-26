@@ -50,6 +50,7 @@
     "id": "core.plant",
     "extends": "core.item.base",
     "name": { "tr": "Saksı Çiçeği", "en": "Potted Plant" },
+    "boil": true,
     "size": [96, 140],
     "colorSlots": { "pot": "#c8643b", "flower": "#f28dbb" },
     "art": {

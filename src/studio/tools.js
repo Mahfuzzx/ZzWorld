@@ -67,7 +67,7 @@ export class PenTool extends Tool {
 
   up() {
     if (!this.points) return;
-    this.doc.addShape(this.#shape());
+    this.doc.addShape(this.app.tagPart(this.#shape()));
     this.points = null;
   }
 
@@ -101,7 +101,7 @@ export class FillTool extends Tool {
   }
 
   up() {
-    if (this.points?.length >= 3) this.doc.addShape(this.#shape());
+    if (this.points?.length >= 3) this.doc.addShape(this.app.tagPart(this.#shape()));
     this.points = null;
   }
 
@@ -154,7 +154,7 @@ export class RectTool extends BoxTool {
   }
 
   commit(b) {
-    this.doc.addShape(this.shape(b));
+    this.doc.addShape(this.app.tagPart(this.shape(b)));
   }
 
   preview(ctx) {
@@ -223,7 +223,7 @@ export class MoveTool extends Tool {
     const moved = { tx: s.tx, ty: s.ty };
     s.tx = tx; // restore, then commit through change() so it can be undone
     s.ty = ty;
-    this.doc.change((def) => Object.assign(def[this.doc.layer][this.doc.state][index], moved), 'art');
+    this.doc.updateShape(index, (shape) => Object.assign(shape, moved));
     this.drag = null;
   }
 
@@ -328,5 +328,23 @@ export class LightTool extends Tool {
   }
 }
 
+// Sets the pivot (turning point) of the part being drawn.
+export class PivotTool extends Tool {
+  static id = 'pivot';
+  static icon = '<circle cx="24" cy="24" r="6" fill="#e8735a"/><path d="M24 6 V16 M24 32 V42 M6 24 H16 M32 24 H42"/><path d="M36 12 A17 17 0 0 1 40 30" stroke-dasharray="3 4"/>';
+
+  down(p) {
+    const part = this.app.part;
+    if (!part) {
+      this.app.toast(this.app.t('studio.animation.pickPart'));
+      return;
+    }
+    this.doc.change((def) => {
+      const entry = def.parts?.find((x) => x.id === part);
+      if (entry) entry.pivot = [Math.round(p.x), Math.round(p.y)];
+    });
+  }
+}
+
 export const DRAW_TOOLS = [PenTool, FillTool, RectTool, EllipseTool, EraserTool, MoveTool];
-export const AREA_TOOLS = [SurfaceTool, AreaTool, OpeningTool, LightTool];
+export const AREA_TOOLS = [SurfaceTool, AreaTool, OpeningTool, LightTool, PivotTool];

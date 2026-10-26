@@ -22,7 +22,11 @@ export class Entity {
     this.parentId = data.parent ?? null;
     this.restingOn = data.restingOn ?? null;
     this.order = data.order ?? 0;
-    this.fx = null; // transient animation offsets, set by the Animator
+    // Transient animation output, written by the Animator every frame.
+    this.fx = null;      // whole entity
+    this.partFx = null;  // { [part]: offsets }
+    this.frames = null;  // { [part]: flipbook frame }
+    this.idleClip = null;
     this.fall = null;
     this.vy = 0;
     this.behaviors = (def.behaviors ?? []).map((config, i) => {
