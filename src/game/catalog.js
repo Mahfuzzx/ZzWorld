@@ -17,7 +17,7 @@ export function placeableIds(defs, firstIds = []) {
   return ordered.filter((id) => {
     try {
       const def = defs.get(id);
-      if (def.abstract || def.kind) return false; // backdrops, songs… are not things
+      if (def.abstract || def.kind || def.catalog === false) return false; // backdrops, songs, parts… are not things
       lookup('entity', def.class ?? 'Item');
       return true;
     } catch {
@@ -36,7 +36,7 @@ function hudButton(className, icon, label) {
   return el;
 }
 
-export function createCatalog(root, { defs, userIds, scene, renderer, input, hud, onGesture }) {
+export function createCatalog(root, { defs, userIds, scene, renderer, input, hud, onGesture, onNewCharacter }) {
   const drawer = document.createElement('div');
   drawer.className = 'catalog';
   drawer.hidden = true;
@@ -50,6 +50,21 @@ export function createCatalog(root, { defs, userIds, scene, renderer, input, hud
   studio.title = 'ZzStudio';
   studio.innerHTML = '<svg viewBox="0 0 48 48"><path d="M10 38 L14 28 L32 10 L38 16 L20 34 Z" fill="#ffd166"/><path d="M10 38 L14 28 L20 34 Z" fill="#3b2f2a"/><path d="M30 38 H40 M35 33 V43"/></svg>';
   drawer.append(studio);
+
+  // Second tile: make a new character.
+  if (onNewCharacter) {
+    const person = document.createElement('button');
+    person.type = 'button';
+    person.className = 'catalog-tile catalog-person';
+    person.title = t('catalog.newCharacter');
+    person.setAttribute('aria-label', person.title);
+    person.innerHTML = '<svg viewBox="0 0 48 48"><circle cx="20" cy="15" r="9" fill="#f1c19a"/><path d="M8 44 V34 a12 12 0 0 1 24 0 V44" fill="#e04f3a"/><path d="M38 14 V26 M32 20 H44" stroke-width="4"/></svg>';
+    person.addEventListener('click', () => {
+      onGesture?.();
+      onNewCharacter();
+    });
+    drawer.append(person);
+  }
 
   for (const id of placeableIds(defs, userIds)) {
     const def = defs.get(id);

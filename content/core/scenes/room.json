@@ -10,6 +10,30 @@
   "entities": [
     { "def": "core.window", "x": 820, "y": 520 },
     {
+      "def": "core.wardrobe", "x": 110, "y": 790,
+      "contains": [
+        { "def": "core.wear.tshirt", "colors": { "main": "#ffd166" } },
+        { "def": "core.wear.dress" },
+        { "def": "core.wear.cap" },
+        { "def": "core.wear.headscarf" },
+        { "def": "core.wear.shorts" },
+        { "def": "core.wear.glasses" }
+      ]
+    },
+    { "def": "core.chair", "x": 600, "y": 800 },
+    {
+      "def": "core.character", "x": 1080, "y": 900,
+      "look": { "age": "child", "skin": "#d39468", "hair": "core.part.hair.curly", "hairColor": "#2b2220", "eyes": "round",
+        "top": "core.part.top.tshirt", "bottom": "core.part.bottom.shorts", "shoes": "core.part.shoes.sneakers",
+        "colors": { "top": "#4f8fe0", "bottom": "#ffd166", "shoes": "#ffffff" } }
+    },
+    {
+      "def": "core.character", "x": 1350, "y": 860,
+      "look": { "age": "adult", "skin": "#f1c19a", "hair": "core.part.hair.long", "hairColor": "#7a4a2a", "eyes": "lashes",
+        "top": "core.part.top.sweater", "bottom": "core.part.bottom.pants", "shoes": "core.part.shoes.boots", "face": "core.part.face.glasses",
+        "colors": { "top": "#3aa76d", "bottom": "#3b2f2a", "shoes": "#8a5a2b", "face": "#e04f3a" } }
+    },
+    {
       "def": "core.fridge", "x": 300, "y": 800,
       "contains": [
         { "def": "core.apple" },

@@ -1,4 +1,4 @@
-import { DefStore, loadPack, fetchJson, Scene, Animator, DayNight } from '../engine/index.js';
+import { DefStore, loadPack, fetchJson, Scene, Animator, DayNight, characters } from '../engine/index.js';
 import { Renderer } from '../engine/renderer.js';
 import { hitArt } from '../engine/art.js';
 import { Input } from '../engine/input.js';
@@ -7,6 +7,7 @@ import { MusicPlayer } from '../audio/music.js';
 import * as storage from '../shared/storage.js';
 import { createHud } from './hud.js';
 import { createCatalog } from './catalog.js';
+import { openCreator } from './creator.js';
 import { addUserDefs } from '../shared/pack.js';
 
 const WORLD_ID = 'world-1'; // single slot until the world picker exists
@@ -68,12 +69,35 @@ export async function startGame(root) {
     if (defs.has(songId)) music.playBackground(defs.get(songId));
   });
   let catalog = null;
+  // Characters are made and changed in the creator.
+  const editCharacter = (character) => openCreator({
+    root, defs, look: character.look, onGesture: unlockAudio,
+    onDone: (look) => {
+      character.setLook(look);
+      character.emit('dressed');
+    },
+  });
+  const newCharacter = () => openCreator({
+    root, defs, look: characters.randomLook(defs, 'child'), onGesture: unlockAudio,
+    onDone: (look) => {
+      const c = scene.spawn('core.character', { look });
+      scene.moveTo(c, renderer.viewLeft + renderer.visibleWidth / 2, c.height + 40);
+      scene.pickUp(c);
+      scene.drop(c);
+    },
+  });
   const input = new Input(canvas, renderer, {
     onFirstGesture: unlockAudio,
     isOverBin: (x, y) => catalog?.isOverBin(x, y) ?? false,
+    // in edit mode, tapping a character opens the creator
+    onTap: (e) => {
+      if (scene.mode !== 'edit' || !e.isCharacter) return false;
+      editCharacter(e);
+      return true;
+    },
   });
   const hud = createHud(root, { scene, dayNight, onGesture: unlockAudio, onModeChange: (mode) => catalog.setMode(mode) });
-  catalog = createCatalog(root, { defs, userIds, scene, renderer, input, hud, onGesture: unlockAudio });
+  catalog = createCatalog(root, { defs, userIds, scene, renderer, input, hud, onGesture: unlockAudio, onNewCharacter: newCharacter });
 
   // The sun/moon button is world-wide: every entity hears world:day / world:night.
   dayNight.onChange((night) => {

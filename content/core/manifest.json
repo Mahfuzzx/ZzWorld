@@ -5,6 +5,6 @@
   "author": "ZzWorld contributors",
   "license": "CC-BY-4.0",
   "homepage": "https://github.com/Mahfuzzx/ZzWorld",
-  "defs": ["base.json", "food.json", "toys.json", "furniture.json", "animated.json", "music.json", "songs.json", "backdrops.json"],
+  "defs": ["base.json", "food.json", "toys.json", "furniture.json", "animated.json", "music.json", "songs.json", "characters.json", "backdrops.json"],
   "scenes": ["room.json"]
 }

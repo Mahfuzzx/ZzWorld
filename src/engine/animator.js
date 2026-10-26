@@ -110,10 +110,9 @@ export class Animator {
     return this.#active.some((a) => a.entity === entity && a.name === name);
   }
 
-  // Keeps the entity's idle loop (def.idle: clip, or { state: clip }) running.
+  // Keeps the loop the entity wants right now (entity.wantedIdle()) running.
   syncIdle(entity) {
-    const idle = entity.def.idle;
-    const want = typeof idle === 'string' ? idle : idle?.[entity.state] ?? null;
+    const want = entity.wantedIdle();
     if (want === entity.idleClip && (!want || this.isPlaying(entity, want))) return;
     if (entity.idleClip && entity.idleClip !== want) this.stop(entity, entity.idleClip);
     entity.idleClip = want;

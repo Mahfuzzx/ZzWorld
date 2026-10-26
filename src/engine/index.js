@@ -2,12 +2,13 @@
 // Everything here is DOM-free so it can be unit tested with Node.
 import { register } from './registry.js';
 import { Entity, Item, Furniture, Decor, Structure } from './entity.js';
-import { Toggle, Container, Instrument } from './behaviors.js';
+import { Toggle, Container, Instrument, Wearable, Seat } from './behaviors.js';
+import { Character, Face, Wearer } from './character.js';
 import { SetState, PlayAnim, StopAnim, PlaySound, PlayMusic, StopMusic, Wait, Random } from './actions.js';
 import { Sky, Stars, SunMoon, Clouds, Art } from './backdrop.js';
 
-for (const cls of [Entity, Item, Furniture, Decor, Structure]) register('entity', cls);
-for (const cls of [Toggle, Container, Instrument]) register('behavior', cls);
+for (const cls of [Entity, Item, Furniture, Decor, Structure, Character]) register('entity', cls);
+for (const cls of [Toggle, Container, Instrument, Wearable, Seat, Face, Wearer]) register('behavior', cls);
 for (const cls of [SetState, PlayAnim, StopAnim, PlaySound, PlayMusic, StopMusic, Wait, Random]) register('action', cls);
 for (const cls of [Sky, Stars, SunMoon, Clouds, Art]) register('layer', cls);
 
@@ -17,7 +18,8 @@ export { Entity, Item, Furniture, Decor, Structure } from './entity.js';
 export { Backdrop, Layer } from './backdrop.js';
 export { DayNight } from './daynight.js';
 export { Behavior } from './behavior.js';
-export { Toggle, Container, Instrument } from './behaviors.js';
+export { Toggle, Container, Instrument, Wearable, Seat } from './behaviors.js';
+export * as characters from './character.js';
 export { Action, runActions } from './actions.js';
 export { Scene, MIN_TOUCH } from './scene.js';
 export { Animator, CLIPS, sampleTrack, clipDuration } from './animator.js';

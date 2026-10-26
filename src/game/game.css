@@ -139,6 +139,141 @@ body {
   pointer-events: none;
 }
 
+/* ---------- character creator ---------- */
+
+.creator {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 46%);
+  background: radial-gradient(circle at 30% 60%, #fff3d6, #f3dcb4 70%);
+  z-index: 5;
+}
+
+.creator-stage {
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+}
+
+.creator-side {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  min-height: 0;
+  padding: calc(env(safe-area-inset-top) + 96px) calc(env(safe-area-inset-right) + 16px) calc(env(safe-area-inset-bottom) + 16px) 8px;
+  gap: 12px;
+}
+
+.creator-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.creator-tab,
+.creator-tile,
+.creator-swatch {
+  border: 3px solid var(--ink);
+  background: #fff8e6;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.creator-tab {
+  width: 54px;
+  height: 54px;
+  padding: 6px;
+  border-radius: 16px;
+}
+
+.creator-tab.selected,
+.creator-tile.selected {
+  background: #ffd166;
+  box-shadow: 0 4px 0 var(--ink);
+}
+
+.creator-tab svg,
+.creator-tile svg {
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.creator-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  align-content: start;
+  gap: 10px;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 4px;
+}
+
+.creator-tile {
+  aspect-ratio: 1;
+  padding: 4px;
+  border-radius: 18px;
+}
+
+.creator-tile canvas {
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.creator-colors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.creator-swatch {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+}
+
+.creator-swatch.selected {
+  outline: 4px solid #e8735a;
+  outline-offset: 2px;
+}
+
+.creator-bar {
+  position: absolute;
+  top: calc(env(safe-area-inset-top) + 14px);
+  right: calc(env(safe-area-inset-right) + 14px);
+  display: flex;
+  gap: 14px;
+}
+
+.creator-done {
+  background: #9bcf53;
+}
+
+.creator-cancel {
+  background: #ffd9d2;
+}
+
+.catalog-person {
+  display: grid;
+  place-items: center;
+  background: #d8f1ff;
+}
+
+.catalog-person svg {
+  width: 64px;
+  height: 64px;
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
 .hud-sky.night {
   background: #2b3a6b;
 }

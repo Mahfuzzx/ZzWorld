@@ -236,7 +236,8 @@
   },
   "catalog": {
     "open": "Eşya ekle",
-    "trash": "Çöp kutusu"
+    "trash": "Çöp kutusu",
+    "newCharacter": "Yeni karakter"
   },
   "music": {
     "songs": "Şarkılarım",
@@ -288,6 +289,31 @@
       "snare": "Tak",
       "hat": "Tıs",
       "clap": "Alkış"
+    }
+  },
+  "creator": {
+    "preview": "Karakter (dokun: zıplar)",
+    "done": "Tamam",
+    "cancel": "Vazgeç",
+    "random": "Rastgele",
+    "none": "Hiçbiri",
+    "tabs": {
+      "age": "Yaş",
+      "skin": "Ten",
+      "hair": "Saç",
+      "eyes": "Gözler",
+      "top": "Üst",
+      "bottom": "Alt",
+      "shoes": "Ayakkabı",
+      "head": "Başlık",
+      "face": "Gözlük",
+      "extras": "Özellikler"
+    },
+    "ages": {
+      "baby": "Bebek",
+      "child": "Çocuk",
+      "adult": "Yetişkin",
+      "elder": "Yaşlı"
     }
   }
 }

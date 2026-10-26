@@ -1,0 +1,2631 @@
+[
+ {
+  "id": "core.character",
+  "extends": "core.base",
+  "class": "Character",
+  "catalog": false,
+  "name": {
+   "tr": "Karakter",
+   "en": "Character"
+  },
+  "behaviors": [
+   {
+    "type": "Face"
+   },
+   {
+    "type": "Wearer"
+   },
+   {
+    "type": "Container",
+    "slots": 1
+   }
+  ],
+  "idle": "idle",
+  "clips": {
+   "idle": {
+    "type": "keyframe",
+    "duration": 2.4,
+    "loop": true,
+    "tracks": {
+     "": [
+      {
+       "t": 0,
+       "sy": 1
+      },
+      {
+       "t": 1.2,
+       "sy": 1.018
+      },
+      {
+       "t": 2.4,
+       "sy": 1
+      }
+     ],
+     "head": [
+      {
+       "t": 0,
+       "rot": 0
+      },
+      {
+       "t": 0.6,
+       "rot": 3
+      },
+      {
+       "t": 1.2,
+       "rot": 0
+      },
+      {
+       "t": 1.8,
+       "rot": -3
+      },
+      {
+       "t": 2.4,
+       "rot": 0
+      }
+     ],
+     "armL": [
+      {
+       "t": 0,
+       "rot": 0
+      },
+      {
+       "t": 1.2,
+       "rot": 3
+      },
+      {
+       "t": 2.4,
+       "rot": 0
+      }
+     ],
+     "armR": [
+      {
+       "t": 0,
+       "rot": 0
+      },
+      {
+       "t": 1.2,
+       "rot": -3
+      },
+      {
+       "t": 2.4,
+       "rot": 0
+      }
+     ]
+    }
+   },
+   "wave": {
+    "type": "keyframe",
+    "duration": 1.3,
+    "tracks": {
+     "armR": [
+      {
+       "t": 0,
+       "rot": 0
+      },
+      {
+       "t": 0.25,
+       "rot": -150
+      },
+      {
+       "t": 0.45,
+       "rot": -115
+      },
+      {
+       "t": 0.65,
+       "rot": -150
+      },
+      {
+       "t": 0.85,
+       "rot": -115
+      },
+      {
+       "t": 1.05,
+       "rot": -150
+      },
+      {
+       "t": 1.3,
+       "rot": 0
+      }
+     ],
+     "head": [
+      {
+       "t": 0,
+       "rot": 0
+      },
+      {
+       "t": 0.4,
+       "rot": 6
+      },
+      {
+       "t": 1.3,
+       "rot": 0
+      }
+     ]
+    }
+   },
+   "jump": {
+    "type": "keyframe",
+    "duration": 0.55,
+    "tracks": {
+     "": [
+      {
+       "t": 0,
+       "y": 0,
+       "sy": 1
+      },
+      {
+       "t": 0.08,
+       "y": 0,
+       "sy": 0.92
+      },
+      {
+       "t": 0.28,
+       "y": -50,
+       "sy": 1.04
+      },
+      {
+       "t": 0.5,
+       "y": 0,
+       "sy": 0.95
+      },
+      {
+       "t": 0.55,
+       "y": 0,
+       "sy": 1
+      }
+     ],
+     "armL": [
+      {
+       "t": 0,
+       "rot": 0
+      },
+      {
+       "t": 0.28,
+       "rot": 140
+      },
+      {
+       "t": 0.55,
+       "rot": 0
+      }
+     ],
+     "armR": [
+      {
+       "t": 0,
+       "rot": 0
+      },
+      {
+       "t": 0.28,
+       "rot": -140
+      },
+      {
+       "t": 0.55,
+       "rot": 0
+      }
+     ]
+    }
+   },
+   "sit": {
+    "type": "keyframe",
+    "duration": 2.4,
+    "loop": true,
+    "tracks": {
+     "legL": [
+      {
+       "t": 0,
+       "sy": 0.42
+      },
+      {
+       "t": 2.4,
+       "sy": 0.42
+      }
+     ],
+     "legR": [
+      {
+       "t": 0,
+       "sy": 0.42
+      },
+      {
+       "t": 2.4,
+       "sy": 0.42
+      }
+     ],
+     "head": [
+      {
+       "t": 0,
+       "rot": 0
+      },
+      {
+       "t": 1.2,
+       "rot": 3
+      },
+      {
+       "t": 2.4,
+       "rot": 0
+      }
+     ]
+    }
+   },
+   "dangle": {
+    "type": "keyframe",
+    "duration": 0.6,
+    "tracks": {
+     "legL": [
+      {
+       "t": 0,
+       "rot": 0
+      },
+      {
+       "t": 0.15,
+       "rot": 12
+      },
+      {
+       "t": 0.3,
+       "rot": -8
+      },
+      {
+       "t": 0.45,
+       "rot": 5
+      },
+      {
+       "t": 0.6,
+       "rot": 0
+      }
+     ],
+     "legR": [
+      {
+       "t": 0,
+       "rot": 0
+      },
+      {
+       "t": 0.15,
+       "rot": -10
+      },
+      {
+       "t": 0.3,
+       "rot": 9
+      },
+      {
+       "t": 0.45,
+       "rot": -4
+      },
+      {
+       "t": 0.6,
+       "rot": 0
+      }
+     ],
+     "armL": [
+      {
+       "t": 0,
+       "rot": 0
+      },
+      {
+       "t": 0.2,
+       "rot": 40
+      },
+      {
+       "t": 0.6,
+       "rot": 0
+      }
+     ],
+     "armR": [
+      {
+       "t": 0,
+       "rot": 0
+      },
+      {
+       "t": 0.2,
+       "rot": -40
+      },
+      {
+       "t": 0.6,
+       "rot": 0
+      }
+     ]
+    }
+   }
+  },
+  "reactions": {
+   "tapHead": [
+    {
+     "do": "SetState",
+     "toggle": [
+      "happy",
+      "laugh",
+      "surprised",
+      "sleepy",
+      "sad",
+      "grumpy"
+     ]
+    },
+    {
+     "do": "PlaySound",
+     "sound": "bip",
+     "pitch": [
+      1.1,
+      1.5
+     ]
+    }
+   ],
+   "tapBody": [
+    {
+     "do": "PlayAnim",
+     "clip": "wave"
+    },
+    {
+     "do": "PlaySound",
+     "sound": "sparkle",
+     "volume": 0.4
+    }
+   ],
+   "pickUp": [
+    {
+     "do": "SetState",
+     "to": "surprised"
+    },
+    {
+     "do": "PlayAnim",
+     "clip": "dangle"
+    },
+    {
+     "do": "PlaySound",
+     "sound": "pop",
+     "pitch": [
+      1.2,
+      1.4
+     ]
+    }
+   ],
+   "land": [
+    {
+     "do": "SetState",
+     "to": "happy"
+    },
+    {
+     "do": "PlayAnim",
+     "clip": "squash",
+     "amp": 0.1
+    },
+    {
+     "do": "PlaySound",
+     "sound": "thud",
+     "volume": 0.4
+    }
+   ],
+   "dropInto": [
+    {
+     "do": "SetState",
+     "to": "happy"
+    }
+   ],
+   "dressed": [
+    {
+     "do": "SetState",
+     "to": "laugh"
+    },
+    {
+     "do": "PlayAnim",
+     "clip": "jump"
+    },
+    {
+     "do": "PlaySound",
+     "sound": "sparkle"
+    }
+   ]
+  }
+ },
+ {
+  "id": "core.part.hair.short",
+  "kind": "part",
+  "slot": "hair",
+  "name": {
+   "tr": "Kısa",
+   "en": "Short"
+  },
+  "art": {
+   "front": [
+    {
+     "type": "path",
+     "d": "M4 48 C2 2 98 2 96 48 C88 30 70 26 54 32 C40 24 18 28 4 48 Z",
+     "fill": "$hair"
+    }
+   ]
+  }
+ },
+ {
+  "id": "core.part.hair.long",
+  "kind": "part",
+  "slot": "hair",
+  "name": {
+   "tr": "Uzun",
+   "en": "Long"
+  },
+  "art": {
+   "back": [
+    {
+     "type": "path",
+     "d": "M2 40 C-2 -4 102 -4 98 40 L104 140 C86 152 14 152 -4 140 Z",
+     "fill": "$hair"
+    }
+   ],
+   "front": [
+    {
+     "type": "path",
+     "d": "M4 52 C2 0 98 0 96 52 C88 30 66 26 50 34 C34 26 12 30 4 52 Z",
+     "fill": "$hair"
+    }
+   ]
+  },
+  "ages": [
+   "child",
+   "adult",
+   "elder"
+  ]
+ },
+ {
+  "id": "core.part.hair.curly",
+  "kind": "part",
+  "slot": "hair",
+  "name": {
+   "tr": "Kıvırcık",
+   "en": "Curly"
+  },
+  "art": {
+   "back": [
+    {
+     "type": "circle",
+     "cx": 13,
+     "cy": 81,
+     "r": 17,
+     "fill": "$hair"
+    },
+    {
+     "type": "circle",
+     "cx": 4,
+     "cy": 64,
+     "r": 17,
+     "fill": "$hair"
+    },
+    {
+     "type": "circle",
+     "cx": 2,
+     "cy": 44,
+     "r": 17,
+     "fill": "$hair"
+    },
+    {
+     "type": "circle",
+     "cx": 9,
+     "cy": 25,
+     "r": 17,
+     "fill": "$hair"
+    },
+    {
+     "type": "circle",
+     "cx": 22,
+     "cy": 11,
+     "r": 17,
+     "fill": "$hair"
+    },
+    {
+     "type": "circle",
+     "cx": 40,
+     "cy": 3,
+     "r": 17,
+     "fill": "$hair"
+    },
+    {
+     "type": "circle",
+     "cx": 60,
+     "cy": 3,
+     "r": 17,
+     "fill": "$hair"
+    },
+    {
+     "type": "circle",
+     "cx": 78,
+     "cy": 11,
+     "r": 17,
+     "fill": "$hair"
+    },
+    {
+     "type": "circle",
+     "cx": 91,
+     "cy": 25,
+     "r": 17,
+     "fill": "$hair"
+    },
+    {
+     "type": "circle",
+     "cx": 98,
+     "cy": 44,
+     "r": 17,
+     "fill": "$hair"
+    },
+    {
+     "type": "circle",
+     "cx": 96,
+     "cy": 64,
+     "r": 17,
+     "fill": "$hair"
+    },
+    {
+     "type": "circle",
+     "cx": 87,
+     "cy": 81,
+     "r": 17,
+     "fill": "$hair"
+    }
+   ],
+   "front": [
+    {
+     "type": "circle",
+     "cx": 6,
+     "cy": 38,
+     "r": 16,
+     "fill": "$hair"
+    },
+    {
+     "type": "circle",
+     "cx": 15,
+     "cy": 20,
+     "r": 16,
+     "fill": "$hair"
+    },
+    {
+     "type": "circle",
+     "cx": 31,
+     "cy": 8,
+     "r": 16,
+     "fill": "$hair"
+    },
+    {
+     "type": "circle",
+     "cx": 50,
+     "cy": 4,
+     "r": 16,
+     "fill": "$hair"
+    },
+    {
+     "type": "circle",
+     "cx": 69,
+     "cy": 8,
+     "r": 16,
+     "fill": "$hair"
+    },
+    {
+     "type": "circle",
+     "cx": 85,
+     "cy": 20,
+     "r": 16,
+     "fill": "$hair"
+    },
+    {
+     "type": "circle",
+     "cx": 94,
+     "cy": 38,
+     "r": 16,
+     "fill": "$hair"
+    }
+   ]
+  }
+ },
+ {
+  "id": "core.part.hair.afro",
+  "kind": "part",
+  "slot": "hair",
+  "name": {
+   "tr": "Afro",
+   "en": "Afro"
+  },
+  "art": {
+   "back": [
+    {
+     "type": "circle",
+     "cx": 50,
+     "cy": 38,
+     "r": 72,
+     "fill": "$hair"
+    }
+   ],
+   "front": [
+    {
+     "type": "path",
+     "d": "M8 40 C14 14 86 14 92 40 C80 28 66 30 50 26 C34 30 20 28 8 40 Z",
+     "fill": "$hair"
+    }
+   ]
+  },
+  "ages": [
+   "child",
+   "adult",
+   "elder"
+  ]
+ },
+ {
+  "id": "core.part.hair.bun",
+  "kind": "part",
+  "slot": "hair",
+  "name": {
+   "tr": "Topuz",
+   "en": "Bun"
+  },
+  "art": {
+   "back": [
+    {
+     "type": "circle",
+     "cx": 50,
+     "cy": -6,
+     "r": 18,
+     "fill": "$hair"
+    }
+   ],
+   "front": [
+    {
+     "type": "path",
+     "d": "M4 48 C2 2 98 2 96 48 C88 30 70 26 54 32 C40 24 18 28 4 48 Z",
+     "fill": "$hair"
+    }
+   ]
+  },
+  "ages": [
+   "child",
+   "adult",
+   "elder"
+  ]
+ },
+ {
+  "id": "core.part.hair.ponytail",
+  "kind": "part",
+  "slot": "hair",
+  "name": {
+   "tr": "At kuyruğu",
+   "en": "Ponytail"
+  },
+  "art": {
+   "back": [
+    {
+     "type": "path",
+     "d": "M84 28 C122 36 122 100 100 122 C104 92 100 62 80 44 Z",
+     "fill": "$hair"
+    }
+   ],
+   "front": [
+    {
+     "type": "path",
+     "d": "M4 48 C2 2 98 2 96 48 C88 30 70 26 54 32 C40 24 18 28 4 48 Z",
+     "fill": "$hair"
+    }
+   ]
+  },
+  "ages": [
+   "child",
+   "adult",
+   "elder"
+  ]
+ },
+ {
+  "id": "core.part.hair.braids",
+  "kind": "part",
+  "slot": "hair",
+  "name": {
+   "tr": "Örgü",
+   "en": "Braids"
+  },
+  "art": {
+   "back": [
+    {
+     "type": "ellipse",
+     "cx": 2,
+     "cy": 70,
+     "rx": 9,
+     "ry": 9,
+     "fill": "$hair"
+    },
+    {
+     "type": "ellipse",
+     "cx": 98,
+     "cy": 70,
+     "rx": 9,
+     "ry": 9,
+     "fill": "$hair"
+    },
+    {
+     "type": "ellipse",
+     "cx": 2,
+     "cy": 86,
+     "rx": 9,
+     "ry": 9,
+     "fill": "$hair"
+    },
+    {
+     "type": "ellipse",
+     "cx": 98,
+     "cy": 86,
+     "rx": 9,
+     "ry": 9,
+     "fill": "$hair"
+    },
+    {
+     "type": "ellipse",
+     "cx": 2,
+     "cy": 102,
+     "rx": 9,
+     "ry": 9,
+     "fill": "$hair"
+    },
+    {
+     "type": "ellipse",
+     "cx": 98,
+     "cy": 102,
+     "rx": 9,
+     "ry": 9,
+     "fill": "$hair"
+    },
+    {
+     "type": "ellipse",
+     "cx": 2,
+     "cy": 118,
+     "rx": 9,
+     "ry": 9,
+     "fill": "$hair"
+    },
+    {
+     "type": "ellipse",
+     "cx": 98,
+     "cy": 118,
+     "rx": 9,
+     "ry": 9,
+     "fill": "$hair"
+    },
+    {
+     "type": "ellipse",
+     "cx": 2,
+     "cy": 134,
+     "rx": 9,
+     "ry": 9,
+     "fill": "$hair"
+    },
+    {
+     "type": "ellipse",
+     "cx": 98,
+     "cy": 134,
+     "rx": 9,
+     "ry": 9,
+     "fill": "$hair"
+    }
+   ],
+   "front": [
+    {
+     "type": "path",
+     "d": "M4 46 C2 4 98 4 96 46 C84 20 58 16 50 30 C42 16 16 20 4 46 Z",
+     "fill": "$hair"
+    }
+   ]
+  },
+  "ages": [
+   "child",
+   "adult",
+   "elder"
+  ]
+ },
+ {
+  "id": "core.part.hair.tuft",
+  "kind": "part",
+  "slot": "hair",
+  "name": {
+   "tr": "Perçem",
+   "en": "Tuft"
+  },
+  "art": {
+   "front": [
+    {
+     "type": "path",
+     "d": "M42 4 C44 -12 60 -12 58 2 C54 -4 48 -4 42 4 Z",
+     "fill": "$hair"
+    }
+   ]
+  },
+  "ages": [
+   "baby",
+   "child"
+  ]
+ },
+ {
+  "id": "core.part.top.tshirt",
+  "kind": "part",
+  "slot": "top",
+  "name": {
+   "tr": "Tişört",
+   "en": "T-shirt"
+  },
+  "art": {
+   "torso": [
+    {
+     "type": "rect",
+     "x": 0,
+     "y": 0,
+     "w": 100,
+     "h": 100,
+     "fill": "$main",
+     "r": 22
+    },
+    {
+     "type": "path",
+     "d": "M34 0 Q50 18 66 0",
+     "fill": null,
+     "lw": 3
+    }
+   ],
+   "arm": [
+    {
+     "type": "rect",
+     "x": 0,
+     "y": 0,
+     "w": 100,
+     "h": 40,
+     "fill": "$main",
+     "r": 40
+    }
+   ]
+  },
+  "color": "#e04f3a",
+  "item": "core.wear.tshirt",
+  "ages": [
+   "child",
+   "adult",
+   "elder"
+  ]
+ },
+ {
+  "id": "core.part.top.sweater",
+  "kind": "part",
+  "slot": "top",
+  "name": {
+   "tr": "Kazak",
+   "en": "Sweater"
+  },
+  "art": {
+   "torso": [
+    {
+     "type": "rect",
+     "x": 0,
+     "y": 0,
+     "w": 100,
+     "h": 100,
+     "fill": "$main",
+     "r": 22
+    },
+    {
+     "type": "path",
+     "d": "M0 70 H100",
+     "fill": null,
+     "lw": 3,
+     "alpha": 0.4
+    },
+    {
+     "type": "path",
+     "d": "M34 0 Q50 18 66 0",
+     "fill": null,
+     "lw": 3
+    }
+   ],
+   "arm": [
+    {
+     "type": "rect",
+     "x": 0,
+     "y": 0,
+     "w": 100,
+     "h": 86,
+     "fill": "$main",
+     "r": 40
+    }
+   ]
+  },
+  "color": "#4f8fe0",
+  "item": "core.wear.sweater",
+  "ages": [
+   "child",
+   "adult",
+   "elder"
+  ]
+ },
+ {
+  "id": "core.part.top.tank",
+  "kind": "part",
+  "slot": "top",
+  "name": {
+   "tr": "Atlet",
+   "en": "Tank top"
+  },
+  "art": {
+   "torso": [
+    {
+     "type": "rect",
+     "x": 10,
+     "y": 4,
+     "w": 80,
+     "h": 96,
+     "fill": "$main",
+     "r": 16
+    },
+    {
+     "type": "path",
+     "d": "M30 4 Q50 24 70 4",
+     "fill": null,
+     "lw": 3
+    }
+   ]
+  },
+  "color": "#ffd166",
+  "ages": [
+   "child",
+   "adult",
+   "elder"
+  ]
+ },
+ {
+  "id": "core.part.top.dress",
+  "kind": "part",
+  "slot": "top",
+  "name": {
+   "tr": "Elbise",
+   "en": "Dress"
+  },
+  "art": {
+   "torso": [
+    {
+     "type": "rect",
+     "x": 0,
+     "y": 0,
+     "w": 100,
+     "h": 100,
+     "fill": "$main",
+     "r": 22
+    },
+    {
+     "type": "path",
+     "d": "M34 0 Q50 18 66 0",
+     "fill": null,
+     "lw": 3
+    }
+   ],
+   "arm": [
+    {
+     "type": "rect",
+     "x": 0,
+     "y": 0,
+     "w": 100,
+     "h": 30,
+     "fill": "$main",
+     "r": 40
+    }
+   ],
+   "hips": [
+    {
+     "type": "path",
+     "d": "M8 0 L92 0 L106 62 L-6 62 Z",
+     "fill": "$main"
+    },
+    {
+     "type": "path",
+     "d": "M-2 50 L102 50",
+     "fill": null,
+     "lw": 3,
+     "alpha": 0.35
+    }
+   ]
+  },
+  "color": "#f28dbb",
+  "covers": [
+   "bottom"
+  ],
+  "item": "core.wear.dress",
+  "ages": [
+   "child",
+   "adult",
+   "elder"
+  ]
+ },
+ {
+  "id": "core.part.top.kaftan",
+  "kind": "part",
+  "slot": "top",
+  "name": {
+   "tr": "Kaftan",
+   "en": "Kaftan"
+  },
+  "art": {
+   "torso": [
+    {
+     "type": "rect",
+     "x": 0,
+     "y": 0,
+     "w": 100,
+     "h": 100,
+     "fill": "$main",
+     "r": 22
+    },
+    {
+     "type": "path",
+     "d": "M50 0 V100",
+     "fill": null,
+     "lw": 3,
+     "alpha": 0.5
+    },
+    {
+     "type": "path",
+     "d": "M40 0 Q50 14 60 0",
+     "fill": null,
+     "lw": 3
+    }
+   ],
+   "arm": [
+    {
+     "type": "rect",
+     "x": -6,
+     "y": 0,
+     "w": 112,
+     "h": 84,
+     "fill": "$main",
+     "r": 40
+    }
+   ],
+   "hips": [
+    {
+     "type": "path",
+     "d": "M6 0 L94 0 L100 94 L0 94 Z",
+     "fill": "$main"
+    },
+    {
+     "type": "path",
+     "d": "M50 0 V94",
+     "fill": null,
+     "lw": 3,
+     "alpha": 0.5
+    }
+   ]
+  },
+  "color": "#3aa76d",
+  "covers": [
+   "bottom"
+  ],
+  "ages": [
+   "child",
+   "adult",
+   "elder"
+  ]
+ },
+ {
+  "id": "core.part.top.sari",
+  "kind": "part",
+  "slot": "top",
+  "name": {
+   "tr": "Sari",
+   "en": "Sari"
+  },
+  "art": {
+   "torso": [
+    {
+     "type": "rect",
+     "x": 0,
+     "y": 0,
+     "w": 100,
+     "h": 100,
+     "fill": "$main",
+     "r": 22
+    },
+    {
+     "type": "path",
+     "d": "M0 8 L100 64 L100 100 L72 100 L0 30 Z",
+     "fill": "#ffffff",
+     "alpha": 0.35,
+     "stroke": null
+    }
+   ],
+   "arm": [
+    {
+     "type": "rect",
+     "x": 0,
+     "y": 0,
+     "w": 100,
+     "h": 34,
+     "fill": "$main",
+     "r": 40
+    }
+   ],
+   "hips": [
+    {
+     "type": "path",
+     "d": "M6 0 L94 0 L98 92 L2 92 Z",
+     "fill": "$main"
+    },
+    {
+     "type": "path",
+     "d": "M60 0 L80 92",
+     "fill": null,
+     "lw": 3,
+     "alpha": 0.4
+    }
+   ]
+  },
+  "color": "#f28c38",
+  "covers": [
+   "bottom"
+  ],
+  "ages": [
+   "adult",
+   "elder"
+  ]
+ },
+ {
+  "id": "core.part.top.onesie",
+  "kind": "part",
+  "slot": "top",
+  "name": {
+   "tr": "Tulum",
+   "en": "Onesie"
+  },
+  "art": {
+   "torso": [
+    {
+     "type": "rect",
+     "x": 0,
+     "y": 0,
+     "w": 100,
+     "h": 100,
+     "fill": "$main",
+     "r": 22
+    },
+    {
+     "type": "path",
+     "d": "M40 10 V90",
+     "fill": null,
+     "lw": 2,
+     "alpha": 0.4
+    }
+   ],
+   "arm": [
+    {
+     "type": "rect",
+     "x": 0,
+     "y": 0,
+     "w": 100,
+     "h": 44,
+     "fill": "$main",
+     "r": 40
+    }
+   ],
+   "hips": [
+    {
+     "type": "path",
+     "d": "M2 0 L98 0 L96 44 L4 44 Z",
+     "fill": "$main"
+    }
+   ]
+  },
+  "color": "#9fd3f2",
+  "covers": [
+   "bottom"
+  ],
+  "ages": [
+   "baby"
+  ]
+ },
+ {
+  "id": "core.part.bottom.pants",
+  "kind": "part",
+  "slot": "bottom",
+  "name": {
+   "tr": "Pantolon",
+   "en": "Trousers"
+  },
+  "art": {
+   "leg": [
+    {
+     "type": "rect",
+     "x": 0,
+     "y": 0,
+     "w": 100,
+     "h": 92,
+     "fill": "$main",
+     "r": 18
+    }
+   ],
+   "hips": [
+    {
+     "type": "rect",
+     "x": 0,
+     "y": 0,
+     "w": 100,
+     "h": 14,
+     "fill": "$main",
+     "r": 4
+    }
+   ]
+  },
+  "color": "#4f8fe0",
+  "item": "core.wear.pants",
+  "ages": [
+   "child",
+   "adult",
+   "elder"
+  ]
+ },
+ {
+  "id": "core.part.bottom.shorts",
+  "kind": "part",
+  "slot": "bottom",
+  "name": {
+   "tr": "Şort",
+   "en": "Shorts"
+  },
+  "art": {
+   "leg": [
+    {
+     "type": "rect",
+     "x": 0,
+     "y": 0,
+     "w": 100,
+     "h": 42,
+     "fill": "$main",
+     "r": 18
+    }
+   ],
+   "hips": [
+    {
+     "type": "rect",
+     "x": 0,
+     "y": 0,
+     "w": 100,
+     "h": 14,
+     "fill": "$main",
+     "r": 4
+    }
+   ]
+  },
+  "color": "#3aa76d",
+  "item": "core.wear.shorts",
+  "ages": [
+   "child",
+   "adult",
+   "elder"
+  ]
+ },
+ {
+  "id": "core.part.bottom.skirt",
+  "kind": "part",
+  "slot": "bottom",
+  "name": {
+   "tr": "Etek",
+   "en": "Skirt"
+  },
+  "art": {
+   "hips": [
+    {
+     "type": "path",
+     "d": "M4 0 L96 0 L106 48 L-6 48 Z",
+     "fill": "$main"
+    }
+   ]
+  },
+  "color": "#8a6fd8",
+  "item": "core.wear.skirt",
+  "ages": [
+   "child",
+   "adult",
+   "elder"
+  ]
+ },
+ {
+  "id": "core.part.bottom.diaper",
+  "kind": "part",
+  "slot": "bottom",
+  "name": {
+   "tr": "Bez",
+   "en": "Nappy"
+  },
+  "art": {
+   "hips": [
+    {
+     "type": "path",
+     "d": "M2 0 L98 0 L84 36 L16 36 Z",
+     "fill": "#ffffff"
+    }
+   ]
+  },
+  "color": "#ffffff",
+  "ages": [
+   "baby"
+  ]
+ },
+ {
+  "id": "core.part.shoes.sneakers",
+  "kind": "part",
+  "slot": "shoes",
+  "name": {
+   "tr": "Spor ayakkabı",
+   "en": "Trainers"
+  },
+  "art": {
+   "leg": [
+    {
+     "type": "ellipse",
+     "cx": 54,
+     "cy": 95,
+     "rx": 60,
+     "ry": 10,
+     "fill": "$main"
+    },
+    {
+     "type": "path",
+     "d": "M-4 99 H112",
+     "fill": null,
+     "lw": 3,
+     "stroke": "#ffffff"
+    }
+   ]
+  },
+  "color": "#ffffff",
+  "ages": [
+   "child",
+   "adult",
+   "elder"
+  ]
+ },
+ {
+  "id": "core.part.shoes.boots",
+  "kind": "part",
+  "slot": "shoes",
+  "name": {
+   "tr": "Bot",
+   "en": "Boots"
+  },
+  "art": {
+   "leg": [
+    {
+     "type": "rect",
+     "x": -4,
+     "y": 72,
+     "w": 108,
+     "h": 26,
+     "fill": "$main",
+     "r": 8
+    },
+    {
+     "type": "ellipse",
+     "cx": 60,
+     "cy": 96,
+     "rx": 56,
+     "ry": 9,
+     "fill": "$main"
+    }
+   ]
+  },
+  "color": "#8a5a2b",
+  "ages": [
+   "child",
+   "adult",
+   "elder"
+  ]
+ },
+ {
+  "id": "core.part.shoes.sandals",
+  "kind": "part",
+  "slot": "shoes",
+  "name": {
+   "tr": "Sandalet",
+   "en": "Sandals"
+  },
+  "art": {
+   "leg": [
+    {
+     "type": "ellipse",
+     "cx": 54,
+     "cy": 99,
+     "rx": 58,
+     "ry": 5,
+     "fill": "#c98a4b"
+    },
+    {
+     "type": "path",
+     "d": "M4 92 L96 92 M50 84 L50 98",
+     "fill": null,
+     "lw": 4,
+     "stroke": "$main"
+    }
+   ]
+  },
+  "color": "#e8735a",
+  "ages": [
+   "child",
+   "adult",
+   "elder"
+  ]
+ },
+ {
+  "id": "core.part.shoes.booties",
+  "kind": "part",
+  "slot": "shoes",
+  "name": {
+   "tr": "Patik",
+   "en": "Booties"
+  },
+  "art": {
+   "leg": [
+    {
+     "type": "ellipse",
+     "cx": 50,
+     "cy": 90,
+     "rx": 58,
+     "ry": 16,
+     "fill": "$main"
+    }
+   ]
+  },
+  "color": "#ffd166",
+  "ages": [
+   "baby"
+  ]
+ },
+ {
+  "id": "core.part.head.cap",
+  "kind": "part",
+  "slot": "head",
+  "name": {
+   "tr": "Şapka",
+   "en": "Cap"
+  },
+  "art": {
+   "hat": [
+    {
+     "type": "path",
+     "d": "M6 32 C8 -6 92 -6 94 32 Z",
+     "fill": "$main"
+    },
+    {
+     "type": "path",
+     "d": "M56 26 L116 32 L112 41 L54 34 Z",
+     "fill": "$main"
+    }
+   ]
+  },
+  "color": "#e04f3a",
+  "item": "core.wear.cap"
+ },
+ {
+  "id": "core.part.head.sunhat",
+  "kind": "part",
+  "slot": "head",
+  "name": {
+   "tr": "Hasır şapka",
+   "en": "Sun hat"
+  },
+  "art": {
+   "hat": [
+    {
+     "type": "ellipse",
+     "cx": 50,
+     "cy": 18,
+     "rx": 68,
+     "ry": 13,
+     "fill": "$main"
+    },
+    {
+     "type": "path",
+     "d": "M24 18 C24 -18 76 -18 76 18 Z",
+     "fill": "$main"
+    },
+    {
+     "type": "path",
+     "d": "M24 12 H76",
+     "fill": null,
+     "lw": 5,
+     "stroke": "#e8735a"
+    }
+   ]
+  },
+  "color": "#f2d38a",
+  "item": "core.wear.sunhat"
+ },
+ {
+  "id": "core.part.head.beanie",
+  "kind": "part",
+  "slot": "head",
+  "name": {
+   "tr": "Bere",
+   "en": "Beanie"
+  },
+  "art": {
+   "hat": [
+    {
+     "type": "path",
+     "d": "M4 40 C2 -14 98 -14 96 40 Z",
+     "fill": "$main"
+    },
+    {
+     "type": "rect",
+     "x": 2,
+     "y": 30,
+     "w": 96,
+     "h": 14,
+     "fill": "$main",
+     "r": 6
+    },
+    {
+     "type": "circle",
+     "cx": 50,
+     "cy": -12,
+     "r": 10,
+     "fill": "#ffffff"
+    }
+   ]
+  },
+  "color": "#8a6fd8",
+  "item": "core.wear.beanie"
+ },
+ {
+  "id": "core.part.head.headscarf",
+  "kind": "part",
+  "slot": "head",
+  "name": {
+   "tr": "Başörtüsü",
+   "en": "Headscarf"
+  },
+  "art": {
+   "back": [
+    {
+     "type": "path",
+     "d": "M-10 52 C-12 -14 112 -14 110 52 L116 130 C86 148 14 148 -16 130 Z",
+     "fill": "$main"
+    }
+   ],
+   "hat": [
+    {
+     "type": "path",
+     "d": "M2 56 C-4 -4 104 -4 98 56 C96 24 78 8 50 8 C22 8 4 24 2 56 Z",
+     "fill": "$main"
+    }
+   ]
+  },
+  "color": "#9fd3f2",
+  "hidesHair": true,
+  "item": "core.wear.headscarf",
+  "ages": [
+   "child",
+   "adult",
+   "elder"
+  ]
+ },
+ {
+  "id": "core.part.head.takke",
+  "kind": "part",
+  "slot": "head",
+  "name": {
+   "tr": "Takke",
+   "en": "Kufi"
+  },
+  "art": {
+   "hat": [
+    {
+     "type": "path",
+     "d": "M16 18 C20 -6 80 -6 84 18 Z",
+     "fill": "$main"
+    },
+    {
+     "type": "path",
+     "d": "M24 10 H76",
+     "fill": null,
+     "lw": 2,
+     "alpha": 0.5
+    }
+   ]
+  },
+  "color": "#ffffff",
+  "item": "core.wear.takke",
+  "ages": [
+   "child",
+   "adult",
+   "elder"
+  ]
+ },
+ {
+  "id": "core.part.head.crown",
+  "kind": "part",
+  "slot": "head",
+  "name": {
+   "tr": "Taç",
+   "en": "Crown"
+  },
+  "art": {
+   "hat": [
+    {
+     "type": "path",
+     "d": "M18 18 L22 -14 L36 4 L50 -18 L64 4 L78 -14 L82 18 Z",
+     "fill": "#ffd166"
+    },
+    {
+     "type": "circle",
+     "cx": 50,
+     "cy": 6,
+     "r": 4,
+     "fill": "#e04f3a"
+    }
+   ]
+  },
+  "color": "#ffd166"
+ },
+ {
+  "id": "core.part.face.glasses",
+  "kind": "part",
+  "slot": "face",
+  "name": {
+   "tr": "Gözlük",
+   "en": "Glasses"
+  },
+  "art": {
+   "face": [
+    {
+     "type": "circle",
+     "cx": 34,
+     "cy": 50,
+     "r": 13,
+     "fill": null,
+     "stroke": "$main",
+     "lw": 3
+    },
+    {
+     "type": "circle",
+     "cx": 66,
+     "cy": 50,
+     "r": 13,
+     "fill": null,
+     "stroke": "$main",
+     "lw": 3
+    },
+    {
+     "type": "path",
+     "d": "M47 49 Q50 46 53 49 M21 48 L4 44 M79 48 L96 44",
+     "fill": null,
+     "lw": 3,
+     "stroke": "$main"
+    }
+   ]
+  },
+  "color": "#3b2f2a",
+  "item": "core.wear.glasses"
+ },
+ {
+  "id": "core.part.face.sunglasses",
+  "kind": "part",
+  "slot": "face",
+  "name": {
+   "tr": "Güneş gözlüğü",
+   "en": "Sunglasses"
+  },
+  "art": {
+   "face": [
+    {
+     "type": "ellipse",
+     "cx": 34,
+     "cy": 50,
+     "rx": 14,
+     "ry": 11,
+     "fill": "#3b2f2a"
+    },
+    {
+     "type": "ellipse",
+     "cx": 66,
+     "cy": 50,
+     "rx": 14,
+     "ry": 11,
+     "fill": "#3b2f2a"
+    },
+    {
+     "type": "path",
+     "d": "M48 48 L52 48 M20 47 L4 44 M80 47 L96 44",
+     "fill": null,
+     "lw": 3,
+     "stroke": "$main"
+    }
+   ]
+  },
+  "color": "#e04f3a",
+  "ages": [
+   "child",
+   "adult",
+   "elder"
+  ]
+ },
+ {
+  "id": "core.part.extra.freckles",
+  "kind": "part",
+  "slot": "extra",
+  "name": {
+   "tr": "Çil",
+   "en": "Freckles"
+  },
+  "art": {
+   "skin": [
+    {
+     "type": "circle",
+     "cx": 22,
+     "cy": 60,
+     "r": 1.8,
+     "fill": "#a0603a",
+     "stroke": null,
+     "alpha": 0.8
+    },
+    {
+     "type": "circle",
+     "cx": 28,
+     "cy": 66,
+     "r": 1.8,
+     "fill": "#a0603a",
+     "stroke": null,
+     "alpha": 0.8
+    },
+    {
+     "type": "circle",
+     "cx": 18,
+     "cy": 68,
+     "r": 1.8,
+     "fill": "#a0603a",
+     "stroke": null,
+     "alpha": 0.8
+    },
+    {
+     "type": "circle",
+     "cx": 72,
+     "cy": 60,
+     "r": 1.8,
+     "fill": "#a0603a",
+     "stroke": null,
+     "alpha": 0.8
+    },
+    {
+     "type": "circle",
+     "cx": 78,
+     "cy": 66,
+     "r": 1.8,
+     "fill": "#a0603a",
+     "stroke": null,
+     "alpha": 0.8
+    },
+    {
+     "type": "circle",
+     "cx": 82,
+     "cy": 58,
+     "r": 1.8,
+     "fill": "#a0603a",
+     "stroke": null,
+     "alpha": 0.8
+    }
+   ]
+  }
+ },
+ {
+  "id": "core.part.extra.vitiligo",
+  "kind": "part",
+  "slot": "extra",
+  "name": {
+   "tr": "Vitiligo",
+   "en": "Vitiligo"
+  },
+  "art": {
+   "skin": [
+    {
+     "type": "ellipse",
+     "cx": 70,
+     "cy": 30,
+     "rx": 14,
+     "ry": 10,
+     "fill": "#fbefe4",
+     "stroke": null,
+     "alpha": 0.9
+    },
+    {
+     "type": "ellipse",
+     "cx": 28,
+     "cy": 72,
+     "rx": 10,
+     "ry": 8,
+     "fill": "#fbefe4",
+     "stroke": null,
+     "alpha": 0.9
+    }
+   ]
+  }
+ },
+ {
+  "id": "core.part.extra.beard",
+  "kind": "part",
+  "slot": "extra",
+  "name": {
+   "tr": "Sakal",
+   "en": "Beard"
+  },
+  "art": {
+   "front": [
+    {
+     "type": "path",
+     "d": "M10 58 C12 106 88 106 90 58 C78 80 64 76 50 84 C36 76 22 80 10 58 Z",
+     "fill": "$hair"
+    }
+   ]
+  },
+  "ages": [
+   "adult",
+   "elder"
+  ]
+ },
+ {
+  "id": "core.part.extra.mustache",
+  "kind": "part",
+  "slot": "extra",
+  "name": {
+   "tr": "Bıyık",
+   "en": "Moustache"
+  },
+  "art": {
+   "front": [
+    {
+     "type": "path",
+     "d": "M30 66 C38 58 46 60 50 64 C54 60 62 58 70 66 C62 68 56 66 50 68 C44 66 38 68 30 66 Z",
+     "fill": "$hair"
+    }
+   ]
+  },
+  "ages": [
+   "adult",
+   "elder"
+  ]
+ },
+ {
+  "id": "core.part.extra.hearingaid",
+  "kind": "part",
+  "slot": "extra",
+  "name": {
+   "tr": "İşitme cihazı",
+   "en": "Hearing aid"
+  },
+  "art": {
+   "face": [
+    {
+     "type": "path",
+     "d": "M97 40 C110 42 110 64 98 66",
+     "fill": null,
+     "lw": 5,
+     "stroke": "$main"
+    },
+    {
+     "type": "circle",
+     "cx": 98,
+     "cy": 66,
+     "r": 4,
+     "fill": "$main"
+    }
+   ]
+  },
+  "color": "#4f8fe0"
+ },
+ {
+  "id": "core.part.extra.prosthesis",
+  "kind": "part",
+  "slot": "extra",
+  "name": {
+   "tr": "Protez bacak",
+   "en": "Prosthetic leg"
+  },
+  "art": {
+   "legR": [
+    {
+     "type": "rect",
+     "x": 10,
+     "y": 0,
+     "w": 80,
+     "h": 22,
+     "fill": "#c9d3d8",
+     "r": 10
+    },
+    {
+     "type": "rect",
+     "x": 40,
+     "y": 18,
+     "w": 20,
+     "h": 70,
+     "fill": "#9aa7ae",
+     "r": 6
+    },
+    {
+     "type": "ellipse",
+     "cx": 58,
+     "cy": 92,
+     "rx": 46,
+     "ry": 8,
+     "fill": "#6b7780"
+    }
+   ]
+  },
+  "replaces": [
+   "legR"
+  ],
+  "ages": [
+   "child",
+   "adult",
+   "elder"
+  ]
+ },
+ {
+  "id": "core.wear.tshirt",
+  "extends": "core.item.base",
+  "name": {
+   "tr": "Tişört",
+   "en": "T-shirt"
+  },
+  "size": [
+   80,
+   62
+  ],
+  "colorSlots": {
+   "main": "#e04f3a"
+  },
+  "behaviors": [
+   {
+    "type": "Wearable",
+    "part": "core.part.top.tshirt"
+   }
+  ],
+  "art": {
+   "default": [
+    {
+     "type": "path",
+     "d": "M14 10 L30 2 Q40 10 50 2 L66 10 L78 24 L64 28 L62 60 L18 60 L16 28 L2 24 Z",
+     "fill": "$main"
+    },
+    {
+     "type": "path",
+     "d": "M30 2 Q40 12 50 2",
+     "fill": null,
+     "lw": 2.5
+    }
+   ]
+  }
+ },
+ {
+  "id": "core.wear.sweater",
+  "extends": "core.item.base",
+  "name": {
+   "tr": "Kazak",
+   "en": "Sweater"
+  },
+  "size": [
+   80,
+   62
+  ],
+  "colorSlots": {
+   "main": "#4f8fe0"
+  },
+  "behaviors": [
+   {
+    "type": "Wearable",
+    "part": "core.part.top.sweater"
+   }
+  ],
+  "art": {
+   "default": [
+    {
+     "type": "path",
+     "d": "M14 10 L30 2 Q40 10 50 2 L66 10 L78 40 L64 44 L62 60 L18 60 L16 44 L2 40 Z",
+     "fill": "$main"
+    },
+    {
+     "type": "path",
+     "d": "M30 2 Q40 12 50 2",
+     "fill": null,
+     "lw": 2.5
+    }
+   ]
+  }
+ },
+ {
+  "id": "core.wear.dress",
+  "extends": "core.item.base",
+  "name": {
+   "tr": "Elbise",
+   "en": "Dress"
+  },
+  "size": [
+   76,
+   80
+  ],
+  "colorSlots": {
+   "main": "#f28dbb"
+  },
+  "behaviors": [
+   {
+    "type": "Wearable",
+    "part": "core.part.top.dress"
+   }
+  ],
+  "art": {
+   "default": [
+    {
+     "type": "path",
+     "d": "M26 2 L50 2 L54 24 L74 76 L2 76 L22 24 Z",
+     "fill": "$main"
+    },
+    {
+     "type": "path",
+     "d": "M28 2 Q38 10 48 2",
+     "fill": null,
+     "lw": 2.5
+    }
+   ]
+  }
+ },
+ {
+  "id": "core.wear.pants",
+  "extends": "core.item.base",
+  "name": {
+   "tr": "Pantolon",
+   "en": "Trousers"
+  },
+  "size": [
+   62,
+   80
+  ],
+  "colorSlots": {
+   "main": "#4f8fe0"
+  },
+  "behaviors": [
+   {
+    "type": "Wearable",
+    "part": "core.part.bottom.pants"
+   }
+  ],
+  "art": {
+   "default": [
+    {
+     "type": "path",
+     "d": "M6 2 L56 2 L58 78 L36 78 L31 26 L26 78 L4 78 Z",
+     "fill": "$main"
+    }
+   ]
+  }
+ },
+ {
+  "id": "core.wear.shorts",
+  "extends": "core.item.base",
+  "name": {
+   "tr": "Şort",
+   "en": "Shorts"
+  },
+  "size": [
+   64,
+   44
+  ],
+  "colorSlots": {
+   "main": "#3aa76d"
+  },
+  "behaviors": [
+   {
+    "type": "Wearable",
+    "part": "core.part.bottom.shorts"
+   }
+  ],
+  "art": {
+   "default": [
+    {
+     "type": "path",
+     "d": "M4 2 L60 2 L62 42 L36 42 L32 20 L28 42 L2 42 Z",
+     "fill": "$main"
+    }
+   ]
+  }
+ },
+ {
+  "id": "core.wear.skirt",
+  "extends": "core.item.base",
+  "name": {
+   "tr": "Etek",
+   "en": "Skirt"
+  },
+  "size": [
+   70,
+   48
+  ],
+  "colorSlots": {
+   "main": "#8a6fd8"
+  },
+  "behaviors": [
+   {
+    "type": "Wearable",
+    "part": "core.part.bottom.skirt"
+   }
+  ],
+  "art": {
+   "default": [
+    {
+     "type": "path",
+     "d": "M14 2 L56 2 L68 46 L2 46 Z",
+     "fill": "$main"
+    }
+   ]
+  }
+ },
+ {
+  "id": "core.wear.cap",
+  "extends": "core.item.base",
+  "name": {
+   "tr": "Şapka",
+   "en": "Cap"
+  },
+  "size": [
+   74,
+   40
+  ],
+  "colorSlots": {
+   "main": "#e04f3a"
+  },
+  "behaviors": [
+   {
+    "type": "Wearable",
+    "part": "core.part.head.cap"
+   }
+  ],
+  "art": {
+   "default": [
+    {
+     "type": "path",
+     "d": "M4 34 C6 0 54 0 56 34 Z",
+     "fill": "$main"
+    },
+    {
+     "type": "path",
+     "d": "M50 28 L72 32 L70 38 L48 36 Z",
+     "fill": "$main"
+    }
+   ]
+  }
+ },
+ {
+  "id": "core.wear.sunhat",
+  "extends": "core.item.base",
+  "name": {
+   "tr": "Hasır şapka",
+   "en": "Sun hat"
+  },
+  "size": [
+   90,
+   40
+  ],
+  "colorSlots": {
+   "main": "#f2d38a"
+  },
+  "behaviors": [
+   {
+    "type": "Wearable",
+    "part": "core.part.head.sunhat"
+   }
+  ],
+  "art": {
+   "default": [
+    {
+     "type": "ellipse",
+     "cx": 45,
+     "cy": 30,
+     "rx": 43,
+     "ry": 8,
+     "fill": "$main"
+    },
+    {
+     "type": "path",
+     "d": "M24 30 C24 2 66 2 66 30 Z",
+     "fill": "$main"
+    }
+   ]
+  }
+ },
+ {
+  "id": "core.wear.beanie",
+  "extends": "core.item.base",
+  "name": {
+   "tr": "Bere",
+   "en": "Beanie"
+  },
+  "size": [
+   60,
+   54
+  ],
+  "colorSlots": {
+   "main": "#8a6fd8"
+  },
+  "behaviors": [
+   {
+    "type": "Wearable",
+    "part": "core.part.head.beanie"
+   }
+  ],
+  "art": {
+   "default": [
+    {
+     "type": "path",
+     "d": "M4 50 C2 8 58 8 56 50 Z",
+     "fill": "$main"
+    },
+    {
+     "type": "circle",
+     "cx": 30,
+     "cy": 9,
+     "r": 8,
+     "fill": "#ffffff"
+    }
+   ]
+  }
+ },
+ {
+  "id": "core.wear.headscarf",
+  "extends": "core.item.base",
+  "name": {
+   "tr": "Başörtüsü",
+   "en": "Headscarf"
+  },
+  "size": [
+   74,
+   56
+  ],
+  "colorSlots": {
+   "main": "#9fd3f2"
+  },
+  "behaviors": [
+   {
+    "type": "Wearable",
+    "part": "core.part.head.headscarf"
+   }
+  ],
+  "art": {
+   "default": [
+    {
+     "type": "path",
+     "d": "M4 52 C4 2 70 2 70 52 Q37 40 4 52 Z",
+     "fill": "$main"
+    }
+   ]
+  }
+ },
+ {
+  "id": "core.wear.takke",
+  "extends": "core.item.base",
+  "name": {
+   "tr": "Takke",
+   "en": "Kufi"
+  },
+  "size": [
+   60,
+   30
+  ],
+  "colorSlots": {
+   "main": "#ffffff"
+  },
+  "behaviors": [
+   {
+    "type": "Wearable",
+    "part": "core.part.head.takke"
+   }
+  ],
+  "art": {
+   "default": [
+    {
+     "type": "path",
+     "d": "M4 28 C8 0 52 0 56 28 Z",
+     "fill": "$main"
+    }
+   ]
+  }
+ },
+ {
+  "id": "core.wear.glasses",
+  "extends": "core.item.base",
+  "name": {
+   "tr": "Gözlük",
+   "en": "Glasses"
+  },
+  "size": [
+   70,
+   28
+  ],
+  "colorSlots": {
+   "main": "#3b2f2a"
+  },
+  "behaviors": [
+   {
+    "type": "Wearable",
+    "part": "core.part.face.glasses"
+   }
+  ],
+  "art": {
+   "default": [
+    {
+     "type": "circle",
+     "cx": 18,
+     "cy": 16,
+     "r": 11,
+     "fill": null,
+     "stroke": "$main",
+     "lw": 3
+    },
+    {
+     "type": "circle",
+     "cx": 52,
+     "cy": 16,
+     "r": 11,
+     "fill": null,
+     "stroke": "$main",
+     "lw": 3
+    },
+    {
+     "type": "path",
+     "d": "M29 15 Q35 11 41 15",
+     "fill": null,
+     "lw": 3,
+     "stroke": "$main"
+    }
+   ]
+  }
+ },
+ {
+  "id": "core.wardrobe",
+  "extends": "core.furniture.base",
+  "name": {
+   "tr": "Gardırop",
+   "en": "Wardrobe"
+  },
+  "size": [
+   190,
+   320
+  ],
+  "colorSlots": {
+   "wood": "#c98a4b"
+  },
+  "behaviors": [
+   {
+    "type": "Toggle",
+    "states": [
+     "closed",
+     "open"
+    ]
+   },
+   {
+    "type": "Container",
+    "slots": 6,
+    "rows": 3,
+    "area": [
+     16,
+     24,
+     158,
+     270
+    ],
+    "visibleIn": "open"
+   }
+  ],
+  "art": {
+   "closed": [
+    {
+     "type": "rect",
+     "x": 0,
+     "y": 0,
+     "w": 190,
+     "h": 310,
+     "fill": "$wood",
+     "r": 10
+    },
+    {
+     "type": "path",
+     "d": "M95 10 V300",
+     "fill": null,
+     "lw": 3
+    },
+    {
+     "type": "circle",
+     "cx": 84,
+     "cy": 160,
+     "r": 5,
+     "fill": "#ffd166"
+    },
+    {
+     "type": "circle",
+     "cx": 106,
+     "cy": 160,
+     "r": 5,
+     "fill": "#ffd166"
+    },
+    {
+     "type": "rect",
+     "x": 10,
+     "y": 306,
+     "w": 18,
+     "h": 14,
+     "fill": "$wood"
+    },
+    {
+     "type": "rect",
+     "x": 162,
+     "y": 306,
+     "w": 18,
+     "h": 14,
+     "fill": "$wood"
+    }
+   ],
+   "open": [
+    {
+     "type": "rect",
+     "x": 0,
+     "y": 0,
+     "w": 190,
+     "h": 310,
+     "fill": "$wood",
+     "r": 10
+    },
+    {
+     "type": "rect",
+     "x": 12,
+     "y": 12,
+     "w": 166,
+     "h": 286,
+     "fill": "#f3e2c4",
+     "r": 4
+    },
+    {
+     "type": "path",
+     "d": "M12 114 H178 M12 206 H178",
+     "fill": null,
+     "lw": 5,
+     "stroke": "#a8743e"
+    },
+    {
+     "type": "path",
+     "d": "M30 30 H160",
+     "fill": null,
+     "lw": 4,
+     "stroke": "#9aa7ae"
+    },
+    {
+     "type": "rect",
+     "x": 10,
+     "y": 306,
+     "w": 18,
+     "h": 14,
+     "fill": "$wood"
+    },
+    {
+     "type": "rect",
+     "x": 162,
+     "y": 306,
+     "w": 18,
+     "h": 14,
+     "fill": "$wood"
+    }
+   ]
+  },
+  "reactions": {
+   "stateEnter:open": [
+    {
+     "do": "PlaySound",
+     "sound": "creak",
+     "pitch": [
+      1,
+      1.2
+     ]
+    }
+   ],
+   "stateEnter:closed": [
+    {
+     "do": "PlayAnim",
+     "clip": "shake",
+     "amp": 3
+    },
+    {
+     "do": "PlaySound",
+     "sound": "thud",
+     "volume": 0.5,
+     "pitch": 1.3
+    }
+   ]
+  }
+ },
+ {
+  "id": "core.chair",
+  "extends": "core.furniture.base",
+  "name": {
+   "tr": "Sandalye",
+   "en": "Chair"
+  },
+  "size": [
+   100,
+   170
+  ],
+  "colorSlots": {
+   "wood": "#c98a4b",
+   "cushion": "#e8735a"
+  },
+  "behaviors": [
+   {
+    "type": "Seat",
+    "area": [
+     10,
+     70,
+     80,
+     20
+    ],
+    "pose": "sit"
+   }
+  ],
+  "art": {
+   "default": [
+    {
+     "type": "rect",
+     "x": 12,
+     "y": 0,
+     "w": 76,
+     "h": 70,
+     "fill": "$wood",
+     "r": 10
+    },
+    {
+     "type": "rect",
+     "x": 22,
+     "y": 12,
+     "w": 56,
+     "h": 44,
+     "fill": "$cushion",
+     "r": 8
+    },
+    {
+     "type": "rect",
+     "x": 14,
+     "y": 96,
+     "w": 12,
+     "h": 74,
+     "fill": "$wood",
+     "r": 4
+    },
+    {
+     "type": "rect",
+     "x": 74,
+     "y": 96,
+     "w": 12,
+     "h": 74,
+     "fill": "$wood",
+     "r": 4
+    },
+    {
+     "type": "rect",
+     "x": 4,
+     "y": 82,
+     "w": 92,
+     "h": 18,
+     "fill": "$wood",
+     "r": 6
+    },
+    {
+     "type": "rect",
+     "x": 8,
+     "y": 76,
+     "w": 84,
+     "h": 10,
+     "fill": "$cushion",
+     "r": 5
+    }
+   ]
+  },
+  "reactions": {
+   "tap": [
+    {
+     "do": "PlayAnim",
+     "clip": "wobble",
+     "amp": 0.08
+    }
+   ]
+  }
+ }
+]

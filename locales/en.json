@@ -236,7 +236,8 @@
   },
   "catalog": {
     "open": "Add things",
-    "trash": "Bin"
+    "trash": "Bin",
+    "newCharacter": "New character"
   },
   "music": {
     "songs": "My songs",
@@ -288,6 +289,31 @@
       "snare": "Tak",
       "hat": "Tss",
       "clap": "Clap"
+    }
+  },
+  "creator": {
+    "preview": "Character (tap: jumps)",
+    "done": "Done",
+    "cancel": "Cancel",
+    "random": "Random",
+    "none": "None",
+    "tabs": {
+      "age": "Age",
+      "skin": "Skin",
+      "hair": "Hair",
+      "eyes": "Eyes",
+      "top": "Top",
+      "bottom": "Bottom",
+      "shoes": "Shoes",
+      "head": "Hat",
+      "face": "Glasses",
+      "extras": "Features"
+    },
+    "ages": {
+      "baby": "Baby",
+      "child": "Child",
+      "adult": "Adult",
+      "elder": "Elder"
     }
   }
 }

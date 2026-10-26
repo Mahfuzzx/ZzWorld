@@ -1,6 +1,16 @@
 import { Behavior } from './behavior.js';
 import { degreeToMidi } from '../audio/theory.js';
 
+// A piece of clothing (or glasses…) lying in the world: { "part": "core.part.top.tshirt" }.
+// Its colour slot "main" becomes the garment's colour when worn.
+export class Wearable extends Behavior {
+  static type = 'Wearable';
+
+  get partId() {
+    return this.config.part;
+  }
+}
+
 // Something you can play: tapping one of its keys plays a note. Notes come
 // from a scale, so whatever a child plays sounds fine.
 //   { "type": "Instrument", "instrument": "xylophone", "scale": "pentatonic",
@@ -109,5 +119,28 @@ export class Container extends Behavior {
         const y = clamp(top + cellH * (row + 1), top + item.height, top + ah);
         e.scene.moveTo(item, x, y);
       });
+  }
+}
+
+// A chair, sofa or bed: characters dropped on it sit (or lie) there.
+//   { "type": "Seat", "area": [x, y, w, h], "pose": "sit" } — y + h is the seat surface
+export class Seat extends Container {
+  static type = 'Seat';
+
+  accepts(item) {
+    if (!item.isCharacter || item.isAncestorOf(this.entity)) return false;
+    return this.contents().length < this.slots;
+  }
+
+  layout() {
+    const e = this.entity;
+    const [ax, ay, aw, ah] = this.area;
+    const left = e.x - e.width / 2 + ax;
+    const surface = e.y - e.height + ay + ah;
+    const people = this.contents().sort((a, b) => a.order - b.order);
+    people.forEach((c, i) => {
+      // hips on the seat surface; the sit pose folds the legs
+      e.scene.moveTo(c, left + (aw * (i + 0.5)) / people.length, surface + c.legHeight);
+    });
   }
 }

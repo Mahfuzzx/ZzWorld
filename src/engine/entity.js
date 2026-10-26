@@ -93,6 +93,16 @@ export class Entity {
     return false;
   }
 
+  get isCharacter() {
+    return false;
+  }
+
+  // The clip that should loop right now (def.idle: a clip, or { state: clip }).
+  wantedIdle() {
+    const idle = this.def.idle;
+    return typeof idle === 'string' ? idle : idle?.[this.state] ?? null;
+  }
+
   // May the child throw this into the bin (edit mode)?
   canDelete() {
     return this.mobility !== 'locked';

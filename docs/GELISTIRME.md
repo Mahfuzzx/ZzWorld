@@ -28,6 +28,18 @@ testler de yakalar.
 Tarayıcı konsolunda `zz` nesnesi hata ayıklama için açıktır (ör. `zz.scene`,
 `zz.save()`).
 
+## Üretilen içerik
+
+Bazı core içerikler elle değil scriptle üretilir; çizimi değiştirmek için scripti düzenleyip
+yeniden çalıştırın:
+
+```
+node tools/gen-characters.mjs
+```
+
+(`content/core/defs/characters.json`: karakter, saç/kıyafet/aksesuar parçaları,
+giysiler, gardırop, sandalye.)
+
 ## Neden HTTPS?
 
 Service worker (çevrimdışı oyun, cihaza kurma) ve mikrofon yalnızca güvenli bağlamda

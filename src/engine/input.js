@@ -8,11 +8,13 @@ const EDGE_SPEED = 900; // scene units / s while dragging near a screen edge
 
 export class Input {
   // isOverBin(clientX, clientY): optional; dropping there removes the entity.
-  constructor(canvas, renderer, { onFirstGesture, isOverBin } = {}) {
+  // onTap(entity): optional; return true to handle a tap instead of the entity.
+  constructor(canvas, renderer, { onFirstGesture, isOverBin, onTap } = {}) {
     this.canvas = canvas;
     this.renderer = renderer;
     this.onFirstGesture = onFirstGesture;
     this.isOverBin = isOverBin;
+    this.onTap = onTap;
     this.pointers = new Map();
 
     canvas.addEventListener('pointerdown', (ev) => this.#down(ev));
@@ -95,7 +97,7 @@ export class Input {
       // where on the entity it was tapped (local box), e.g. which xylophone key
       const e = ptr.entity;
       const p = this.renderer.toScene(ev.clientX, ev.clientY);
-      e.emit('tap', { local: { x: p.x - (e.x - e.width / 2), y: p.y - (e.y - e.height) } });
+      if (!this.onTap?.(e)) e.emit('tap', { local: { x: p.x - (e.x - e.width / 2), y: p.y - (e.y - e.height) } });
     } else if (ptr.mode === 'drag') {
       const e = ptr.entity;
       const target = this.scene.dropTargetFor(e);

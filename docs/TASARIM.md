@@ -650,15 +650,49 @@ Beden çeşitliliği (boy/kilo seçenekleri) ilk sürümde yoktur.
 Katmanlar: iç giyim yok; üst, alt, tek parça (elbise), ayakkabı, şapka/baş örtüsü,
 gözlük, aksesuar.
 
-### 14.5 Yüz ifadeleri (öneri)
-- İfadeler (mutlu, şaşkın, üzgün, uykulu, kızgın, gülen) yüz parçalarının durumlarıdır.
-- Karakterin yüzüne dokununca ifade değişir; olaylar da ifadeyi değiştirir
-  (yemek yiyince mutlu, uyurken gözler kapalı).
+### 14.5 Yüz ifadeleri
+- İfadeler (mutlu, gülen, şaşkın, uykulu, üzgün, somurtkan) karakterin durumlarıdır.
+- Başa dokununca ifade değişir; olaylar da ifadeyi değiştirir (kaldırınca şaşkın,
+  yere konunca mutlu, giydirilince güler).
 
 ### 14.6 Davranış
 - Standart animasyon klip seti (`idle`, `walk`, `sit`, `sleep`, `eat`, `wave`…); böylece
   kullanıcının çizdiği her karakter tüm eşyalarla uyumlu çalışır.
 - Karakter elinde nesne tutabilir, oturabilir, yatabilir, araca binebilir.
+
+### 14.7 Uygulanan (5. adım)
+
+**Görünümden çizime.** Karakter (`class: "Character"`) sabit bir çizim yerine bir
+**görünüm** (`look`) taşır: yaş, ten, saç ve saç rengi, göz stili ve rengi, üst, alt,
+ayakkabı, başlık, gözlük, ekstralar ve parça renkleri. Görünüm, her ifade için bir çizim
+ve parçalar (baş, kollar, bacaklar) içeren sıradan bir tanıma dönüştürülür; çizim,
+animasyon ve dokunma diğer nesnelerle aynı yoldan çalışır.
+
+**Parça kütüphanesi** (`"kind": "part"`, `content/core/defs/characters.json`): her parça
+vücut bölgelerine (baş, gövde, kol, bacak, kalça) 0–100'lük kutularda çizilir, kutular
+yaşa göre esnetilir; böylece bir şapka her yaşa uyar. Alanlar: `slot`, `ages`, `color`,
+`covers` (elbise altı örter), `hidesHair` (başörtüsü), `replaces` (protez bacak),
+`item` (çıkarılınca yere düşen giysi). Renkler: `$main`, `$skin`, `$hair`, `$eye`.
+
+- Saç: kısa, uzun, kıvırcık, afro, topuz, at kuyruğu, örgü, perçem (bebek); 13 renk.
+- Üst: tişört, kazak, atlet, elbise, kaftan, sari, bebek tulumu. Alt: pantolon, şort,
+  etek, bez. Ayakkabı: spor, bot, sandalet, patik.
+- Başlık: şapka, hasır şapka, bere, başörtüsü, takke, taç. Gözlük, güneş gözlüğü.
+- Özellikler: çil, vitiligo, sakal, bıyık, işitme cihazı, protez bacak; 10 ten rengi.
+
+**Davranışlar:** `Face` (başa/gövdeye dokunma), `Wearer` (kıyafet giydirme; eskisi yere
+düşer), elde tutma (sağ eldeki `Container`), `Seat` (sandalye; karakter oturur, `sit`
+pozu). Klipler: `idle`, `wave`, `jump`, `sit`, `dangle` (kaldırılınca bacak sallama).
+
+**Karakter oluşturucu:** yazısız tam ekran; yaş, ten, saç, gözler, üst, alt, ayakkabı,
+başlık, gözlük ve özellikler sekmeleri; resimli seçenekler, renk paletleri, zar
+(rastgele), canlı önizleme (dokununca zıplar). Düzenleme modunda katalogdaki kişi karosu
+yeni karakter yapar; bir karaktere dokunmak onu oluşturucuda açar.
+
+**Odada:** gardırop (içinde kıyafetler), sandalye ve iki karakter.
+
+Parça çizimleri `tools/gen-characters.mjs` ile üretilir. Henüz yok: yürüme, yatma, yemek
+yeme; ZzStudio'da kendi saç/kıyafet parçalarını çizme; tekerlekli sandalye (araçlarla).
 
 ## 15. ZzStudio — Nesne Üretici
 
@@ -788,7 +822,8 @@ Okuma bilmeyen çocuk geçemez.
    çizim, line boil, sürekli döngüler; ZzStudio'da Animasyon sekmesi (§8.4, §15.3).
 4. ✅ **Ses ve müzik:** ses üretici, mikrofon kaydı, döngü/melodi yapıcı, oyun içi ses
    motoru, radyo ve ksilofon (§10.3). Oyun içi mikrofon 10. adımda (ebeveyn kapısıyla).
-5. **Karakterler:** parçalı karakter ve karakter oluşturucu.
+5. ✅ **Karakterler:** parçalı karakter, 4 yaş, ifadeler, kıyafet ve aksesuarlar, giydirme,
+   oturma, elde tutma ve karakter oluşturucu (§14.7).
 6. **İlk ev:** 2–3 oda, 15–20 core nesne.
 7. **Sokak ve mahalle:** yan kaydırma, kavşaklar, portal, şehir haritası.
 8. **Ajanlar:** evcil ve ortam hayvanları.
@@ -799,7 +834,6 @@ Okuma bilmeyen çocuk geçemez.
 ## 21. Açık Sorular
 
 - Çizim katmanı: Canvas 2D mi, PixiJS mi (prototipte tablet üzerinde ölçülecek).
-- Yüz ifadeleri önerisi (§14.5) onay bekliyor.
 - "ZzStudio" adı onay bekliyor.
 
 ## 22. Karar Günlüğü
