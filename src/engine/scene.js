@@ -37,6 +37,10 @@ export class Scene {
   static deserialize(defs, data, services) {
     const scene = new Scene(defs, data, services);
     for (const entity of data.entities ?? []) scene.spawn(entity.def, entity);
+    // Re-apply container layouts so saves follow layout rule changes.
+    for (const entity of scene.entities.values()) {
+      for (const b of entity.behaviors) b.layout?.();
+    }
     return scene;
   }
 

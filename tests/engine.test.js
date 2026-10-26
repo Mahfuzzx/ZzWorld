@@ -210,3 +210,16 @@ test('scenes saved before layers keep their wall colours', () => {
   assert.equal(scene.interior.wall, '#123456');
   assert.equal(scene.serialize().interior.wall, '#123456');
 });
+
+test('contents never stick out of their container', () => {
+  const scene = emptyScene();
+  const basket = scene.spawn('core.basket', { x: 500, y: 800 });
+  for (const def of ['core.ball', 'core.apple', 'core.apple']) scene.putInto(basket, scene.spawn(def));
+  const inside = (item, box) => item.x - item.width / 2 >= box.x - box.width / 2 - 0.01
+    && item.x + item.width / 2 <= box.x + box.width / 2 + 0.01
+    && item.y - item.height >= box.y - box.height - 0.01
+    && item.y <= box.y + 0.01;
+  const contents = scene.childrenOf(basket);
+  assert.equal(contents.length, 3);
+  for (const item of contents) assert.ok(inside(item, basket), `${item.def.id} at ${item.x} sticks out`);
+});

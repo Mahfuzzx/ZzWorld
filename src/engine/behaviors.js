@@ -75,12 +75,17 @@ export class Container extends Behavior {
     const cellH = ah / rows;
     const left = e.x - e.width / 2 + ax;
     const top = e.y - e.height + ay;
+    const clamp = (v, min, max) => Math.min(Math.max(v, min), max);
     this.contents()
       .sort((a, b) => a.order - b.order)
       .forEach((item, i) => {
         const col = i % cols;
         const row = Math.floor(i / cols);
-        e.scene.moveTo(item, left + cellW * (col + 0.5), top + cellH * (row + 1));
+        // Items wider than their cell may overlap their neighbours, but never
+        // stick out of the container's area.
+        const x = clamp(left + cellW * (col + 0.5), left + item.width / 2, left + aw - item.width / 2);
+        const y = clamp(top + cellH * (row + 1), top + item.height, top + ah);
+        e.scene.moveTo(item, x, y);
       });
   }
 }
