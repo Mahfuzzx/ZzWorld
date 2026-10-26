@@ -5,16 +5,41 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta http-equiv="Content-Security-Policy"
         content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; media-src 'self' blob:; font-src 'self'; connect-src 'self'; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+  <meta name="theme-color" content="#f6e7c8">
   <title>ZzStudio</title>
   <link rel="icon" href="../icons/icon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="../src/game/game.css">
+  <link rel="stylesheet" href="../src/studio/studio.css">
 </head>
-<body>
-  <main id="app">
-    <div class="splash">
-      <img class="splash-logo" src="../icons/icon.svg" alt="" width="160" height="160">
-      <h1 class="splash-title">ZzStudio</h1>
-    </div>
+<body class="studio">
+  <header class="st-top">
+    <button type="button" class="st-btn" id="btn-library" data-i18n="studio.library.title"></button>
+    <input class="st-name" id="obj-name" autocomplete="off" spellcheck="false">
+    <div class="st-states" id="states"></div>
+    <span class="st-spacer"></span>
+    <button type="button" class="st-btn st-icon" id="btn-undo" data-i18n-title="studio.undo">↶</button>
+    <button type="button" class="st-btn st-icon" id="btn-redo" data-i18n-title="studio.redo">↷</button>
+    <button type="button" class="st-btn st-primary" id="btn-test" data-i18n="studio.test"></button>
+    <a class="st-btn" href="../" data-i18n="studio.backToGame"></a>
+  </header>
+
+  <main class="st-main">
+    <nav class="st-tools" id="tools"></nav>
+    <section class="st-canvas-wrap">
+      <canvas id="editor"></canvas>
+      <div class="st-canvas-bar" id="canvas-bar"></div>
+    </section>
+    <aside class="st-panel">
+      <div class="st-tabs" id="tabs"></div>
+      <div class="st-panel-body" id="panel"></div>
+    </aside>
   </main>
+
+  <footer class="st-bottom" id="palette"></footer>
+
+  <dialog class="st-dialog" id="library"></dialog>
+  <dialog class="st-dialog st-preview" id="preview"></dialog>
+
+  <script type="module" src="../src/studio/main.js"></script>
 </body>
 </html>

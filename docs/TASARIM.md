@@ -617,6 +617,34 @@ yazı kullanılabilir (TR/EN).
 ### 15.2 Test
 Her editörde canlı önizleme ve nesneyi bir test sahnesinde deneme.
 
+### 15.3 v1'de olanlar
+- **Çizim araçları** (polimorfik `Tool` sınıfları): kalem (basınca duyarlı,
+  perfect-freehand), dolgu (serbest kapalı alan), dikdörtgen ve elips (Rough.js ile el
+  çizimi görünüm), silgi, seç-taşı (öne/arkaya, çoğalt, sil, seçiliyi yeniden boyama),
+  geri al / yinele.
+- **Alan araçları:** yüzey, kap alanı, açıklık (pencere camı), ışık kaynağı.
+- **Durumlar** (sekmeler; ekle, çift dokunarak yeniden adlandır, sil) ve kaplar için
+  **ön çizim** katmanı.
+- **Paneller:** Genel (TR/EN ad, kimlik, tür, boyut, hareketlilik), Renkler (renk
+  yuvaları), Davranış (Toggle, Container, yüzeyler, açıklık, ışık), Tepkiler
+  (olay → eylem listesi: ses, hareket, durum, bekle).
+- **Nesnelerim:** yeni, hazır (core) nesneden kopya, sil; paket adı; `.zzpack` dışa ve
+  içe aktarma. Nesneler değiştikçe IndexedDB'ye kendiliğinden kaydedilir.
+- **Dene:** nesne, gerçek oyun motoruyla çalışan bir deneme odasında açılır.
+- **Oyunla bağlantı:** Stüdyo'da kaydedilen nesneler oyunun düzenleme modundaki
+  katalogda ilk sırada görünür.
+- Henüz yok: parça/pivot sistemi, animasyon ve ses editörleri (sonraki adımlar).
+
+### 15.4 Oyunda katalog ve çöp kutusu
+- Düzenleme modunda "+" düğmesi alttan bir katalog çekmecesi açar; ilk karo ZzStudio'yu
+  açar, sonra kullanıcının nesneleri, sonra core nesneler gelir.
+- Karoya dokununca yeni nesne odanın ortasına düşer; karo yukarı çekilince nesne
+  parmakla birlikte odaya taşınır.
+- Sol üstteki çöp kutusuna bırakılan nesne kaldırılır; içindekiler ve üstündekiler
+  yere düşer. Yapılar (pencere, kapı) çöpe atılamaz; eski yerine dönüp "hayır" der
+  gibi sallanır.
+- Silinmiş bir Stüdyo nesnesini içeren kayıtlar yine açılır; o nesne atlanır.
+
 ## 16. İçerik Paketleri
 
 - Paket biçimi: **`.zzpack`** (ZIP). İçinde `manifest.json` (kimlik, ad, yazar,
@@ -683,7 +711,9 @@ Okuma bilmeyen çocuk geçemez.
    - ✅ Oyun/düzenleme modu, hareketlilik kuralları, katmanlı arka plan (gökyüzü,
      yıldızlar, güneş/ay, bulutlar, manzara), pencere açıklıkları, güneş/ay düğmesi,
      gece gölgesi ve ışıklar.
-2. **ZzStudio v1:** el çizimi, durumlar, çapa noktaları, tepki editörü, dışa aktarma.
+2. ✅ **ZzStudio v1:** el çizimi, durumlar, alanlar, tepki editörü, dışa/içe aktarma,
+   deneme odası; oyunda katalog ve çöp kutusu; core nesnelere el çizimi efekti (§15.3).
+   Parça/pivot ve çapa noktaları animasyon adımına kaldı.
 3. **Animasyon:** hazır hareketler, parça animasyonu, kare kare çizim, line boil.
 4. **Ses ve müzik:** ses üretici, döngü/melodi yapıcı, oyun içi ses motoru.
 5. **Karakterler:** parçalı karakter ve karakter oluşturucu.

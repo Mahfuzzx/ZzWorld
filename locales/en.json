@@ -13,5 +13,145 @@
     "play": "Play mode",
     "day": "Make it day",
     "night": "Make it night"
+  },
+  "studio": {
+    "undo": "Undo",
+    "redo": "Redo",
+    "test": "Try it",
+    "backToGame": "Back to game",
+    "saved": "Saved",
+    "tools": {
+      "pen": "Pen",
+      "fill": "Fill",
+      "rect": "Rectangle",
+      "ellipse": "Ellipse",
+      "eraser": "Eraser",
+      "move": "Select and move",
+      "surface": "Surface (things can be put on it)",
+      "area": "Container area (contents sit here)",
+      "opening": "Opening (window glass)",
+      "light": "Light source"
+    },
+    "states": {
+      "add": "Add state",
+      "rename": "New name for this state:",
+      "remove": "Delete this state",
+      "newName": "state"
+    },
+    "canvas": {
+      "back": "Back drawing",
+      "front": "Front drawing",
+      "areas": "Show areas",
+      "toFront": "Bring to front",
+      "toBack": "Send to back",
+      "duplicate": "Duplicate",
+      "delete": "Delete"
+    },
+    "tabs": {
+      "general": "General",
+      "colors": "Colours",
+      "behavior": "Behaviour",
+      "reactions": "Reactions"
+    },
+    "general": {
+      "id": "Id",
+      "nameTr": "Name (Turkish)",
+      "nameEn": "Name (English)",
+      "class": "Kind",
+      "width": "Width",
+      "height": "Height",
+      "mobility": "When it can be moved",
+      "classes": {
+        "Item": "Item",
+        "Furniture": "Furniture",
+        "Decor": "Wall decoration",
+        "Structure": "Structure (window, door)"
+      },
+      "mobilities": {
+        "default": "By kind",
+        "free": "Always",
+        "edit": "Only in edit mode",
+        "locked": "Never"
+      }
+    },
+    "colors": {
+      "slots": "Paintable colours",
+      "add": "Add colour slot",
+      "hint": "Parts drawn with a slot can be repainted in the game. Dashed swatches below are slots.",
+      "slotName": "slot",
+      "remove": "Delete",
+      "brush": "Size",
+      "none": "No fill"
+    },
+    "behavior": {
+      "toggle": "Tapping switches to the next state",
+      "toggleHint": "States are the tabs at the top (e.g. closed / open).",
+      "container": "Things can be put inside",
+      "slots": "How many things",
+      "rows": "Shelves",
+      "visibleIn": "Inside is visible",
+      "always": "Always",
+      "areaHint": "Draw where the contents sit with the \"Container area\" tool. Draw parts in front of them on the \"Front drawing\" layer.",
+      "surfaces": "Surfaces",
+      "surfacesHint": "Draw places things can stand on with the \"Surface\" tool. Tap a surface to remove it.",
+      "opening": "Opening",
+      "openingHint": "Draw the window glass with the \"Opening\" tool; the world outside shows through in the game.",
+      "light": "Light",
+      "lightHint": "Place the light source with the \"Light\" tool.",
+      "radius": "Radius",
+      "when": "Shines when",
+      "clear": "Remove",
+      "count": "{n}"
+    },
+    "reactions": {
+      "hint": "Reactions from the kind (pick up, land) already work; the ones you add here replace them.",
+      "add": "Add event",
+      "addAction": "Add action",
+      "remove": "Remove",
+      "events": {
+        "tap": "When tapped",
+        "pickUp": "When picked up",
+        "drop": "When dropped",
+        "land": "When it lands",
+        "received": "When something is put in",
+        "world:night": "When night falls",
+        "world:day": "When day comes",
+        "stateEnter": "When it becomes: {s}"
+      },
+      "actions": {
+        "PlaySound": "Play sound",
+        "PlayAnim": "Move",
+        "SetState": "Change state",
+        "Wait": "Wait (ms)"
+      },
+      "toggle": "(next one)"
+    },
+    "library": {
+      "title": "My objects",
+      "new": "New object",
+      "copy": "Copy a ready-made object",
+      "empty": "No objects yet. Draw a new one!",
+      "delete": "Delete",
+      "confirmDelete": "Delete \"{name}\"?",
+      "pack": "Pack name",
+      "packHint": "Lowercase letters, digits and dashes (e.g. annas-things). New object ids start with it.",
+      "export": "Export pack",
+      "import": "Import pack",
+      "imported": "{n} objects imported",
+      "importError": "The pack could not be opened:\n{error}",
+      "close": "Close",
+      "newName": "New object",
+      "copySuffix": "(copy)",
+      "core": "Ready-made objects",
+      "mine": "My objects"
+    },
+    "preview": {
+      "title": "Test room",
+      "close": "Close"
+    }
+  },
+  "catalog": {
+    "open": "Add things",
+    "trash": "Bin"
   }
 }

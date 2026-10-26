@@ -7,10 +7,12 @@ const EDGE_PX = 70;
 const EDGE_SPEED = 900; // scene units / s while dragging near a screen edge
 
 export class Input {
-  constructor(canvas, renderer, { onFirstGesture } = {}) {
+  // isOverBin(clientX, clientY): optional; dropping there removes the entity.
+  constructor(canvas, renderer, { onFirstGesture, isOverBin } = {}) {
     this.canvas = canvas;
     this.renderer = renderer;
     this.onFirstGesture = onFirstGesture;
+    this.isOverBin = isOverBin;
     this.pointers = new Map();
 
     canvas.addEventListener('pointerdown', (ev) => this.#down(ev));
@@ -37,6 +39,26 @@ export class Input {
       : { ...base, mode: 'pan', lastX: ev.clientX });
   }
 
+  // Continues a drag that started elsewhere (e.g. pulling a new thing out of the
+  // catalog): the entity follows this pointer from now on.
+  adopt(ev, entity) {
+    this.canvas.setPointerCapture(ev.pointerId);
+    const p = this.renderer.toScene(ev.clientX, ev.clientY);
+    this.pointers.set(ev.pointerId, {
+      mode: 'drag',
+      entity,
+      startX: ev.clientX,
+      startY: ev.clientY,
+      clientX: ev.clientX,
+      clientY: ev.clientY,
+      time: performance.now(),
+      grabX: 0,
+      grabY: entity.height / 2,
+    });
+    this.scene.moveTo(entity, p.x, p.y + entity.height / 2);
+    this.scene.pickUp(entity);
+  }
+
   #move(ev) {
     const ptr = this.pointers.get(ev.pointerId);
     if (!ptr) return;
@@ -45,6 +67,7 @@ export class Input {
 
     if (ptr.mode === 'press' && Math.hypot(ev.clientX - ptr.startX, ev.clientY - ptr.startY) > DRAG_PX) {
       if (ptr.entity.canDrag(this.scene.mode)) {
+        ptr.origin = { x: ptr.entity.x, y: ptr.entity.y };
         this.scene.pickUp(ptr.entity);
         ptr.mode = 'drag';
       } else {
@@ -71,9 +94,22 @@ export class Input {
     if (ptr.mode === 'press' && !cancelled && performance.now() - ptr.time < TAP_MS) {
       ptr.entity.emit('tap');
     } else if (ptr.mode === 'drag') {
-      const target = this.scene.dropTargetFor(ptr.entity);
-      if (target) this.scene.putInto(target, ptr.entity);
-      else this.scene.drop(ptr.entity);
+      const e = ptr.entity;
+      const target = this.scene.dropTargetFor(e);
+      if (this.isOverBin?.(ev.clientX, ev.clientY)) {
+        if (e.canDelete()) {
+          this.scene.remove(e);
+        } else {
+          // Not allowed in the bin (windows, doors): go back and shake "no".
+          if (ptr.origin) this.scene.moveTo(e, ptr.origin.x, ptr.origin.y);
+          this.scene.drop(e);
+          this.scene.services.animator?.play(e, 'shake');
+        }
+      } else if (target) {
+        this.scene.putInto(target, e);
+      } else {
+        this.scene.drop(e);
+      }
     } else if (ptr.mode === 'pan') {
       this.scene.changed();
     }

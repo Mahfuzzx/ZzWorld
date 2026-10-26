@@ -36,7 +36,18 @@ export class Scene {
   // Restores a scene saved with serialize().
   static deserialize(defs, data, services) {
     const scene = new Scene(defs, data, services);
-    for (const entity of data.entities ?? []) scene.spawn(entity.def, entity);
+    for (const entity of data.entities ?? []) {
+      try {
+        scene.spawn(entity.def, entity);
+      } catch (err) {
+        // e.g. an object made in ZzStudio that was deleted since
+        console.warn(`Skipping ${entity.def}:`, err.message);
+      }
+    }
+    for (const e of scene.entities.values()) {
+      if (e.parentId && !scene.get(e.parentId)) e.parentId = null;
+      if (e.restingOn && !scene.get(e.restingOn)) e.restingOn = null;
+    }
     // Re-apply container layouts so saves follow layout rule changes.
     for (const entity of scene.entities.values()) {
       for (const b of entity.behaviors) b.layout?.();
@@ -78,6 +89,19 @@ export class Scene {
 
   get(id) {
     return this.entities.get(id) ?? null;
+  }
+
+  // Removes an entity. Its contents and whatever rests on it stay in the scene
+  // and fall down instead of disappearing with it.
+  remove(entity) {
+    entity.parent?.release(entity);
+    for (const d of this.dependantsOf(entity)) {
+      if (d.parentId === entity.id) entity.release(d);
+      d.restingOn = null;
+      this.drop(d);
+    }
+    this.entities.delete(entity.id);
+    this.changed();
   }
 
   childrenOf(entity) {

@@ -76,6 +76,69 @@ body {
   background: #ffd166;
 }
 
+.hud-btn[hidden] {
+  display: none;
+}
+
+.hud-bin {
+  position: absolute;
+  top: calc(env(safe-area-inset-top) + 14px);
+  left: calc(env(safe-area-inset-left) + 14px);
+  background: #e9eef0;
+}
+
+.catalog {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  gap: 12px;
+  padding: 12px 14px calc(env(safe-area-inset-bottom) + 12px);
+  border-top: 4px solid var(--ink);
+  background: rgba(255, 248, 230, 0.94);
+  overflow-x: auto;
+  touch-action: pan-x;
+}
+
+.catalog[hidden] {
+  display: none;
+}
+
+.catalog-tile {
+  flex: none;
+  width: 100px;
+  height: 100px;
+  padding: 6px;
+  border: 3px solid var(--ink);
+  border-radius: 18px;
+  background: #fff;
+  cursor: grab;
+  touch-action: pan-x;
+}
+
+.catalog-studio {
+  display: grid;
+  place-items: center;
+  background: #ffe9a8;
+}
+
+.catalog-studio svg {
+  width: 64px;
+  height: 64px;
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.catalog-tile canvas {
+  width: 84px;
+  height: 84px;
+  pointer-events: none;
+}
+
 .hud-sky.night {
   background: #2b3a6b;
 }

@@ -17,7 +17,7 @@ function button(className) {
   return el;
 }
 
-export function createHud(root, { scene, dayNight, onGesture }) {
+export function createHud(root, { scene, dayNight, onGesture, onModeChange }) {
   const hud = document.createElement('div');
   hud.className = 'hud';
 
@@ -32,6 +32,7 @@ export function createHud(root, { scene, dayNight, onGesture }) {
     onGesture?.();
     scene.mode = scene.mode === 'edit' ? 'play' : 'edit';
     renderMode();
+    onModeChange?.(scene.mode);
   });
 
   const sky = button('hud-sky');

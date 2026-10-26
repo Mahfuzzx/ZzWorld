@@ -1,4 +1,4 @@
-import { drawArt, shapePath, INK } from './art.js';
+import { drawArt, shapePath, seedFor, INK } from './art.js';
 import { Backdrop } from './backdrop.js';
 import { matchesWhen } from './actions.js';
 
@@ -140,8 +140,11 @@ export class Renderer {
     wctx.setTransform(1, 0, 0, 1, 0, 0);
     wctx.clearRect(0, 0, this.wallLayer.width, this.wallLayer.height);
     this.#setWorldTransform(wctx);
+    // Walls and floor fill the whole view, also beyond the room's ends on wide screens.
+    const left = Math.min(0, this.viewLeft);
+    const width = Math.max(scene.width, this.viewLeft + this.visibleWidth) - left;
     wctx.fillStyle = wall;
-    wctx.fillRect(0, 0, scene.width, scene.floorY);
+    wctx.fillRect(left, 0, width, scene.floorY);
     this.#cutOpenings(wctx, openings);
     this.ctx.setTransform(1, 0, 0, 1, 0, 0);
     this.ctx.drawImage(this.wallLayer, 0, 0);
@@ -149,21 +152,21 @@ export class Renderer {
     const { ctx } = this;
     this.#setWorldTransform(ctx);
     ctx.fillStyle = floor;
-    ctx.fillRect(0, scene.floorY, scene.width, scene.height - scene.floorY);
+    ctx.fillRect(left, scene.floorY, width, scene.height - scene.floorY);
     ctx.strokeStyle = INK;
     ctx.globalAlpha = 0.12;
     ctx.lineWidth = 3;
     for (let y = scene.floorY + 60; y < scene.height; y += 70) {
       ctx.beginPath();
-      ctx.moveTo(0, y);
-      ctx.lineTo(scene.width, y);
+      ctx.moveTo(left, y);
+      ctx.lineTo(left + width, y);
       ctx.stroke();
     }
     ctx.globalAlpha = 1;
     ctx.lineWidth = 6;
     ctx.beginPath();
-    ctx.moveTo(0, scene.floorY);
-    ctx.lineTo(scene.width, scene.floorY);
+    ctx.moveTo(left, scene.floorY);
+    ctx.lineTo(left + width, scene.floorY);
     ctx.stroke();
   }
 
@@ -246,7 +249,7 @@ export class Renderer {
       const ctx = bitmap.getContext('2d');
       ctx.scale(px, px);
       ctx.translate(MARGIN, MARGIN);
-      drawArt(ctx, art, (slot) => e.color(slot));
+      drawArt(ctx, art, (slot) => e.color(slot), { seed: seedFor(e.def.id) });
       this.cache.set(key, bitmap);
     }
     return bitmap;

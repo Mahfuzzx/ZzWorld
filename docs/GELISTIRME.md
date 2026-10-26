@@ -9,6 +9,10 @@ Proje, Apache'nin `htdocs` klasöründen doğrudan servis edilir; build adımı 
 
 `.htaccess` HTTP isteklerini HTTPS'e yönlendirir ve `.git` klasörünü dışarıya kapatır.
 
+Üçüncü parti kütüphaneler `vendor/` altındadır (sürüm ve lisanslar
+[vendor/README.md](../vendor/README.md)). Yeni bir dosya eklendiğinde `sw.js`
+içindeki `PRECACHE` listesine eklenmeli ve `VERSION` artırılmalıdır.
+
 ## Testler
 
 Motor (`src/engine/`) DOM'a bağımlı olmayan kısımları Node ile test edilir

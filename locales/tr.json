@@ -13,5 +13,145 @@
     "play": "Oyun modu",
     "day": "Gündüz yap",
     "night": "Gece yap"
+  },
+  "studio": {
+    "undo": "Geri al",
+    "redo": "Yinele",
+    "test": "Dene",
+    "backToGame": "Oyuna dön",
+    "saved": "Kaydedildi",
+    "tools": {
+      "pen": "Kalem",
+      "fill": "Dolgu",
+      "rect": "Dikdörtgen",
+      "ellipse": "Elips",
+      "eraser": "Silgi",
+      "move": "Seç ve taşı",
+      "surface": "Yüzey (üstüne eşya konur)",
+      "area": "Kap alanı (içindekiler burada durur)",
+      "opening": "Açıklık (pencere camı)",
+      "light": "Işık kaynağı"
+    },
+    "states": {
+      "add": "Durum ekle",
+      "rename": "Durumun yeni adı:",
+      "remove": "Bu durumu sil",
+      "newName": "durum"
+    },
+    "canvas": {
+      "back": "Arka çizim",
+      "front": "Ön çizim",
+      "areas": "Alanları göster",
+      "toFront": "Öne getir",
+      "toBack": "Arkaya gönder",
+      "duplicate": "Çoğalt",
+      "delete": "Sil"
+    },
+    "tabs": {
+      "general": "Genel",
+      "colors": "Renkler",
+      "behavior": "Davranış",
+      "reactions": "Tepkiler"
+    },
+    "general": {
+      "id": "Kimlik",
+      "nameTr": "Ad (Türkçe)",
+      "nameEn": "Ad (İngilizce)",
+      "class": "Tür",
+      "width": "Genişlik",
+      "height": "Yükseklik",
+      "mobility": "Ne zaman taşınır",
+      "classes": {
+        "Item": "Eşya",
+        "Furniture": "Mobilya",
+        "Decor": "Duvar süsü",
+        "Structure": "Yapı (pencere, kapı)"
+      },
+      "mobilities": {
+        "default": "Türe göre",
+        "free": "Her zaman",
+        "edit": "Sadece düzenleme modunda",
+        "locked": "Hiç"
+      }
+    },
+    "colors": {
+      "slots": "Boyanabilir renkler",
+      "add": "Renk yuvası ekle",
+      "hint": "Bir yuvayla çizilen yerler oyunda boyanabilir. Aşağıdaki kesikli kenarlı renkler yuvalardır.",
+      "slotName": "yuva",
+      "remove": "Sil",
+      "brush": "Kalınlık",
+      "none": "Dolgusuz"
+    },
+    "behavior": {
+      "toggle": "Dokununca bir sonraki duruma geçsin",
+      "toggleHint": "Durumlar üstteki sekmelerdir (ör. kapalı / açık).",
+      "container": "İçine eşya konabilsin",
+      "slots": "Kaç eşya alır",
+      "rows": "Raf sayısı",
+      "visibleIn": "İçi ne zaman görünür",
+      "always": "Her zaman",
+      "areaHint": "İçindekilerin duracağı yeri \"Kap alanı\" aracıyla çiz. Önünde kalacak kısımları \"Ön çizim\" katmanına çiz.",
+      "surfaces": "Yüzeyler",
+      "surfacesHint": "Üstüne eşya konabilen yerleri \"Yüzey\" aracıyla çiz. Bir yüzeye dokunarak silebilirsin.",
+      "opening": "Açıklık",
+      "openingHint": "Pencere camını \"Açıklık\" aracıyla çiz; oyunda arkadaki dünya görünür.",
+      "light": "Işık",
+      "lightHint": "Işık kaynağını \"Işık\" aracıyla yerleştir.",
+      "radius": "Yarıçap",
+      "when": "Ne zaman yanar",
+      "clear": "Kaldır",
+      "count": "{n} tane"
+    },
+    "reactions": {
+      "hint": "Türden gelen tepkiler (kaldırınca, yere düşünce) zaten çalışır; burada eklediklerin onları değiştirir.",
+      "add": "Olay ekle",
+      "addAction": "Eylem ekle",
+      "remove": "Kaldır",
+      "events": {
+        "tap": "Dokununca",
+        "pickUp": "Kaldırınca",
+        "drop": "Bırakınca",
+        "land": "Yere düşünce",
+        "received": "İçine bir şey konunca",
+        "world:night": "Gece olunca",
+        "world:day": "Gündüz olunca",
+        "stateEnter": "Şu duruma geçince: {s}"
+      },
+      "actions": {
+        "PlaySound": "Ses çal",
+        "PlayAnim": "Hareket et",
+        "SetState": "Durum değiştir",
+        "Wait": "Bekle (ms)"
+      },
+      "toggle": "(sıradaki)"
+    },
+    "library": {
+      "title": "Nesnelerim",
+      "new": "Yeni nesne",
+      "copy": "Hazır nesneden kopyala",
+      "empty": "Henüz nesnen yok. Yeni bir tane çiz!",
+      "delete": "Sil",
+      "confirmDelete": "\"{name}\" silinsin mi?",
+      "pack": "Paket adı",
+      "packHint": "Küçük harf, rakam ve tire (ör. ayse-nin-esyalari). Yeni nesnelerin kimliği bununla başlar.",
+      "export": "Paketi dışa aktar",
+      "import": "Paket içe aktar",
+      "imported": "{n} nesne içe aktarıldı",
+      "importError": "Paket açılamadı:\n{error}",
+      "close": "Kapat",
+      "newName": "Yeni nesne",
+      "copySuffix": "(kopya)",
+      "core": "Hazır nesneler",
+      "mine": "Benim nesnelerim"
+    },
+    "preview": {
+      "title": "Deneme odası",
+      "close": "Kapat"
+    }
+  },
+  "catalog": {
+    "open": "Eşya ekle",
+    "trash": "Çöp kutusu"
   }
 }

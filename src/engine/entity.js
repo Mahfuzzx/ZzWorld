@@ -89,6 +89,11 @@ export class Entity {
     return false;
   }
 
+  // May the child throw this into the bin (edit mode)?
+  canDelete() {
+    return this.mobility !== 'locked';
+  }
+
   // Which surfaces may this entity land on? Items can sit on any surface.
   canRestOn(other) {
     return true;
@@ -177,4 +182,8 @@ export class Decor extends Entity {
 // part of the building: they can be moved in edit mode but never removed.
 export class Structure extends Decor {
   static type = 'Structure';
+
+  canDelete() {
+    return false;
+  }
 }

@@ -31,6 +31,8 @@ const PRESETS = {
   creak: (ctx, out, t, v, p) => tone(ctx, out, t, { type: 'sawtooth', from: 90 * p, to: 140 * p, duration: 0.3, volume: 0.06 * v }),
 };
 
+export const SOUND_NAMES = Object.keys(PRESETS);
+
 export class Sfx {
   #ctx = null;
   #master = null;

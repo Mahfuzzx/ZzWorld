@@ -27,9 +27,20 @@ export function getLanguage() {
   return current;
 }
 
-export function t(key) {
+// t('studio.library.imported', { n: 3 }) fills "{n}" placeholders.
+export function t(key, vars) {
   const value = key.split('.').reduce((node, part) => node?.[part], strings);
-  return typeof value === 'string' ? value : key;
+  if (typeof value !== 'string') return key;
+  return vars ? value.replace(/\{(\w+)\}/g, (m, name) => vars[name] ?? m) : value;
+}
+
+// Fills elements marked with data-i18n (text) and data-i18n-title (tooltip).
+export function translatePage(root = document) {
+  for (const el of root.querySelectorAll('[data-i18n]')) el.textContent = t(el.dataset.i18n);
+  for (const el of root.querySelectorAll('[data-i18n-title]')) {
+    el.title = t(el.dataset.i18nTitle);
+    el.setAttribute('aria-label', el.title);
+  }
 }
 
 // Picks the right language from an object definition field like { tr: "…", en: "…" }.

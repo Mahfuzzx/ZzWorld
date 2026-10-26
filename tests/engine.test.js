@@ -223,3 +223,45 @@ test('contents never stick out of their container', () => {
   assert.equal(contents.length, 3);
   for (const item of contents) assert.ok(inside(item, basket), `${item.def.id} at ${item.x} sticks out`);
 });
+
+test('removing a container drops its contents instead of deleting them', () => {
+  const scene = emptyScene();
+  const basket = scene.spawn('core.basket', { x: 500, y: 600 });
+  const apple = scene.spawn('core.apple');
+  scene.putInto(basket, apple);
+  scene.remove(basket);
+  assert.equal(scene.get(basket.id), null);
+  assert.equal(scene.get(apple.id), apple);
+  assert.equal(apple.parentId, null);
+  settle(scene);
+  assert.equal(apple.y, 740, 'the apple fell to the floor');
+});
+
+test('structures cannot be thrown away', () => {
+  const scene = emptyScene();
+  assert.equal(scene.spawn('core.window').canDelete(), false);
+  assert.ok(scene.spawn('core.fridge').canDelete());
+});
+
+test('saves with objects that no longer exist still load', () => {
+  const defs = coreDefs();
+  defs.add({ id: 'my.box', extends: 'core.item.base', size: [80, 80], behaviors: [{ type: 'Container', slots: 2 }] });
+  const scene = new Scene(defs, { id: 's' }, fakeServices());
+  const box = scene.spawn('my.box', { x: 300, y: 800 });
+  const apple = scene.spawn('core.apple');
+  scene.putInto(box, apple);
+  const data = scene.serialize();
+
+  const warn = console.warn;
+  console.warn = () => {};
+  let restored;
+  try {
+    restored = Scene.deserialize(coreDefs(), data, fakeServices()); // my.box is gone
+  } finally {
+    console.warn = warn;
+  }
+  assert.equal(restored.entities.size, 1);
+  const lone = restored.get(apple.id);
+  assert.equal(lone.parentId, null);
+  assert.ok(restored.renderList().includes(lone), 'the apple is still visible');
+});

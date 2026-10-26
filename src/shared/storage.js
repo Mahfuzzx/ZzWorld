@@ -1,8 +1,11 @@
-// IndexedDB storage for worlds. Nothing here ever leaves the device.
+// IndexedDB storage. Nothing here ever leaves the device.
+//   worlds — saved game worlds
+//   defs   — definitions made in ZzStudio or imported from .zzpack files
 
 const DB_NAME = 'zzworld';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 const WORLDS = 'worlds';
+const DEFS = 'defs';
 
 let dbPromise = null;
 
@@ -12,6 +15,7 @@ function openDb() {
     request.onupgradeneeded = () => {
       const db = request.result;
       if (!db.objectStoreNames.contains(WORLDS)) db.createObjectStore(WORLDS, { keyPath: 'id' });
+      if (!db.objectStoreNames.contains(DEFS)) db.createObjectStore(DEFS, { keyPath: 'id' });
     };
     request.onsuccess = () => resolve(request.result);
     request.onerror = () => reject(request.error);
@@ -19,11 +23,11 @@ function openDb() {
   return dbPromise;
 }
 
-async function withStore(mode, fn) {
+async function withStore(name, mode, fn) {
   const db = await openDb();
   return new Promise((resolve, reject) => {
-    const tx = db.transaction(WORLDS, mode);
-    const request = fn(tx.objectStore(WORLDS));
+    const tx = db.transaction(name, mode);
+    const request = fn(tx.objectStore(name));
     tx.oncomplete = () => resolve(request?.result);
     tx.onerror = () => reject(tx.error);
     tx.onabort = () => reject(tx.error);
@@ -31,19 +35,31 @@ async function withStore(mode, fn) {
 }
 
 export async function loadWorld(id) {
-  return (await withStore('readonly', (store) => store.get(id))) ?? null;
+  return (await withStore(WORLDS, 'readonly', (store) => store.get(id))) ?? null;
 }
 
 export function saveWorld(world) {
-  return withStore('readwrite', (store) => store.put(world));
+  return withStore(WORLDS, 'readwrite', (store) => store.put(world));
 }
 
 export function listWorlds() {
-  return withStore('readonly', (store) => store.getAll());
+  return withStore(WORLDS, 'readonly', (store) => store.getAll());
 }
 
 export function deleteWorld(id) {
-  return withStore('readwrite', (store) => store.delete(id));
+  return withStore(WORLDS, 'readwrite', (store) => store.delete(id));
+}
+
+export function listDefs() {
+  return withStore(DEFS, 'readonly', (store) => store.getAll());
+}
+
+export function saveDef(def) {
+  return withStore(DEFS, 'readwrite', (store) => store.put(def));
+}
+
+export function deleteDef(id) {
+  return withStore(DEFS, 'readwrite', (store) => store.delete(id));
 }
 
 // Asks the browser not to evict our data under storage pressure.

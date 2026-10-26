@@ -218,13 +218,14 @@ export class Art extends Layer {
     bitmap.height = Math.ceil(height * view.pixelScale);
     const ctx = bitmap.getContext('2d');
     ctx.scale(view.pixelScale, view.pixelScale);
-    drawArt(ctx, art, () => '#999999');
+    const seed = this.config.seed ?? 1;
+    drawArt(ctx, art, () => '#999999', { seed });
     if (variant === 'night') {
       ctx.globalCompositeOperation = 'source-atop';
       ctx.fillStyle = nightTint;
       ctx.fillRect(0, 0, width, height);
       ctx.globalCompositeOperation = 'source-over';
-      drawArt(ctx, nightArt, () => '#999999');
+      drawArt(ctx, nightArt, () => '#999999', { seed });
     }
     this.cache.set(variant, bitmap);
     return bitmap;

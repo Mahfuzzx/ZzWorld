@@ -4,6 +4,8 @@ import { Input } from '../engine/input.js';
 import { Sfx } from '../audio/sfx.js';
 import * as storage from '../shared/storage.js';
 import { createHud } from './hud.js';
+import { createCatalog } from './catalog.js';
+import { addUserDefs } from '../shared/pack.js';
 
 const WORLD_ID = 'world-1'; // single slot until the world picker exists
 const START_TEMPLATE = 'scenes/room.json';
@@ -15,6 +17,13 @@ export async function startGame(root) {
   const coreUrl = new URL('../../content/core/', import.meta.url);
   const defs = new DefStore();
   await loadPack(defs, coreUrl);
+  // Objects made in ZzStudio or imported from packs (never replacing core ones).
+  let userIds = [];
+  try {
+    userIds = addUserDefs(defs, await storage.listDefs());
+  } catch (err) {
+    console.warn('User objects could not be loaded:', err);
+  }
 
   const audio = new Sfx();
   const dayNight = new DayNight();
@@ -45,8 +54,13 @@ export async function startGame(root) {
   const renderer = new Renderer(canvas);
   renderer.setScene(scene, { backdropId: scene.backdrop ?? world.backdrop ?? DEFAULT_BACKDROP });
   const unlockAudio = () => audio.unlock();
-  const input = new Input(canvas, renderer, { onFirstGesture: unlockAudio });
-  createHud(root, { scene, dayNight, onGesture: unlockAudio });
+  let catalog = null;
+  const input = new Input(canvas, renderer, {
+    onFirstGesture: unlockAudio,
+    isOverBin: (x, y) => catalog?.isOverBin(x, y) ?? false,
+  });
+  const hud = createHud(root, { scene, dayNight, onGesture: unlockAudio, onModeChange: (mode) => catalog.setMode(mode) });
+  catalog = createCatalog(root, { defs, userIds, scene, renderer, input, hud, onGesture: unlockAudio });
 
   // The sun/moon button is world-wide: every entity hears world:day / world:night.
   dayNight.onChange((night) => {
