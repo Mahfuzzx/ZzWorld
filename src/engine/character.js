@@ -20,6 +20,8 @@ export const AGES = ['baby', 'child', 'adult', 'elder'];
 export const EXPRESSIONS = ['happy', 'laugh', 'surprised', 'sleepy', 'sad', 'grumpy'];
 export const SLOTS = ['hair', 'top', 'bottom', 'shoes', 'head', 'face'];
 export const EYE_STYLES = ['dots', 'round', 'lashes'];
+// Hair sits on a head this much bigger than the skin (volume).
+const HAIR_VOLUME = 1.07;
 
 export const SKIN_TONES = ['#fde3cf', '#f9d0b0', '#f1c19a', '#e8ad83', '#d39468', '#b97a50', '#9c6340', '#7d4c2f', '#5f3a24', '#43281a'];
 export const HAIR_COLORS = ['#2b2220', '#4a2f22', '#7a4a2a', '#a0522d', '#d2691e', '#e8c06a', '#f1e3b5', '#b8b4ad', '#f2f0ea', '#f28dbb', '#4f8fe0', '#3aa76d', '#8a6fd8'];
@@ -245,13 +247,18 @@ export function composeArt(look, defs, expression = 'happy') {
   });
 
   // head: ears, face, features, hair, glasses, hats
-  const headSkin = skin([{ type: 'circle', cx: 2, cy: 54, r: 11, fill: '$skin' }, { type: 'circle', cx: 98, cy: 54, r: 11, fill: '$skin' },
+  skin([{ type: 'circle', cx: 2, cy: 54, r: 11, fill: '$skin' }, { type: 'circle', cx: 98, cy: 54, r: 11, fill: '$skin' },
     { type: 'circle', cx: 50, cy: 50, r: 50, fill: '$skin' }], headBox, 'head');
-  const headEnv = envelope([headSkin[2]]);
   each('skin', (shapes, colors) => put(shapes, headBox, 'head', colors));
   put(face(look.eyes, expression), headBox, 'head');
-  // fringes and beards hug the round head
-  each('front', (shapes, colors, p) => wear(shapes, headBox, 'head', colors, headEnv, p, 2));
+  // Hair (and beards) wrap a slightly bigger head, so they have some volume:
+  // their 0–100 box is the box of that bigger circle, and every row of the
+  // drawing is bent to its width. A hair cap drawn across the whole top of the
+  // box therefore covers the crown completely and follows the round head.
+  const hairR = head.r * HAIR_VOLUME;
+  const hairBox = rect(head.cx - hairR, head.cy - hairR, hairR * 2, hairR * 2);
+  const hairEnv = envelope([{ type: 'circle', cx: head.cx, cy: head.cy, r: hairR, fill: '#000' }]);
+  each('front', (shapes, colors, p) => wear(shapes, hairBox, 'head', colors, hairEnv, p, 0));
   each('face', (shapes, colors) => put(shapes, headBox, 'head', colors));
   each('hat', (shapes, colors) => put(shapes, headBox, 'head', colors));
   return out;

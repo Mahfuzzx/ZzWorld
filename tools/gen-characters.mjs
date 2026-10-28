@@ -15,7 +15,11 @@ const GROWN = ['adult', 'elder'];
 const part = (id, slot, name, art, extra = {}) => ({ id: `core.part.${id}`, kind: 'part', slot, name, art, ...extra });
 
 // ---------- hair ($hair) ----------
-const fringe = path('M4 48 C2 2 98 2 96 48 C88 30 70 26 54 32 C40 24 18 28 4 48 Z', '$hair');
+// Front hair is a cap: it fills the whole top of its box (the full width from the
+// top down to the sides) and ends in a fringe. The engine bends every row to the
+// round head, so the cap covers the crown and hugs the head (character.js).
+const cap = (fringeEdge) => path(`M0 0 H100 ${fringeEdge} Z`, '$hair');
+const fringe = cap('V52 C90 34 72 28 56 34 C42 26 20 30 0 52');
 const curls = (from, to, radius, count, r) => Array.from({ length: count }, (_, i) => {
   const a = ((from + ((to - from) * i) / (count - 1)) * Math.PI) / 180;
   return circle(Math.round(50 + radius * Math.cos(a)), Math.round(50 + radius * Math.sin(a)), r, '$hair');
@@ -24,15 +28,15 @@ const hair = [
   part('hair.short', 'hair', { tr: 'Kısa', en: 'Short' }, { front: [fringe] }),
   part('hair.long', 'hair', { tr: 'Uzun', en: 'Long' }, {
     back: [path('M2 40 C-2 -4 102 -4 98 40 L104 140 C86 152 14 152 -4 140 Z', '$hair')],
-    front: [path('M4 52 C2 0 98 0 96 52 C88 30 66 26 50 34 C34 26 12 30 4 52 Z', '$hair')],
+    front: [cap('V62 C92 38 70 30 50 38 C30 30 8 38 0 62')],
   }, { ages: NOT_BABY }),
   part('hair.curly', 'hair', { tr: 'Kıvırcık', en: 'Curly' }, {
     back: curls(140, 400, 48, 12, 17),
-    front: curls(195, 345, 46, 7, 16),
+    front: [cap('V56 Q92 44 84 50 Q78 36 66 42 Q58 30 50 38 Q42 30 34 42 Q22 36 16 50 Q8 44 0 56')],
   }),
   part('hair.afro', 'hair', { tr: 'Afro', en: 'Afro' }, {
     back: [circle(50, 38, 72, '$hair')],
-    front: [path('M8 40 C14 14 86 14 92 40 C80 28 66 30 50 26 C34 30 20 28 8 40 Z', '$hair')],
+    front: [cap('V44 C82 30 66 34 50 28 C34 34 18 30 0 44')],
   }, { ages: NOT_BABY }),
   part('hair.bun', 'hair', { tr: 'Topuz', en: 'Bun' }, {
     back: [circle(50, -6, 18, '$hair')],
@@ -44,7 +48,7 @@ const hair = [
   }, { ages: NOT_BABY }),
   part('hair.braids', 'hair', { tr: 'Örgü', en: 'Braids' }, {
     back: [...[70, 86, 102, 118, 134].flatMap((y) => [ellipse(2, y, 9, 9, '$hair'), ellipse(98, y, 9, 9, '$hair')])],
-    front: [path('M4 46 C2 4 98 4 96 46 C84 20 58 16 50 30 C42 16 16 20 4 46 Z', '$hair')],
+    front: [cap('V50 C86 24 58 22 50 34 C42 22 14 24 0 50')],
   }, { ages: NOT_BABY }),
   part('hair.tuft', 'hair', { tr: 'Perçem', en: 'Tuft' }, {
     front: [path('M42 4 C44 -12 60 -12 58 2 C54 -4 48 -4 42 4 Z', '$hair')],
