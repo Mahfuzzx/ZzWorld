@@ -55,6 +55,10 @@ const signs = [
     path('M16 44 H74 V54 C74 66 66 70 56 70 H34 C24 70 16 66 16 54 Z', '#9fd3f2'),
     path('M22 44 V24 C22 18 32 18 32 24', null, { lw: 3 }), circle(46, 34, 4, '#ffffff'), circle(58, 28, 3, '#ffffff'),
   ]),
+  sign('street', { tr: 'Sokak levhası', en: 'Street sign' }, [
+    rect(14, 60, 62, 10, '#8f959b', { stroke: null }), circle(30, 40, 14, '#8fc7a4'), rect(27, 50, 6, 12, '#8a5a2b'),
+    path('M46 58 L60 42 L74 58 Z', '#e8735a'), rect(50, 56, 20, 14, '#f2c4a8'),
+  ]),
   sign('sofa', { tr: 'Salon levhası', en: 'Living room sign' }, [
     rect(18, 34, 54, 22, '#e8735a', { r: 8 }), rect(12, 44, 66, 20, '#e8735a', { r: 8 }), path('M20 64 V70 M70 64 V70', null, { lw: 4 }),
   ]),

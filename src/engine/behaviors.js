@@ -179,7 +179,9 @@ export class Doorway extends Behavior {
   }
 
   accepts(item) {
-    return this.open && !!this.entity.target && item.mobility === 'free' && !!this.entity.scene.services.travel;
+    // things can't be posted to the city map ("@map"), only to rooms
+    const target = this.entity.target;
+    return this.open && !!target && !target.scene.startsWith('@') && item.mobility === 'free' && !!this.entity.scene.services.travel;
   }
 
   receive(item) {

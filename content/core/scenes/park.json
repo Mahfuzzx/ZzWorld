@@ -1,0 +1,27 @@
+{
+  "id": "core.scene.park",
+  "hood": "core.hood.cicek",
+  "name": { "tr": "Park", "en": "Park" },
+  "width": 2600,
+  "height": 1000,
+  "floorY": 680,
+  "exterior": { "grass": "#9fd0a8", "path": "#e6d3a8" },
+  "backdrop": "core.backdrop.city",
+  "music": "core.song.room",
+  "entities": [
+    { "def": "core.signpost.street", "x": 160, "y": 740, "door": "toStreet", "target": { "scene": "core.scene.street.cicek", "door": "toPark" } },
+    { "def": "core.tree", "x": 420, "y": 760 },
+    { "def": "core.swing", "x": 800, "y": 820 },
+    { "def": "core.flowers", "x": 1060, "y": 760 },
+    { "def": "core.bench", "x": 1260, "y": 800 },
+    { "def": "core.streetlamp", "x": 1460, "y": 760 },
+    {
+      "def": "core.pond", "x": 1720, "y": 880,
+      "contains": [{ "def": "core.duck" }, { "def": "core.duck", "colors": { "body": "#ffffff" } }]
+    },
+    { "def": "core.tree", "x": 2050, "y": 750, "colors": { "leaves": "#5fae6a" } },
+    { "def": "core.flowers", "x": 2250, "y": 770, "colors": { "petals": "#ffd166" } },
+    { "def": "core.bush", "x": 2440, "y": 750 },
+    { "def": "core.ball", "x": 1000, "y": 920 }
+  ]
+}

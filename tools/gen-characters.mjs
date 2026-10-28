@@ -228,6 +228,14 @@ const character = {
       legR: [{ t: 0, sy: 0.42 }, { t: 2.4, sy: 0.42 }],
       head: [{ t: 0, rot: 0 }, { t: 1.2, rot: 3 }, { t: 2.4, rot: 0 }],
     } },
+    // on a swing: sitting, swaying back and forth
+    swing: { type: 'keyframe', duration: 1.8, loop: true, tracks: {
+      '': [{ t: 0, rot: -12 }, { t: 0.9, rot: 12 }, { t: 1.8, rot: -12 }],
+      legL: [{ t: 0, sy: 0.42, rot: 10 }, { t: 0.9, sy: 0.42, rot: -10 }, { t: 1.8, sy: 0.42, rot: 10 }],
+      legR: [{ t: 0, sy: 0.42, rot: 10 }, { t: 0.9, sy: 0.42, rot: -10 }, { t: 1.8, sy: 0.42, rot: 10 }],
+      armL: [{ t: 0, rot: 160 }, { t: 1.8, rot: 160 }],
+      armR: [{ t: 0, rot: -160 }, { t: 1.8, rot: -160 }],
+    } },
     // lying in bed: turned on the side, slowly breathing
     sleep: { type: 'keyframe', duration: 3, loop: true, tracks: {
       '': [{ t: 0, rot: -90, sy: 1 }, { t: 1.5, rot: -90, sy: 1.025 }, { t: 3, rot: -90, sy: 1 }],

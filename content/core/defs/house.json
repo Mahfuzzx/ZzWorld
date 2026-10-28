@@ -261,6 +261,75 @@
   }
  },
  {
+  "id": "core.sign.street",
+  "extends": "core.decor.base",
+  "name": {
+   "tr": "Sokak levhası",
+   "en": "Street sign"
+  },
+  "size": [
+   90,
+   90
+  ],
+  "art": {
+   "default": [
+    {
+     "type": "circle",
+     "cx": 45,
+     "cy": 45,
+     "r": 42,
+     "fill": "#fff8e6"
+    },
+    {
+     "type": "rect",
+     "x": 14,
+     "y": 60,
+     "w": 62,
+     "h": 10,
+     "fill": "#8f959b",
+     "stroke": null
+    },
+    {
+     "type": "circle",
+     "cx": 30,
+     "cy": 40,
+     "r": 14,
+     "fill": "#8fc7a4"
+    },
+    {
+     "type": "rect",
+     "x": 27,
+     "y": 50,
+     "w": 6,
+     "h": 12,
+     "fill": "#8a5a2b"
+    },
+    {
+     "type": "path",
+     "d": "M46 58 L60 42 L74 58 Z",
+     "fill": "#e8735a"
+    },
+    {
+     "type": "rect",
+     "x": 50,
+     "y": 56,
+     "w": 20,
+     "h": 14,
+     "fill": "#f2c4a8"
+    }
+   ]
+  },
+  "reactions": {
+   "tap": [
+    {
+     "do": "PlayAnim",
+     "clip": "wobble",
+     "amp": 0.12
+    }
+   ]
+  }
+ },
+ {
   "id": "core.sign.sofa",
   "extends": "core.decor.base",
   "name": {

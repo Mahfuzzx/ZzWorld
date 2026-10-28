@@ -7,6 +7,7 @@ const ICONS = {
   // play mode: hand
   play: '<svg viewBox="0 0 48 48"><path d="M16 26 V12 a3 3 0 0 1 6 0 V22 V9 a3 3 0 0 1 6 0 V22 V11 a3 3 0 0 1 6 0 V24 V16 a3 3 0 0 1 6 0 V30 c0 8 -6 12 -13 12 c-6 0 -9 -3 -12 -8 l-6 -9 a3 3 0 0 1 5 -3 z" fill="#ffd9b8"/></svg>',
   sun: '<svg viewBox="0 0 48 48"><g stroke-width="4"><path d="M24 4v6M24 38v6M4 24h6M38 24h6M10 10l4 4M34 34l4 4M38 10l-4 4M14 34l-4 4"/></g><circle cx="24" cy="24" r="9" fill="#ffd166"/></svg>',
+  map: '<svg viewBox="0 0 48 48"><path d="M6 12 L17 8 L31 12 L42 8 V38 L31 42 L17 38 L6 42 Z" fill="#fff8e6"/><path d="M17 8 V38 M31 12 V42"/><circle cx="24" cy="24" r="4" fill="#e04f3a"/></svg>',
   heart: '<svg viewBox="0 0 48 48"><path d="M24 40 C6 28 8 12 18 12 C22 12 24 16 24 16 C24 16 26 12 30 12 C40 12 42 28 24 40 Z" fill="#e8735a"/></svg>',
   // grown-ups: a small key
   parent: '<svg viewBox="0 0 48 48"><circle cx="16" cy="24" r="9" fill="#ffd166"/><path d="M25 24 H42 M36 24 V31 M41 24 V29"/></svg>',
@@ -22,7 +23,7 @@ function button(className) {
 
 // getScene() returns the scene being shown (it changes when going to another room).
 // onFeedback / onParent are optional (the Studio test room has neither).
-export function createHud(root, { getScene, dayNight, onGesture, onModeChange, onFeedback, onParent }) {
+export function createHud(root, { getScene, dayNight, onGesture, onModeChange, onFeedback, onParent, onMap }) {
   const hud = document.createElement('div');
   hud.className = 'hud';
 
@@ -71,6 +72,17 @@ export function createHud(root, { getScene, dayNight, onGesture, onModeChange, o
     parent.setAttribute('aria-label', t('parent.open'));
     parent.addEventListener('click', () => onParent());
     root.append(parent);
+  }
+
+  if (onMap) {
+    const map = button('hud-map');
+    map.innerHTML = ICONS.map;
+    map.setAttribute('aria-label', t('citymap.open'));
+    map.addEventListener('click', () => {
+      onGesture?.();
+      onMap();
+    });
+    hud.append(map);
   }
 
   renderMode();

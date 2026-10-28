@@ -17,6 +17,9 @@ export class Scene {
     this.floorY = data.floorY ?? 760;
     // Indoor scenes have a wall and floor; `background` is the pre-layers name.
     this.interior = data.interior ?? data.background ?? null;
+    // Outdoor scenes: { "sidewalk": colour, "road": colour } or { "grass": colour, "path": colour }
+    this.exterior = data.exterior ?? null;
+    this.hood = data.hood ?? null; // the neighbourhood this scene belongs to
     this.backdrop = data.backdrop ?? null;
     this.music = data.music ?? null; // song id for the background music
     this.mode = 'play'; // 'play' | 'edit' — UI state, not saved
@@ -353,6 +356,8 @@ export class Scene {
       height: this.height,
       floorY: this.floorY,
       interior: this.interior,
+      exterior: this.exterior,
+      hood: this.hood,
       backdrop: this.backdrop,
       music: this.music,
       camera: { x: Math.round(this.camera.x) },

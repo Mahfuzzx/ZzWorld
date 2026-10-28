@@ -242,7 +242,8 @@
   "catalog": {
     "open": "Eşya ekle",
     "trash": "Çöp kutusu",
-    "newCharacter": "Yeni karakter"
+    "newCharacter": "Yeni karakter",
+    "newDoor": "Yeni kapı (yeni odaya)"
   },
   "music": {
     "songs": "Şarkılarım",
@@ -368,5 +369,13 @@
     },
     "source": "Açık kaynak kodu (GitHub)",
     "version": "Sürüm"
+  },
+  "citymap": {
+    "open": "Şehir haritası",
+    "soon": "yakında"
+  },
+  "house": {
+    "newRoom": "Yeni oda",
+    "room": "Oda"
   }
 }

@@ -1,0 +1,22 @@
+{
+  "id": "core.city",
+  "name": { "tr": "Zz Kasabası", "en": "Zz Town" },
+  "neighborhoods": [
+    {
+      "id": "core.hood.cicek",
+      "name": { "tr": "Çiçek Mahallesi", "en": "Flower Hill" },
+      "x": 380, "y": 430, "r": 150, "color": "#9fd0a8", "icon": "house",
+      "entry": { "scene": "core.scene.street.cicek", "door": "fromMap" }
+    },
+    {
+      "id": "core.hood.sahil",
+      "name": { "tr": "Sahil", "en": "Seaside" },
+      "x": 740, "y": 270, "r": 120, "color": "#f6dc8a", "icon": "boat", "locked": true
+    },
+    {
+      "id": "core.hood.merkez",
+      "name": { "tr": "Şehir Merkezi", "en": "Downtown" },
+      "x": 700, "y": 600, "r": 130, "color": "#c9b8d9", "icon": "tower", "locked": true
+    }
+  ]
+}

@@ -242,7 +242,8 @@
   "catalog": {
     "open": "Add things",
     "trash": "Bin",
-    "newCharacter": "New character"
+    "newCharacter": "New character",
+    "newDoor": "New door (to a new room)"
   },
   "music": {
     "songs": "My songs",
@@ -368,5 +369,13 @@
     },
     "source": "Open source code (GitHub)",
     "version": "Version"
+  },
+  "citymap": {
+    "open": "City map",
+    "soon": "coming soon"
+  },
+  "house": {
+    "newRoom": "New room",
+    "room": "Room"
   }
 }

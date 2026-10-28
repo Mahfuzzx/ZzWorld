@@ -1,5 +1,6 @@
 {
   "id": "core.scene.bathroom",
+  "hood": "core.hood.cicek",
   "name": { "tr": "Banyo", "en": "Bathroom" },
   "width": 1400,
   "height": 1000,

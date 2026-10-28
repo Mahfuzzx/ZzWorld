@@ -37,7 +37,7 @@ function hudButton(className, icon, label) {
 }
 
 // Always works on the scene being shown (renderer.scene), which changes between rooms.
-export function createCatalog(root, { defs, userIds, renderer, input, hud, onGesture, onNewCharacter }) {
+export function createCatalog(root, { defs, userIds, renderer, input, hud, onGesture, onNewCharacter, onNewDoor }) {
   const drawer = document.createElement('div');
   drawer.className = 'catalog';
   drawer.hidden = true;
@@ -65,6 +65,24 @@ export function createCatalog(root, { defs, userIds, renderer, input, hud, onGes
       onNewCharacter();
     });
     drawer.append(person);
+  }
+
+  // Third tile: a door to another room (house design). Only indoors.
+  if (onNewDoor) {
+    const door = document.createElement('button');
+    door.type = 'button';
+    door.className = 'catalog-tile catalog-door';
+    door.title = t('catalog.newDoor');
+    door.setAttribute('aria-label', door.title);
+    door.innerHTML = '<svg viewBox="0 0 48 48"><rect x="10" y="6" width="24" height="38" rx="2" fill="#c98a4b"/><circle cx="28" cy="26" r="2" fill="#ffd166"/><path d="M40 10 V22 M34 16 H46" stroke-width="4"/></svg>';
+    door.addEventListener('click', () => {
+      onGesture?.();
+      if (onNewDoor()) return;
+      door.classList.remove('nope');
+      void door.offsetWidth;
+      door.classList.add('nope');
+    });
+    drawer.append(door);
   }
 
   for (const id of placeableIds(defs, userIds)) {

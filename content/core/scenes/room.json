@@ -1,5 +1,6 @@
 {
   "id": "core.scene.room",
+  "hood": "core.hood.cicek",
   "name": { "tr": "Salon", "en": "Living room" },
   "width": 2000,
   "height": 1000,
@@ -9,6 +10,8 @@
   "music": "core.song.room",
   "entities": [
     { "def": "core.window", "x": 820, "y": 520 },
+    { "def": "core.door", "x": 480, "y": 740, "door": "toStreet", "target": { "scene": "core.scene.street.cicek", "door": "toHome" } },
+    { "def": "core.sign.street", "x": 480, "y": 440 },
     { "def": "core.door", "x": 1910, "y": 740, "door": "toBedroom", "target": { "scene": "core.scene.bedroom", "door": "toLiving" } },
     { "def": "core.sign.bed", "x": 1910, "y": 440 },
     {

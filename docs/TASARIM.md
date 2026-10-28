@@ -208,6 +208,16 @@ banyo — ve her oda ayrı bir sahnedir.
 - Yeni eşyalar: yatak, oyuncak sandığı, ayıcık, resim, küvet, lavabo, ayna, lastik
   ördek (`tools/gen-house.mjs`).
 
+**Ev tasarımı (7. adım):** düzenleme modunda katalogdaki kapı kutusu yeni bir kapı
+koyar ve "nereye açılsın?" seçicisini açar (`src/game/doorpicker.js`). Seçenekler
+yalnızca resimdir: beş pastel renkte **yeni oda** veya aynı mahalledeki mevcut odalar
+(duvar/zemin renkleriyle çizilir, adı küçük yazılır). Kapı ekranda görünen duvarın en
+boş yerine konur; karşı odaya otomatik olarak geri dönen bir kapı eklenir, iki kapı
+birbirini gösterir (`src/game/house.js`: `linkDoors`, `freeSpot`). Yeni odalar
+`user.room.*` kimliğiyle dünyada saklanır. Seçici kapatılırsa kapı geri alınır;
+dışarıda (sokak, park) kapı kutusu sallanır, bir şey olmaz. Bağlantısız kapılar çöpe
+atılabilir, bağlı kapılar atılamaz.
+
 ### 4.7 İlk mahalle
 İlk sürümdeki mahallede iki mekân türü bulunur:
 - **Evler:** karakterlerin yaşadığı, odaları olan binalar. İlk sürümün merkezi.
@@ -215,6 +225,23 @@ banyo — ve her oda ayrı bir sahnedir.
   ana alan.
 
 Market, veteriner gibi diğer mekânlar sonraki sürümlere bırakılmıştır.
+
+**Uygulanan (7. adım):** ilk mahalle **Çiçek Sokağı**dır (`core.hood.cicek`).
+
+- **Sokak** (`core.scene.street.cicek`): yan kaydırmalı dış sahne (`exterior`):
+  kaldırım, bordür, kesik çizgili yol. Üç ev cephesi (`Structure`, kilitli, gece
+  pencereleri yanar); evin ön kapısı salona açılır. Ağaçlar, posta kutusu, çiçekler,
+  sokak lambası (gece kendiliğinden yanar), bank.
+- **Park** (`core.scene.park`): çim ve patika; salıncak (`Seat`, `pose: "swing"`,
+  karakter sallanıp güler), havuz (ördekler yüzer), bank, ağaçlar, top.
+- Sokak ↔ park ve sokak → harita geçişleri **tabelalarla** olur (her zaman açık
+  `Portal`). Haritaya eşya gönderilemez.
+- **Şehir haritası** (`content/core/city.json`, `src/game/citymap.js`): HUD'daki
+  harita düğmesi veya sokaktaki harita tabelasıyla açılır. "Buradasın" iğnesi bulunulan
+  mahalleyi gösterir; Sahil ve Merkez kilitli (asma kilit, dokununca sallanır).
+  Mahalleye dokununca sokağın girişine gidilir. Her sahnenin bir `hood` alanı vardır.
+- Dışarıda gece gölgesi içeriden daha açıktır.
+- Kavşaklar ve yan sokaklar, sokak sayısı artınca eklenecek.
 
 ### 4.8 Sahneler arası taşıma
 Karakterler, eşyalar ve hayvanlar sahneler arasında taşınabilir (karakterin elinde,
@@ -871,7 +898,8 @@ ve ses ayarları, yedekleme 10. adımda eklenecek.
    oturma, elde tutma ve karakter oluşturucu (§14.7).
 6. ✅ **İlk ev:** salon, yatak odası, banyo; kapılarla oda geçişi, yatak, küvet ve yeni
    eşyalar (§4.6).
-7. **Sokak ve mahalle:** yan kaydırma, kavşaklar, portal, şehir haritası.
+7. ✅ **Sokak ve mahalle:** Çiçek Sokağı, park, salıncak, şehir haritası, ev tasarımı
+   (kapı ekleyip yeni/mevcut odaya bağlama) (§4.6, §4.7). Kavşaklar sonraya kaldı.
 8. **Ajanlar:** evcil ve ortam hayvanları.
 9. **Araçlar.**
 10. **Dünya durumu (4 zaman, mevsim, hava), ışık modeli, Props katmanı, ebeveyn bölümü, oyun içi mikrofon.**
@@ -926,3 +954,5 @@ ve ses ayarları, yedekleme 10. adımda eklenecek.
 | 2026-10-28 | Oyun worldzz.com adresinde canlıda. |
 | 2026-10-28 | Kıyafet ve saçlar vücut siluetine esner; genel esnek nesneler (`Wrap`, masa örtüsü), ZzStudio'da seçeneği. |
 | 2026-10-28 | Anonim geri bildirim: çocuklar butonlarla, ebeveynler metinle; PHP + SQLite, IP tutulmaz, anahtarlı okuma sayfası. |
+| 2026-10-28 | İlk mahalle: Çiçek Sokağı + park; sokak, park ve harita arası tabelalarla geçiş. Diğer mahalleler haritada kilitli. |
+| 2026-10-28 | Ev tasarımı: kapı eklenince yeni oda (renk seçerek) veya mevcut oda seçilir; karşıya otomatik dönüş kapısı konur. |

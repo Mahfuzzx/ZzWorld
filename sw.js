@@ -5,7 +5,7 @@
 // hosts send week-long max-age headers). Unchanged files cost a short 304.
 // Offline the last cached copy is served. Bump VERSION on every release.
 
-const VERSION = 'v0.7.3';
+const VERSION = 'v0.7.4';
 const CACHE = `zzworld-${VERSION}`;
 
 const PRECACHE = [
@@ -13,7 +13,9 @@ const PRECACHE = [
   './index.html',
   './manifest.webmanifest',
   './src/game/catalog.js',
+  './src/game/citymap.js',
   './src/game/creator.js',
+  './src/game/doorpicker.js',
   './src/game/feedback-kid.js',
   './src/game/parent.js',
   './src/shared/pack.js',
@@ -38,6 +40,7 @@ const PRECACHE = [
   './content/core/defs/characters.json',
   './content/core/defs/music.json',
   './content/core/defs/songs.json',
+  './content/core/defs/street.json',
   './content/core/defs/food.json',
   './content/core/defs/furniture.json',
   './content/core/defs/house.json',
@@ -46,6 +49,9 @@ const PRECACHE = [
   './content/core/scenes/room.json',
   './content/core/scenes/bedroom.json',
   './content/core/scenes/bathroom.json',
+  './content/core/scenes/street.json',
+  './content/core/scenes/park.json',
+  './content/core/city.json',
   './icons/apple-touch-icon.png',
   './icons/icon-192.png',
   './icons/icon-512.png',
@@ -78,6 +84,7 @@ const PRECACHE = [
   './src/engine/warp.js',
   './src/game/game.css',
   './src/game/game.js',
+  './src/game/house.js',
   './src/game/hud.js',
   './src/main.js',
   './src/shared/feedback.js',

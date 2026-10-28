@@ -93,6 +93,7 @@ export class Renderer {
 
     const openings = scene.renderList().filter((e) => e.def.opening);
     if (scene.interior) this.#drawInterior(openings);
+    else if (scene.exterior) this.#drawExterior();
 
     this.#setWorldTransform(ctx);
     for (const { entity, front } of scene.drawPasses()) this.#drawEntity(entity, front);
@@ -172,13 +173,74 @@ export class Renderer {
     ctx.stroke();
   }
 
+  // Outdoors: the backdrop is the sky and the town; in front of it a sidewalk
+  // and a road, or grass with a path (parks).
+  #drawExterior() {
+    const { ctx, scene } = this;
+    const ex = scene.exterior;
+    const left = Math.min(0, this.viewLeft);
+    const width = Math.max(scene.width, this.viewLeft + this.visibleWidth) - left;
+    const y0 = scene.floorY;
+    this.#setWorldTransform(ctx);
+    const band = (y, h, color) => {
+      ctx.fillStyle = color;
+      ctx.fillRect(left, y, width, h);
+    };
+    const line = (y, w, alpha = 1, dash = null) => {
+      ctx.save();
+      ctx.strokeStyle = INK;
+      ctx.globalAlpha = alpha;
+      ctx.lineWidth = w;
+      if (dash) ctx.setLineDash(dash);
+      ctx.beginPath();
+      ctx.moveTo(left, y);
+      ctx.lineTo(left + width, y);
+      ctx.stroke();
+      ctx.restore();
+    };
+    if (ex.road) {
+      const curb = y0 + (ex.sidewalkDepth ?? 130);
+      band(y0, curb - y0, ex.sidewalk ?? '#d9cfc0');
+      for (let x = Math.floor(left / 120) * 120; x < left + width; x += 120) {
+        ctx.save();
+        ctx.strokeStyle = INK;
+        ctx.globalAlpha = 0.12;
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(x, y0);
+        ctx.lineTo(x - 20, curb);
+        ctx.stroke();
+        ctx.restore();
+      }
+      band(curb, scene.height - curb, ex.road);
+      line(curb, 6);
+      ctx.save();
+      ctx.strokeStyle = '#fff8e6';
+      ctx.lineWidth = 8;
+      ctx.setLineDash([60, 50]);
+      ctx.beginPath();
+      ctx.moveTo(left, (curb + scene.height) / 2);
+      ctx.lineTo(left + width, (curb + scene.height) / 2);
+      ctx.stroke();
+      ctx.restore();
+    } else {
+      band(y0, scene.height - y0, ex.grass ?? '#9fd0a8');
+      if (ex.path) band(y0 + 90, 70, ex.path);
+      line(y0 + 90, 3, 0.15);
+      line(y0 + 160, 3, 0.15);
+    }
+    line(y0, 6);
+  }
+
   // Darkens the scene at night. Window openings stay clear (the backdrop has its
   // own night look) and lights punch soft holes into the shade.
   #drawNightShade(night, openings) {
     const sctx = this.shadeLayer.getContext('2d');
     sctx.setTransform(1, 0, 0, 1, 0, 0);
     sctx.clearRect(0, 0, this.shadeLayer.width, this.shadeLayer.height);
-    sctx.fillStyle = `rgba(${NIGHT_SHADE.join(',')}, ${NIGHT_ALPHA * night})`;
+    // outdoors the sky has its own night look, so the shade is lighter there
+    const alpha = (this.scene.interior ? NIGHT_ALPHA : NIGHT_ALPHA * 0.6) * night;
+    sctx.fillStyle = `rgba(${NIGHT_SHADE.join(',')}, ${alpha})`;
     sctx.fillRect(0, 0, this.shadeLayer.width, this.shadeLayer.height);
 
     this.#setWorldTransform(sctx);

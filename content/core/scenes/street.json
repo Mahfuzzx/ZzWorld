@@ -1,0 +1,26 @@
+{
+  "id": "core.scene.street.cicek",
+  "hood": "core.hood.cicek",
+  "name": { "tr": "Çiçek Sokağı", "en": "Flower Street" },
+  "width": 2800,
+  "height": 1000,
+  "floorY": 680,
+  "exterior": { "sidewalk": "#d9cfc0", "road": "#8f959b" },
+  "backdrop": "core.backdrop.city",
+  "music": "core.song.room",
+  "entities": [
+    { "def": "core.facade.home", "x": 700, "y": 680 },
+    { "def": "core.door.front", "x": 700, "y": 680, "door": "toHome", "target": { "scene": "core.scene.room", "door": "toStreet" } },
+    { "def": "core.facade.blue", "x": 1350, "y": 680 },
+    { "def": "core.facade.yellow", "x": 2050, "y": 680 },
+    { "def": "core.tree", "x": 250, "y": 760 },
+    { "def": "core.mailbox", "x": 430, "y": 770 },
+    { "def": "core.flowers", "x": 960, "y": 750 },
+    { "def": "core.streetlamp", "x": 1040, "y": 760 },
+    { "def": "core.bush", "x": 1600, "y": 745 },
+    { "def": "core.bench", "x": 1760, "y": 790 },
+    { "def": "core.tree", "x": 2320, "y": 760, "colors": { "leaves": "#5fae6a" } },
+    { "def": "core.signpost.park", "x": 2520, "y": 730, "door": "toPark", "target": { "scene": "core.scene.park", "door": "toStreet" } },
+    { "def": "core.signpost.map", "x": 2700, "y": 730, "door": "fromMap", "target": { "scene": "@map" } }
+  ]
+}

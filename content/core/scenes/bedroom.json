@@ -1,5 +1,6 @@
 {
   "id": "core.scene.bedroom",
+  "hood": "core.hood.cicek",
   "name": { "tr": "Yatak odası", "en": "Bedroom" },
   "width": 1800,
   "height": 1000,

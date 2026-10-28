@@ -36,10 +36,12 @@ yeniden çalıştırın:
 ```
 node tools/gen-characters.mjs
 node tools/gen-house.mjs
+node tools/gen-street.mjs
 ```
 
 (`content/core/defs/characters.json`: karakter, saç/kıyafet/aksesuar parçaları,
-giysiler, gardırop, sandalye; `house.json`: kapı, levhalar, yatak odası ve banyo eşyaları.)
+giysiler, gardırop, sandalye; `house.json`: kapı, levhalar, yatak odası ve banyo eşyaları; `street.json`: ev cepheleri, ön kapı,
+tabelalar, sokak lambası, ağaç, çalı, bank, salıncak, havuz, çiçekler, posta kutusu.)
 
 ## Geri bildirim sunucusu (PHP + SQLite)
 

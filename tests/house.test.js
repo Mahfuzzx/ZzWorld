@@ -20,7 +20,8 @@ test('every door leads to a room with a door back', () => {
   assert.ok(rooms.has(readJson('manifest.json').startScene));
   let doors = 0;
   for (const room of rooms.values()) {
-    for (const door of room.entities.filter((e) => e.door)) {
+    // "@map" opens the city map instead of a room
+    for (const door of room.entities.filter((e) => e.door && !e.target.scene.startsWith('@'))) {
       doors++;
       const other = rooms.get(door.target.scene);
       assert.ok(other, `${room.id}/${door.door} → missing ${door.target.scene}`);
@@ -29,7 +30,7 @@ test('every door leads to a room with a door back', () => {
       assert.deepEqual(back.target, { scene: room.id, door: door.door }, `${other.id}/${back.door} does not lead back`);
     }
   }
-  assert.equal(doors, 4);
+  assert.equal(doors, 8, 'house rooms, the street and the park');
 });
 
 test('all rooms build from their templates and survive a save', () => {
@@ -130,4 +131,28 @@ test('doors are not in the catalog; a door leading nowhere can be thrown away', 
   const scene = new Scene(defs, { id: 'x' }, services());
   assert.equal(scene.spawn('core.door', { target: { scene: 'y', door: 'b' } }).canDelete(), false);
   assert.equal(scene.spawn('core.door').canDelete(), true, 'an old catalog door without a target');
+});
+
+test('house design: a new door and the room behind it point at each other', async () => {
+  const { linkDoors, newDoorKey, newRoomTemplate, freeSpot } = await import('../src/game/house.js');
+  const defs = coreDefs();
+  const living = Scene.fromTemplate(defs, templates()[0], services());
+  const key = newDoorKey(living);
+  assert.ok(![...living.entities.values()].some((e) => e.door === key), 'a key not used yet');
+  const door = living.spawn('core.door', { x: 900, y: living.floorY, door: key });
+
+  const room = Scene.fromTemplate(defs, newRoomTemplate('user.room.test', 'core.hood.cicek'), services());
+  const back = linkDoors(living, door, room);
+  assert.deepEqual(door.target, { scene: 'user.room.test', door: back.door });
+  assert.deepEqual(back.target, { scene: living.id, door: key });
+  assert.equal(back.y, room.floorY);
+  // the door back keeps clear of the window in the middle of the new room
+  assert.ok(Math.abs(back.x - 800) > 200, `door back at ${back.x}`);
+  assert.equal(door.canDelete(), false, 'now that it leads somewhere it stays');
+
+  // the new room survives a save and keeps its way back
+  const restored = Scene.deserialize(defs, JSON.parse(JSON.stringify(room.serialize())), services());
+  assert.equal(restored.hood, 'core.hood.cicek');
+  assert.deepEqual([...restored.entities.values()].find((e) => e.door === back.door).target, back.target);
+  assert.ok(freeSpot(restored) > 0);
 });

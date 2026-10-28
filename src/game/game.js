@@ -12,6 +12,9 @@ import { addUserDefs } from '../shared/pack.js';
 import { flushFeedback } from '../shared/feedback.js';
 import { openKidFeedback } from './feedback-kid.js';
 import { openParentGate, openParentPanel } from './parent.js';
+import { openCityMap } from './citymap.js';
+import { openDoorPicker } from './doorpicker.js';
+import { freeSpot, linkDoors, newDoorKey, newRoomTemplate } from './house.js';
 
 const WORLD_ID = 'world-1'; // single slot until the world picker exists
 // City-wide default; neighbourhoods and streets will override it once the map exists.
@@ -37,6 +40,7 @@ export async function startGame(root) {
     const template = await fetchJson(new URL(`scenes/${file}`, coreUrl));
     templates.set(template.id, template);
   }
+  const city = manifest.city ? await fetchJson(new URL(manifest.city, coreUrl)) : { neighborhoods: [] };
 
   const audio = new AudioEngine();
   const music = new MusicPlayer(audio);
@@ -164,18 +168,49 @@ export async function startGame(root) {
     onModeChange: (mode) => catalog.setMode(mode),
     onFeedback: () => openKidFeedback({ root, onGesture: unlockAudio }),
     onParent: () => openParentGate({ root, onPass: () => openParentPanel({ root }) }),
+    onMap: () => openMap(),
   });
-  catalog = createCatalog(root, { defs, userIds, renderer, input, hud, onGesture: unlockAudio, onNewCharacter: newCharacter });
+  // House design: a new door asks where it leads (a new room or one that exists).
+  const roomsIn = (hood, exceptId) => {
+    const rooms = new Map();
+    for (const tpl of templates.values()) if (tpl.interior && tpl.hood === hood) rooms.set(tpl.id, tpl);
+    for (const saved of Object.values(world.scenes)) if (saved.interior && saved.hood === hood) rooms.set(saved.id, { ...rooms.get(saved.id), ...saved });
+    rooms.delete(exceptId);
+    return [...rooms.values()].map((r) => ({ id: r.id, name: r.name ?? templates.get(r.id)?.name, wall: r.interior.wall, floor: r.interior.floor }));
+  };
+  const newDoor = () => {
+    const scene = state.scene;
+    if (!scene.interior) return false;
+    // the emptiest bit of wall the child can see right now
+    const x = freeSpot(scene, 150, renderer.viewLeft, renderer.viewLeft + renderer.visibleWidth);
+    const door = scene.spawn('core.door', { x, y: scene.floorY, door: newDoorKey(scene) });
+    openDoorPicker({
+      root,
+      rooms: roomsIn(scene.hood, scene.id),
+      onGesture: unlockAudio,
+      onCancel: () => scene.remove(door),
+      onPick: (choice) => {
+        const other = choice.newRoom
+          ? Scene.fromTemplate(defs, newRoomTemplate(`user.room.${Date.now().toString(36)}`, scene.hood, choice.newRoom), services)
+          : loadScene(choice.room);
+        linkDoors(scene, door, other);
+        world.scenes[other.id] = other.serialize();
+        door.setState('open');
+        save();
+      },
+    });
+    return true;
+  };
+  catalog = createCatalog(root, { defs, userIds, renderer, input, hud, onGesture: unlockAudio, onNewCharacter: newCharacter, onNewDoor: newDoor });
 
-  // ---------- going through doors ----------
+  // ---------- going places ----------
 
-  // `entity` (or nothing: the child taps an open door) goes to the door's
-  // target. Characters take the view with them; things just go.
+  // Goes to a scene, arriving at one of its doors. `entity` (optional) is
+  // carried along; characters take the view with them, things just go.
   let travelling = false;
-  services.travel = async (entity, portal) => {
-    if (travelling || !portal.target) return;
+  const goTo = async (targetId, targetDoor, entity = null) => {
+    if (travelling) return;
     const from = state.scene;
-    const { scene: targetId, door: targetDoor } = portal.target;
     if (!templates.has(targetId) && !world.scenes[targetId]) return;
 
     const moving = entity ? from.extract(entity) : null;
@@ -213,6 +248,22 @@ export async function startGame(root) {
     fade.classList.remove('on');
     travelling = false;
     save();
+  };
+
+  const openMap = () => openCityMap({
+    root,
+    city,
+    current: state.scene.hood,
+    onGesture: unlockAudio,
+    onPick: (hood) => hood.entry && goTo(hood.entry.scene, hood.entry.door),
+  });
+
+  // Doors and signposts: "@map" opens the city map, anything else is a scene.
+  services.travel = (entity, portal) => {
+    const target = portal.target;
+    if (!target) return;
+    if (target.scene === '@map') openMap();
+    else goTo(target.scene, target.door, entity);
   };
 
   // The sun/moon button is world-wide: every entity hears world:day / world:night.
