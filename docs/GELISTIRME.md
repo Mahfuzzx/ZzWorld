@@ -119,8 +119,30 @@ deposunu kullanır; orada ayrıca içe aktarmak gerekir.
 ## Service worker ve önbellek
 
 `sw.js` "önce ağ" stratejisi kullanır: sunucuya ulaşılabiliyorsa her zaman güncel
-dosya gelir, ağ yoksa önbellekteki kopya kullanılır. Önceden önbelleğe alınan dosya
-listesi (`PRECACHE`) değiştiğinde `VERSION` artırılmalıdır.
+dosya gelir, ağ yoksa önbellekteki kopya kullanılır. Her istek sunucuya "değişti mi?"
+diye sorar (`cache: 'no-cache'`); böylece sunucu uzun önbellek süresi gönderse bile
+(ör. LiteSpeed'in 7 günlük `max-age` değeri) kurulu uygulama eski kodu çalıştırmaz.
+
+Kurulu uygulama, ekrana her dönüşünde yeni sürüm var mı diye bakar; yeni service worker
+devreye girince dünyayı kaydedip sayfayı bir kez yeniler.
+
+## Yeni sürüm yayınlama
+
+1. `sw.js` içindeki `VERSION` değerini artırın (her yayında; tablet ve telefonlardaki
+   kurulu uygulamalar güncellemeyi bundan anlar). Yeni dosya eklendiyse `PRECACHE`
+   listesine de ekleyin.
+2. `src/shared/version.js` içindeki `APP_VERSION` değerini artırın (ebeveyn
+   bölümünde ve geri bildirimlerde görünür).
+3. Dosyaları sunucuya yükleyin ve önbellek başlıklarını kontrol edin:
+   ```
+   curl -sI https://worldzz.com/src/main.js
+   ```
+   `Cache-Control: no-cache` görünmelidir (`.htaccess` ayarlar; sunucu
+   `mod_headers` desteklemiyorsa barındırma panelinden ayarlanmalıdır).
+
+Bu düzenlemeden önce kurulmuş uygulamalar eski kodla çalıştığı için kendiliğinden
+yenilenmez: tarayıcı yeni `sw.js` dosyasını en geç 24 saat içinde alır; uygulamanın
+bir kez tamamen kapatılıp açılması yeter. Sonraki sürümler kendiliğinden gelir.
 
 ## Güvenlik kuralı (CSP)
 

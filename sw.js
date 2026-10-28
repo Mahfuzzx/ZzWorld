@@ -1,9 +1,11 @@
 // ZzWorld service worker.
 // Strategy: network-first for same-origin GET requests, falling back to the cache.
-// During development changes show up on a normal reload; offline the last cached
-// copy is served. Bump VERSION when the precache list changes.
+// Every request asks the server whether the file changed ("no-cache"), so an
+// installed app never runs old code because of the browser's HTTP cache (some
+// hosts send week-long max-age headers). Unchanged files cost a short 304.
+// Offline the last cached copy is served. Bump VERSION on every release.
 
-const VERSION = 'v12';
+const VERSION = 'v13';
 const CACHE = `zzworld-${VERSION}`;
 
 const PRECACHE = [
@@ -89,7 +91,7 @@ const PRECACHE = [
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE)
-      .then((cache) => cache.addAll(PRECACHE))
+      .then((cache) => cache.addAll(PRECACHE.map((url) => new Request(url, { cache: 'reload' }))))
       .then(() => self.skipWaiting()),
   );
 });
@@ -115,7 +117,7 @@ self.addEventListener('fetch', (event) => {
   event.respondWith((async () => {
     const cache = await caches.open(CACHE);
     try {
-      const response = await fetch(request);
+      const response = await fetch(request, { cache: 'no-cache' });
       if (response.ok) cache.put(request, response.clone());
       return response;
     } catch {

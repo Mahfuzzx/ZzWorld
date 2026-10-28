@@ -9,3 +9,20 @@ RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=302,L]
 RedirectMatch 404 /\.git
 
 AddType application/manifest+json .webmanifest
+
+# Code and content must never be kept for days by browsers: an installed app
+# would keep running an old version. "no-cache" still allows caching, but the
+# browser asks first ("has it changed?") and gets a short 304 if not.
+# Pictures and fonts may be cached for a week.
+<IfModule mod_expires.c>
+  ExpiresActive Off
+</IfModule>
+<IfModule mod_headers.c>
+  <FilesMatch "\.(html|js|mjs|css|json|webmanifest)$">
+    Header set Cache-Control "no-cache"
+    Header unset Expires
+  </FilesMatch>
+  <FilesMatch "\.(png|svg|jpg|jpeg|webp|woff2?)$">
+    Header set Cache-Control "public, max-age=604800"
+  </FilesMatch>
+</IfModule>
