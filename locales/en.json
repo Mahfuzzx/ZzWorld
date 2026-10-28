@@ -104,7 +104,12 @@
       "radius": "Radius",
       "when": "Shines when",
       "clear": "Remove",
-      "count": "{n}"
+      "count": "{n}",
+      "wrap": "Stretchy cover",
+      "wrapOn": "Wraps around what it is dropped on",
+      "wrapHint": "Like a tablecloth, blanket or cover: dropped on something, it stretches to its shape. Draw it flat (spread out).",
+      "depth": "How far down it reaches (%)",
+      "drape": "Hang down like cloth (off: hug the shape tightly)"
     },
     "reactions": {
       "hint": "Reactions from the kind (pick up, land) already work; the ones you add here replace them.",
@@ -315,5 +320,53 @@
       "adult": "Adult",
       "elder": "Elder"
     }
+  },
+  "kidFeedback": {
+    "open": "Tell us what you think",
+    "send": "Send",
+    "moods": {
+      "1": "I did not like it",
+      "2": "Not really",
+      "3": "It is OK",
+      "4": "I like it",
+      "5": "I love it"
+    },
+    "tags": {
+      "love": "I love it",
+      "idea": "I have an idea",
+      "bug": "Something is broken",
+      "hard": "It was hard"
+    }
+  },
+  "parent": {
+    "open": "Parents",
+    "title": "For parents",
+    "close": "Close",
+    "numbers": "zero,one,two,three,four,five,six,seven,eight,nine",
+    "gate": {
+      "title": "For grown-ups",
+      "question": "What is {a} plus {b}?"
+    },
+    "feedback": {
+      "title": "Send feedback",
+      "note": "Your message is anonymous: only the text you write, the game version and the language are sent. Please do not write personal details such as names, addresses, phone numbers or e-mail addresses.",
+      "placeholder": "Your idea, a bug you found, or a suggestion…",
+      "categories": {
+        "idea": "Idea / suggestion",
+        "bug": "Bug",
+        "other": "Other"
+      },
+      "send": "Send",
+      "sent": "Thank you, your message was sent.",
+      "queued": "Could not send right now; it will be sent automatically when you are online.",
+      "empty": "Please write a message first."
+    },
+    "language": "Language",
+    "privacy": {
+      "title": "Privacy",
+      "text": "ZzWorld has no ads, needs no account and never sends game data anywhere: worlds, drawings and recordings stay on this device.\nThe only exception is anonymous feedback you choose to send. No identity, device details or location are sent with it, and IP addresses are not stored."
+    },
+    "source": "Open source code (GitHub)",
+    "version": "Version"
   }
 }

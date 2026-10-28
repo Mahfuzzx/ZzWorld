@@ -257,6 +257,7 @@ Nesneye eklenen, aynı arayüzü paylaşan modüller:
 | `Motion` | kendi başına hareket (araç sürüşü) |
 | `Affordance` | ajanlara bir ihtiyacı karşıladığını ilan eder (bkz. §11) |
 | `Wearable` | karaktere giyilir (bkz. §14.4) |
+| `Wrap` | esnek örtü: bırakıldığı nesnenin siluetine göre esner (masa örtüsü); `depth`, `drape` |
 | `SoundModifier` | içine atılan sesi değiştirir (papağan, robot) |
 
 ### 5.3 Nesne tanımı
@@ -699,6 +700,12 @@ yaşa göre esnetilir; böylece bir şapka her yaşa uyar. Alanlar: `slot`, `age
 - Başlık: şapka, hasır şapka, bere, başörtüsü, takke, taç. Gözlük, güneş gözlüğü.
 - Özellikler: çil, vitiligo, sakal, bıyık, işitme cihazı, protez bacak; 10 ten rengi.
 
+**Esneyen kıyafetler:** kıyafetler ve ön saç, giyildikleri vücut parçasının
+siluetine "zarf bükme" ile sarılır (`src/engine/warp.js`): her yükseklik satırında
+kıyafetin sol/sağ kenarı vücudun kenarına (artı kumaş payı) oturur; yuvarlak köşeleri,
+incelen bacakları ve yuvarlak başı takip eder. Kasıtlı taşan parçalar (ayakkabılar, bebek
+perçemi) `"fit": false` ile bükülmez.
+
 **Davranışlar:** `Face` (başa/gövdeye dokunma), `Wearer` (kıyafet giydirme; eskisi yere
 düşer), elde tutma (sağ eldeki `Container`), `Seat` (sandalye; karakter oturur, `sit`
 pozu). Klipler: `idle`, `wave`, `jump`, `sit`, `dangle` (kaldırılınca bacak sallama).
@@ -799,10 +806,29 @@ Her editörde canlı önizleme ve nesneyi bir test sahnesinde deneme.
 5. Mikrofon yalnızca kayıt butonu basılıyken açıktır.
 6. Analitik, reklam, hesap, sunucu yok.
 
+### 18.1b Anonim geri bildirim (tek istisna)
+
+Oyuncular isterlerse geri bildirim gönderebilir; bu, "veri cihazdan çıkmaz" ilkesinin
+bilinçli tek istisnasıdır ve tamamen anonimdir:
+- **Çocuklar** (sol üstteki kalp): yazısız; bir yüz ifadesi ve isteğe bağlı resimler
+  (çok sevdim, fikrim var, bir şey bozuk, zor geldi). Çocuğun kimliğini belli edecek
+  hiçbir şey gönderilemez.
+- **Ebeveynler** (ebeveyn bölümü): kategori ve serbest metin; kişisel bilgi yazmamaları
+  için uyarı vardır.
+- Gönderilen: seçilenler / metin, dil, oyun sürümü. Sunucuda yalnızca tarih (saat yok)
+  eklenir. IP, tarayıcı bilgisi, çerez, cihaz kimliği gönderilmez ve saklanmaz; istekler
+  çerezsiz (`credentials: omit`) gider. Çevrimdışıyken yazılanlar cihazda bekler.
+- Sunucu: `api/feedback.php` (PHP + SQLite, web kökü dışında), okuma sayfası
+  `api/admin.php` (anahtarla). Kurulum: docs/GELISTIRME.md.
+
 ### 18.2 Ebeveyn kapısı
 **Yazıyla sorulan bir işlem:** "Yedi artı beş kaç?" gibi bir soru, seçilen dilde yazıyla
 gösterilir ve rakamlı tuşlarla cevaplanır. Soru her seferinde rastgele seçilir.
-Okuma bilmeyen çocuk geçemez.
+Okuma bilmeyen çocuk geçemez. 3 yanlış cevapta kapı kapanır.
+
+**Uygulandı:** sol alttaki küçük anahtar düğmesi kapıyı açar. Ebeveyn bölümünde şimdilik
+geri bildirim, dil seçimi (cihaz dilinin yerine geçer) ve gizlilik bilgisi var; mikrofon
+ve ses ayarları, yedekleme 10. adımda eklenecek.
 
 ### 18.3 Ebeveyn bölümü içeriği
 - Mikrofon aç/kapa (varsayılan **kapalı**), tüm kayıtları silme
@@ -897,3 +923,6 @@ Okuma bilmeyen çocuk geçemez.
 | 2026-10-26 | Döngüsel/hareketli katmanlar ve hava efektleri (yağmur, kar, şimşek, sis). |
 | 2026-10-26 | Işık modeli: ortam ışığı + `Light` davranışlı ışık kaynakları; arka planlar da ışık/ses üreten nesneler içerebilir. |
 | 2026-10-26 | Bu sistem önce dokümana; kodu ZzStudio'dan sonra. |
+| 2026-10-28 | Oyun worldzz.com adresinde canlıda. |
+| 2026-10-28 | Kıyafet ve saçlar vücut siluetine esner; genel esnek nesneler (`Wrap`, masa örtüsü), ZzStudio'da seçeneği. |
+| 2026-10-28 | Anonim geri bildirim: çocuklar butonlarla, ebeveynler metinle; PHP + SQLite, IP tutulmaz, anahtarlı okuma sayfası. |

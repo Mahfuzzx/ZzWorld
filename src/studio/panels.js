@@ -104,6 +104,20 @@ const PANELS = {
       );
     }
 
+    const wrap = doc.behavior('Wrap');
+    out.push(
+      section(t('studio.behavior.wrap')),
+      check(t('studio.behavior.wrapOn'), !!wrap, (on) => doc.setBehavior('Wrap', on ? { depth: 0.5, drape: true } : null)),
+      hint(t('studio.behavior.wrapHint')),
+    );
+    if (wrap) {
+      const { type, ...config } = wrap;
+      out.push(
+        field(t('studio.behavior.depth'), number(Math.round((config.depth ?? 0.5) * 100), (v) => doc.setBehavior('Wrap', { ...config, depth: Math.min(100, Math.max(5, v)) / 100 }), { min: 5, max: 100, step: 5 })),
+        check(t('studio.behavior.drape'), config.drape !== false, (on) => doc.setBehavior('Wrap', { ...config, drape: on })),
+      );
+    }
+
     out.push(section(`${t('studio.behavior.surfaces')} · ${t('studio.behavior.count', { n: def.surfaces?.length ?? 0 })}`),
       hint(t('studio.behavior.surfacesHint')));
     if (def.surfaces?.length) {

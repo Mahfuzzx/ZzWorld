@@ -41,6 +41,34 @@ node tools/gen-house.mjs
 (`content/core/defs/characters.json`: karakter, saç/kıyafet/aksesuar parçaları,
 giysiler, gardırop, sandalye; `house.json`: kapı, levhalar, yatak odası ve banyo eşyaları.)
 
+## Geri bildirim sunucusu (PHP + SQLite)
+
+Oyundaki geri bildirimler `api/feedback.php` adresine gider; `api/admin.php` onları
+okuma sayfasıdır. PHP 8 ve `pdo_sqlite` gerekir.
+
+1. **Veri klasörü:** veritabanı varsayılan olarak web kökünün üç üstündeki
+   `zzworld-data/` klasörüne yazılır (`…/htdocs/ZzWorld/api` → `…/zzworld-data`).
+   Sunucuda bu klasör web kökü içinde kalıyorsa ya da yazılamıyorsa
+   `api/config.sample.php` dosyasını `api/config.local.php` olarak kopyalayıp
+   `data_dir` değerini değiştirin. `config.local.php` git'e girmez.
+2. **Okuma anahtarı:** `api/admin.php` adresini açın, en az 12 karakterlik bir anahtar
+   yazın; sayfanın verdiği satırı `config.local.php` içindeki `admin_key_hash` alanına
+   koyun. Anahtarın kendisi hiçbir yere kaydedilmez.
+3. **Erişim kaydı:** geri bildirim adresi Apache erişim kaydına (IP adresleriyle)
+   yazılmamalıdır. `httpd.conf` (veya site yapılandırması) içinde:
+   ```
+   SetEnvIf Request_URI "/api/feedback.php$" zz_nolog
+   CustomLog "logs/access.log" common env=!zz_nolog
+   ```
+   (Mevcut `CustomLog` satırına `env=!zz_nolog` eklemek yeterlidir; SSL sitesinin
+   kendi `CustomLog` satırı varsa ona da.)
+
+`api/.htaccess` paylaşılan kodu, ayar dosyalarını ve veritabanı dosyalarını dışarıya
+kapatır. Geri bildirimde yalnızca tarih (saat yok), tür, seçilen yüz/resimler veya
+ebeveynin yazdığı metin (en fazla 1000 karakter), dil ve oyun sürümü saklanır; IP adresi,
+tarayıcı bilgisi, çerez ya da kimlik saklanmaz. Kötüye kullanıma karşı yalnızca herkes için
+ortak saatlik bir üst sınır vardır (`max_per_hour`).
+
 ## Neden HTTPS?
 
 Service worker (çevrimdışı oyun, cihaza kurma) ve mikrofon yalnızca güvenli bağlamda

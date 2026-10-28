@@ -13,3 +13,6 @@ desktop.ini
 # Dependencies / builds (if ever added)
 node_modules/
 dist/
+
+# Server settings with secrets (see api/config.sample.php)
+api/config.local.php

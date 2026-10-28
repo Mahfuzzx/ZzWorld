@@ -42,7 +42,7 @@
         { "def": "core.apple", "colors": { "body": "#9bcf53" } }
       ]
     },
-    { "def": "core.table", "x": 820, "y": 820 },
+    { "def": "core.table", "x": 820, "y": 820, "contains": [{ "def": "core.tablecloth" }] },
     { "def": "core.apple", "x": 740, "y": 670 },
     { "def": "core.basket", "x": 880, "y": 670 },
     { "def": "core.lamp", "x": 1200, "y": 790 },

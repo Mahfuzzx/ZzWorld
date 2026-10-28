@@ -1,0 +1,11 @@
+# Only feedback.php and admin.php are public. The shared code, the settings and
+# any data file never are.
+Options -Indexes
+
+<FilesMatch "^(lib|config.*)\.php$">
+  Require all denied
+</FilesMatch>
+
+<FilesMatch "\.(sqlite|sqlite-wal|sqlite-shm|db|log)$">
+  Require all denied
+</FilesMatch>

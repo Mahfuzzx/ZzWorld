@@ -48,7 +48,7 @@ const hair = [
   }, { ages: NOT_BABY }),
   part('hair.tuft', 'hair', { tr: 'Perçem', en: 'Tuft' }, {
     front: [path('M42 4 C44 -12 60 -12 58 2 C54 -4 48 -4 42 4 Z', '$hair')],
-  }, { ages: ['baby', 'child'] }),
+  }, { fit: false, ages: ['baby', 'child'] }), // sits on top of the head: no bending
 ];
 
 // ---------- tops ($main): torso, arm, hips ----------
@@ -102,15 +102,15 @@ const bottoms = [
 const shoes = [
   part('shoes.sneakers', 'shoes', { tr: 'Spor ayakkabı', en: 'Trainers' }, {
     leg: [ellipse(54, 95, 60, 10, '$main'), path('M-4 99 H112', null, { lw: 3, stroke: '#ffffff' })],
-  }, { color: '#ffffff', ages: NOT_BABY }),
+  }, { color: '#ffffff', fit: false, ages: NOT_BABY }),
   part('shoes.boots', 'shoes', { tr: 'Bot', en: 'Boots' }, {
     leg: [rectS(-4, 72, 108, 26, '$main', { r: 8 }), ellipse(60, 96, 56, 9, '$main')],
-  }, { color: '#8a5a2b', ages: NOT_BABY }),
+  }, { color: '#8a5a2b', fit: false, ages: NOT_BABY }),
   part('shoes.sandals', 'shoes', { tr: 'Sandalet', en: 'Sandals' }, {
     leg: [ellipse(54, 99, 58, 5, '#c98a4b'), path('M4 92 L96 92 M50 84 L50 98', null, { lw: 4, stroke: '$main' })],
-  }, { color: '#e8735a', ages: NOT_BABY }),
+  }, { color: '#e8735a', fit: false, ages: NOT_BABY }),
   part('shoes.booties', 'shoes', { tr: 'Patik', en: 'Booties' }, { leg: [ellipse(50, 90, 58, 16, '$main')] },
-    { color: '#ffd166', ages: ['baby'] }),
+    { color: '#ffd166', fit: false, ages: ['baby'] }),
 ];
 
 // ---------- head: back (behind head), hat (on top) ----------

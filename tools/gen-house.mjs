@@ -206,6 +206,23 @@ const duck = {
   },
 };
 
-const all = [door, ...signs, bed, toybox, teddy, picture, bathtub, sink, mirror, duck];
+// ---------- covers ----------
+// Lies flat when on its own; dropped on a table it bends over the table top and hangs down.
+const checks = [];
+for (let y = 0; y < 100; y += 20) for (let x = (y / 20) % 2 ? 20 : 0; x < 220; x += 40) checks.push(rect(x, y, 20, 20, '#ffffff', { alpha: 0.55, stroke: null }));
+const tablecloth = {
+  id: 'core.tablecloth', extends: 'core.item.base',
+  name: { tr: 'Masa örtüsü', en: 'Tablecloth' },
+  size: [220, 110],
+  colorSlots: { cloth: '#e04f3a' },
+  behaviors: [{ type: 'Wrap', depth: 0.42, drape: true }],
+  art: { default: [
+    path('M0 0 H220 V100 Q211 110 202 100 Q193 110 184 100 Q175 110 166 100 Q157 110 148 100 Q139 110 130 100 Q121 110 112 100 Q103 110 94 100 Q85 110 76 100 Q67 110 58 100 Q49 110 40 100 Q31 110 22 100 Q13 110 4 100 L0 100 Z', '$cloth'),
+    ...checks,
+  ] },
+  reactions: { dropInto: [{ do: 'PlaySound', sound: 'whoosh', volume: 0.5 }] },
+};
+
+const all = [door, ...signs, bed, toybox, teddy, picture, bathtub, sink, mirror, duck, tablecloth];
 writeFileSync(new URL('../content/core/defs/house.json', import.meta.url), `${JSON.stringify(all, null, 1)}\n`);
 console.log(`${all.length} definitions written`);

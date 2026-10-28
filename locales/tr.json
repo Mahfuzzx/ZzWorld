@@ -104,7 +104,12 @@
       "radius": "Yarıçap",
       "when": "Ne zaman yanar",
       "clear": "Kaldır",
-      "count": "{n} tane"
+      "count": "{n} tane",
+      "wrap": "Esnek örtü",
+      "wrapOn": "Bırakıldığı nesneye sarılsın",
+      "wrapHint": "Masa örtüsü, battaniye, kılıf gibi: bir nesnenin üstüne bırakılınca onun şekline göre esner. Çizimi düz (açık) hâliyle yap.",
+      "depth": "Ne kadar aşağı insin (%)",
+      "drape": "Kumaş gibi aşağı sarksın (kapalıysa şekle sıkıca sarılır)"
     },
     "reactions": {
       "hint": "Türden gelen tepkiler (kaldırınca, yere düşünce) zaten çalışır; burada eklediklerin onları değiştirir.",
@@ -315,5 +320,53 @@
       "adult": "Yetişkin",
       "elder": "Yaşlı"
     }
+  },
+  "kidFeedback": {
+    "open": "Bize ne düşündüğünü söyle",
+    "send": "Gönder",
+    "moods": {
+      "1": "Hiç beğenmedim",
+      "2": "Pek beğenmedim",
+      "3": "Fena değil",
+      "4": "Beğendim",
+      "5": "Bayıldım"
+    },
+    "tags": {
+      "love": "Çok sevdim",
+      "idea": "Bir fikrim var",
+      "bug": "Bir şey bozuk",
+      "hard": "Zor geldi"
+    }
+  },
+  "parent": {
+    "open": "Ebeveyn bölümü",
+    "title": "Ebeveyn bölümü",
+    "close": "Kapat",
+    "numbers": "sıfır,bir,iki,üç,dört,beş,altı,yedi,sekiz,dokuz",
+    "gate": {
+      "title": "Yetişkinler için",
+      "question": "{a} artı {b} kaç?"
+    },
+    "feedback": {
+      "title": "Geri bildirim gönder",
+      "note": "Mesajınız anonimdir: yalnızca yazdığınız metin, oyunun sürümü ve dili gönderilir. Lütfen ad, adres, telefon veya e-posta gibi kişisel bilgiler yazmayın.",
+      "placeholder": "Fikriniz, bulduğunuz bir hata ya da önerileriniz…",
+      "categories": {
+        "idea": "Fikir / öneri",
+        "bug": "Hata",
+        "other": "Diğer"
+      },
+      "send": "Gönder",
+      "sent": "Teşekkürler, mesajınız gönderildi.",
+      "queued": "Şu an gönderilemedi; internet bağlantısı olunca kendiliğinden gönderilecek.",
+      "empty": "Lütfen önce bir mesaj yazın."
+    },
+    "language": "Dil",
+    "privacy": {
+      "title": "Gizlilik",
+      "text": "ZzWorld reklam içermez, hesap istemez ve oyun verilerini hiçbir yere göndermez: dünyalar, çizimler ve ses kayıtları yalnızca bu cihazda saklanır.\nTek istisna, kendi isteğinizle gönderdiğiniz anonim geri bildirimlerdir. Bunlarla birlikte kimlik, cihaz bilgisi veya konum gönderilmez ve IP adresi kaydedilmez."
+    },
+    "source": "Açık kaynak kodu (GitHub)",
+    "version": "Sürüm"
   }
 }

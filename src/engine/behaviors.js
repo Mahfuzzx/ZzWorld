@@ -1,5 +1,7 @@
 import { Behavior } from './behavior.js';
 import { degreeToMidi } from '../audio/theory.js';
+import { partGroups } from './compose.js';
+import { envelope, warpShape, fitMap, drapeMap } from './warp.js';
 
 // A piece of clothing (or glasses…) lying in the world: { "part": "core.part.top.tshirt" }.
 // Its colour slot "main" becomes the garment's colour when worn.
@@ -70,8 +72,9 @@ export class Container extends Behavior {
     return this.config.area ?? [0, 0, this.entity.width, this.entity.height];
   }
 
+  // covers (Wrap) are children too, but not contents
   contents() {
-    return this.entity.scene.childrenOf(this.entity);
+    return this.entity.scene.childrenOf(this.entity).filter((c) => !c.wrapping);
   }
 
   showsContents() {
@@ -181,5 +184,81 @@ export class Doorway extends Behavior {
 
   receive(item) {
     this.entity.scene.services.travel(item, this.entity);
+  }
+}
+
+// A cover that bends to whatever it is dropped on: a tablecloth drapes over a
+// table, a blanket over a box. The cover's own drawing is bent to the outline
+// of the thing below; pulling it off makes it flat again.
+//   { "type": "Wrap", "depth": 0.5, "drape": true }
+//   depth: how far down it reaches (part of the covered thing's height)
+//   drape: hang straight down from the widest point (cloth) instead of hugging
+export class Wrap extends Behavior {
+  static type = 'Wrap';
+
+  constructor(entity, config, saved) {
+    super(entity, config, saved);
+    this.on = saved?.on ?? null;
+    this.baseDef = entity.def;
+    this.applied = null;
+  }
+
+  get target() {
+    const p = this.entity.parent;
+    return p && p.id === this.on ? p : null;
+  }
+
+  wrap(target) {
+    const e = this.entity;
+    e.parentId = target.id;
+    e.restingOn = null;
+    e.fall = null;
+    this.on = target.id;
+    this.apply();
+  }
+
+  unwrap() {
+    this.on = null;
+    this.applied = null;
+    this.entity.def = this.baseDef;
+  }
+
+  // Bends the cover's drawing to the target's current outline.
+  apply() {
+    const target = this.target;
+    if (!target) return;
+    const e = this.entity;
+    const shapes = partGroups(target.def, target.state, 'art').flatMap((g) => g.shapes);
+    const env = envelope(shapes);
+    if (!Number.isFinite(env.top)) return;
+    const [w, h] = this.baseDef.size ?? [100, 100];
+    const box = { x: 0, y: env.top - 2, w: target.width, h: target.height * (this.config.depth ?? 0.5) };
+    const fit = this.config.drape === false ? fitMap(box, env, { pad: 2 }) : drapeMap(box, env);
+    const map = (x, y) => fit((x / w) * 100, (y / h) * 100);
+    const bend = (list) => (list ? Object.fromEntries(Object.entries(list).map(([state, art]) => [state, art.map((s) => warpShape(s, map))])) : undefined);
+    e.def = {
+      ...this.baseDef,
+      id: `${this.baseDef.id}@${target.def.id}:${target.state}`,
+      size: [target.width, target.height],
+      art: bend(this.baseDef.art),
+      artFront: bend(this.baseDef.artFront),
+    };
+    e.scene.moveTo(e, target.x, target.y);
+    this.applied = `${target.def.id}:${target.state}`;
+  }
+
+  layout() {
+    if (this.on && this.target) this.apply();
+    else if (this.on) this.unwrap();
+  }
+
+  tick() {
+    // the covered thing changed (a box opened): follow its new shape
+    const target = this.target;
+    if (target && this.applied !== `${target.def.id}:${target.state}`) this.apply();
+  }
+
+  serialize() {
+    return this.on ? { on: this.on } : undefined;
   }
 }

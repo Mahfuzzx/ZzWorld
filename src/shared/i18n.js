@@ -7,7 +7,14 @@ const FALLBACK = 'en';
 let current = FALLBACK;
 let strings = {};
 
+// The language chosen in the parent section wins over the device language.
 export function detectLanguage() {
+  try {
+    const chosen = localStorage.getItem('zz.lang');
+    if (SUPPORTED.includes(chosen)) return chosen;
+  } catch {
+    // storage blocked: fall back to the device language
+  }
   for (const tag of navigator.languages ?? [navigator.language]) {
     const base = tag.toLowerCase().split('-')[0];
     if (SUPPORTED.includes(base)) return base;

@@ -71,7 +71,33 @@ export class Entity {
 
   get visible() {
     const parent = this.parent;
-    return !parent || (parent.visible && parent.behaviors.some((b) => b.showsContents()));
+    if (!parent) return true;
+    // a cover lies over its target, so it shows even on a closed box
+    if (this.wrapping) return parent.visible;
+    return parent.visible && parent.behaviors.some((b) => b.showsContents());
+  }
+
+  // Is this a cover (Wrap) lying over its parent right now?
+  get wrapping() {
+    return !!this.#wrapBehavior()?.target;
+  }
+
+  #wrapBehavior() {
+    return this.behaviors.find((b) => b.constructor.type === 'Wrap') ?? null;
+  }
+
+  // Can a cover be put over this? Characters and wall things say no.
+  canBeWrapped() {
+    return !this.isCharacter && !!this.def.art;
+  }
+
+  // The Wrap behaviour of `item` if it could cover this entity now.
+  #coverFor(item) {
+    if (item === this || item.isAncestorOf(this) || !this.canBeWrapped()) return null;
+    const wrap = item.#wrapBehavior();
+    if (!wrap) return null;
+    if (this.scene.childrenOf(this).some((c) => c.wrapping)) return null; // already covered
+    return wrap;
   }
 
   color(slot) {
@@ -134,10 +160,15 @@ export class Entity {
   }
 
   accepts(item, options) {
-    return this.behaviors.some((b) => b.accepts(item, options));
+    return !!this.#coverFor(item) || this.behaviors.some((b) => b.accepts(item, options));
   }
 
   receive(item, options) {
+    const cover = this.#coverFor(item);
+    if (cover) {
+      cover.wrap(this);
+      return true;
+    }
     const b = this.behaviors.find((b) => b.accepts(item, options));
     if (!b) return false;
     b.receive(item);
@@ -145,6 +176,12 @@ export class Entity {
   }
 
   release(item) {
+    const cover = item.#wrapBehavior();
+    if (cover?.target === this) {
+      cover.unwrap();
+      item.parentId = null;
+      return;
+    }
     for (const b of this.behaviors) b.release(item);
   }
 
@@ -154,7 +191,9 @@ export class Entity {
 
   serialize() {
     const round = (v) => Math.round(v * 10) / 10;
-    const out = { id: this.id, def: this.def.id, x: round(this.x), y: round(this.y), state: this.state, order: this.order };
+    // a cover's bent drawing is made again on load: save its own definition
+    const defId = this.#wrapBehavior()?.baseDef.id ?? this.def.id;
+    const out = { id: this.id, def: defId, x: round(this.x), y: round(this.y), state: this.state, order: this.order };
     if (Object.keys(this.colors).length) out.colors = { ...this.colors };
     if (this.parentId) out.parent = this.parentId;
     if (this.restingOn) out.restingOn = this.restingOn;
@@ -185,6 +224,10 @@ export class Furniture extends Entity {
 export class Decor extends Entity {
   static type = 'Decor';
   static defaults = { ...Entity.defaults, mobility: 'edit', gravity: false, layer: 0 };
+
+  canBeWrapped() {
+    return false;
+  }
 
   constrainDrag(x, y) {
     const margin = 10;

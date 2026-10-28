@@ -14,6 +14,7 @@
 // Colours: "$main" (the part's colour in the look), "$skin", "$hair", "$eye".
 import { Item } from './entity.js';
 import { Behavior } from './behavior.js';
+import { envelope, warpShape, fitMap } from './warp.js';
 
 export const AGES = ['baby', 'child', 'adult', 'elder'];
 export const EXPRESSIONS = ['happy', 'laugh', 'surprised', 'sleepy', 'sad', 'grumpy'];
@@ -187,48 +188,70 @@ export function composeArt(look, defs, expression = 'happy') {
   const hips = rect(legL.x, legL.y, legR.x + legR.w - legL.x, legL.h);
   const base = { skin: look.skin, hair: look.hairColor, eye: look.eyeColor };
   const out = [];
+  // Skin shapes go straight in; we keep them to know the body's outline.
+  const skin = (shapes, box, part) => shapes.map((s) => {
+    const m = mapShape(colorize([s], base)[0], box, part);
+    out.push(m);
+    return m;
+  });
   const put = (shapes, box, part, colors = base) => {
     for (const s of colorize(shapes ?? [], colors)) out.push(mapShape(s, box, part));
   };
+  // Clothes and hair bend to the outline of the body part they are on, so they
+  // follow its rounded corners, tapering legs and round head. Parts that are
+  // meant to stick out (shoes) say "fit": false.
+  const wear = (shapes, box, part, colors, env, p, pad = 1.5) => {
+    if (p?.fit === false) return put(shapes, box, part, colors);
+    const map = fitMap(box, env, { pad });
+    for (const s of colorize(shapes ?? [], colors)) out.push({ ...warpShape(s, map), ...(part ? { part } : {}) });
+  };
   const partColors = (slot, p) => ({ ...base, main: look.colors?.[slot] ?? p.color ?? '#999999' });
   const each = (key, fn) => {
-    for (const [slot, p] of Object.entries(worn)) if (p.art?.[key]) fn(p.art[key], partColors(slot, p));
-    for (const p of extras) if (p.art?.[key]) fn(p.art[key], partColors(p.id, p));
+    for (const [slot, p] of Object.entries(worn)) if (p.art?.[key]) fn(p.art[key], partColors(slot, p), p);
+    for (const p of extras) if (p.art?.[key]) fn(p.art[key], partColors(p.id, p), p);
   };
   const replaced = new Set(extras.flatMap((p) => p.replaces ?? []));
 
-  // behind the head
+  // behind the head (long hair, headscarf): free, it may fall over the shoulders
   each('back', (shapes, colors) => put(shapes, headBox, 'head', colors));
 
   // legs, then what is worn on them
+  const legSkins = [];
   sk.legs.forEach((leg, i) => {
     const part = i ? 'legR' : 'legL';
-    if (!replaced.has(part)) put([{ type: 'rect', x: 4, y: 0, w: 92, h: 100, r: 30, fill: '$skin' }], leg, part);
+    const legSkin = replaced.has(part) ? [] : skin([{ type: 'rect', x: 4, y: 0, w: 92, h: 100, r: 30, fill: '$skin' }], leg, part);
+    legSkins.push(...legSkin);
     for (const p of extras) if (p.replaces?.includes(part)) put(p.art[part], leg, part, partColors(p.id, p));
-    each('leg', (shapes, colors) => put(shapes, leg, part, colors));
+    const env = envelope(legSkin.length ? legSkin : [mapShape({ type: 'rect', x: 4, y: 0, w: 92, h: 100, fill: '#000' }, leg)]);
+    each('leg', (shapes, colors, p) => wear(shapes, leg, part, colors, env, p));
   });
-  each('hips', (shapes, colors) => put(shapes, hips, '', colors));
+  // skirts span both legs: their outline is the outside of the two legs
+  const hipsEnv = envelope(legSkins.length ? legSkins : sk.legs.map((l) => mapShape({ type: 'rect', x: 0, y: 0, w: 100, h: 100, fill: '#000' }, l)));
+  each('hips', (shapes, colors, p) => wear(shapes, hips, '', colors, hipsEnv, p));
 
   // neck and torso
-  put([{ type: 'rect', x: 0, y: 0, w: 100, h: 100, r: 30, fill: '$skin' }],
+  skin([{ type: 'rect', x: 0, y: 0, w: 100, h: 100, r: 30, fill: '$skin' }],
     rect(head.cx - head.r * 0.22, head.cy + head.r * 0.6, head.r * 0.44, sk.torso.y - head.cy - head.r * 0.4), '');
-  put([{ type: 'rect', x: 0, y: 0, w: 100, h: 100, r: 22, fill: '$skin' }], sk.torso, '');
-  each('torso', (shapes, colors) => put(shapes, sk.torso, '', colors));
+  const torsoEnv = envelope(skin([{ type: 'rect', x: 0, y: 0, w: 100, h: 100, r: 22, fill: '$skin' }], sk.torso, ''));
+  each('torso', (shapes, colors, p) => wear(shapes, sk.torso, '', colors, torsoEnv, p));
 
-  // arms with hands
+  // arms with hands (sleeves follow the arm, not the hand)
   sk.arms.forEach((arm, i) => {
     const part = i ? 'armR' : 'armL';
-    put([{ type: 'rect', x: 0, y: 0, w: 100, h: 92, r: 45, fill: '$skin' },
+    const [armSkin] = skin([{ type: 'rect', x: 0, y: 0, w: 100, h: 92, r: 45, fill: '$skin' },
       { type: 'circle', cx: 50, cy: 94, r: 62, fill: '$skin' }], arm, part);
-    each('arm', (shapes, colors) => put(shapes, arm, part, colors));
+    const env = envelope([armSkin]);
+    each('arm', (shapes, colors, p) => wear(shapes, arm, part, colors, env, p));
   });
 
   // head: ears, face, features, hair, glasses, hats
-  put([{ type: 'circle', cx: 2, cy: 54, r: 11, fill: '$skin' }, { type: 'circle', cx: 98, cy: 54, r: 11, fill: '$skin' },
+  const headSkin = skin([{ type: 'circle', cx: 2, cy: 54, r: 11, fill: '$skin' }, { type: 'circle', cx: 98, cy: 54, r: 11, fill: '$skin' },
     { type: 'circle', cx: 50, cy: 50, r: 50, fill: '$skin' }], headBox, 'head');
+  const headEnv = envelope([headSkin[2]]);
   each('skin', (shapes, colors) => put(shapes, headBox, 'head', colors));
   put(face(look.eyes, expression), headBox, 'head');
-  each('front', (shapes, colors) => put(shapes, headBox, 'head', colors));
+  // fringes and beards hug the round head
+  each('front', (shapes, colors, p) => wear(shapes, headBox, 'head', colors, headEnv, p, 2));
   each('face', (shapes, colors) => put(shapes, headBox, 'head', colors));
   each('hat', (shapes, colors) => put(shapes, headBox, 'head', colors));
   return out;

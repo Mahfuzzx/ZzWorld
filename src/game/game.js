@@ -9,6 +9,9 @@ import { createHud } from './hud.js';
 import { createCatalog } from './catalog.js';
 import { openCreator } from './creator.js';
 import { addUserDefs } from '../shared/pack.js';
+import { flushFeedback } from '../shared/feedback.js';
+import { openKidFeedback } from './feedback-kid.js';
+import { openParentGate, openParentPanel } from './parent.js';
 
 const WORLD_ID = 'world-1'; // single slot until the world picker exists
 // City-wide default; neighbourhoods and streets will override it once the map exists.
@@ -96,6 +99,7 @@ export async function startGame(root) {
     state.scene = loadScene(manifest.startScene);
   }
   storage.requestPersistence();
+  flushFeedback(); // feedback written while offline
 
   // ---------- screen ----------
 
@@ -153,7 +157,14 @@ export async function startGame(root) {
       return true;
     },
   });
-  const hud = createHud(root, { getScene: () => state.scene, dayNight, onGesture: unlockAudio, onModeChange: (mode) => catalog.setMode(mode) });
+  const hud = createHud(root, {
+    getScene: () => state.scene,
+    dayNight,
+    onGesture: unlockAudio,
+    onModeChange: (mode) => catalog.setMode(mode),
+    onFeedback: () => openKidFeedback({ root, onGesture: unlockAudio }),
+    onParent: () => openParentGate({ root, onPass: () => openParentPanel({ root }) }),
+  });
   catalog = createCatalog(root, { defs, userIds, renderer, input, hud, onGesture: unlockAudio, onNewCharacter: newCharacter });
 
   // ---------- going through doors ----------

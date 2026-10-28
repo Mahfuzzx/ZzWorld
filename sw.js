@@ -3,7 +3,7 @@
 // During development changes show up on a normal reload; offline the last cached
 // copy is served. Bump VERSION when the precache list changes.
 
-const VERSION = 'v9';
+const VERSION = 'v12';
 const CACHE = `zzworld-${VERSION}`;
 
 const PRECACHE = [
@@ -12,6 +12,8 @@ const PRECACHE = [
   './manifest.webmanifest',
   './src/game/catalog.js',
   './src/game/creator.js',
+  './src/game/feedback-kid.js',
+  './src/game/parent.js',
   './src/shared/pack.js',
   './src/shared/thumb.js',
   './src/shared/zip.js',
@@ -71,12 +73,15 @@ const PRECACHE = [
   './src/engine/registry.js',
   './src/engine/renderer.js',
   './src/engine/scene.js',
+  './src/engine/warp.js',
   './src/game/game.css',
   './src/game/game.js',
   './src/game/hud.js',
   './src/main.js',
+  './src/shared/feedback.js',
   './src/shared/i18n.js',
   './src/shared/storage.js',
+  './src/shared/version.js',
   './studio/',
   './studio/music/',
 ];
@@ -102,7 +107,10 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   const { request } = event;
-  if (request.method !== 'GET' || new URL(request.url).origin !== self.location.origin) return;
+  const url = new URL(request.url);
+  if (request.method !== 'GET' || url.origin !== self.location.origin) return;
+  // the server parts (feedback, its admin page) are never cached
+  if (url.pathname.includes('/api/')) return;
 
   event.respondWith((async () => {
     const cache = await caches.open(CACHE);
