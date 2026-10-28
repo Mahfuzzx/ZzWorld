@@ -1,0 +1,9 @@
+#!/bin/sh
+# Every commit is a new version: raise the version number and stage it, so
+# installed apps pick up the change (see tools/bump-version.mjs).
+# Enable once per clone:  git config core.hooksPath .githooks
+# Skip for a single commit: ZZ_NO_BUMP=1 git commit ...
+[ -n "$ZZ_NO_BUMP" ] && exit 0
+
+node tools/bump-version.mjs || exit 1
+git add src/shared/version.js sw.js

@@ -128,11 +128,17 @@ devreye girince dünyayı kaydedip sayfayı bir kez yeniler.
 
 ## Yeni sürüm yayınlama
 
-1. `sw.js` içindeki `VERSION` değerini artırın (her yayında; tablet ve telefonlardaki
-   kurulu uygulamalar güncellemeyi bundan anlar). Yeni dosya eklendiyse `PRECACHE`
-   listesine de ekleyin.
-2. `src/shared/version.js` içindeki `APP_VERSION` değerini artırın (ebeveyn
-   bölümünde ve geri bildirimlerde görünür).
+1. **Sürüm her commit'te bir artar.** `node tools/bump-version.mjs` oyun sürümünü
+   (`src/shared/version.js` → `APP_VERSION`, ebeveyn bölümünde ve geri bildirimlerde
+   görünür) bir artırır ve `sw.js` içindeki `VERSION` değerini aynı sürüme eşitler;
+   kurulu uygulamalar güncellemeyi bundan anlar. Büyük adımlar için `minor` veya
+   `major` verilebilir. Bunu her commit'te kendiliğinden yapan git kancası
+   `.githooks/pre-commit` dosyasındadır; her klonda bir kez etkinleştirin:
+   ```
+   git config core.hooksPath .githooks
+   ```
+   (Tek bir commit'te atlamak için: `ZZ_NO_BUMP=1 git commit …`.)
+2. Yeni dosya eklendiyse `sw.js` içindeki `PRECACHE` listesine ekleyin.
 3. Dosyaları sunucuya yükleyin ve önbellek başlıklarını kontrol edin:
    ```
    curl -sI https://worldzz.com/src/main.js

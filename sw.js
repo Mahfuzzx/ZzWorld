@@ -5,7 +5,7 @@
 // hosts send week-long max-age headers). Unchanged files cost a short 304.
 // Offline the last cached copy is served. Bump VERSION on every release.
 
-const VERSION = 'v13';
+const VERSION = 'v0.7.2';
 const CACHE = `zzworld-${VERSION}`;
 
 const PRECACHE = [
