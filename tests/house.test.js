@@ -122,3 +122,12 @@ test('a sleeping character is picked by where it is drawn, not its upright box',
   assert.equal(scene.hitTest(kid.x - kid.height / 2 + 10, cy), kid, 'the head end, far to the left');
   assert.equal(scene.hitTest(kid.x, kid.y - kid.height + 5), null, 'above it there is nothing now');
 });
+
+test('doors are not in the catalog; a door leading nowhere can be thrown away', async () => {
+  const { placeableIds } = await import('../src/game/catalog.js');
+  const defs = coreDefs();
+  assert.ok(!placeableIds(defs).includes('core.door'), 'doors come with the house');
+  const scene = new Scene(defs, { id: 'x' }, services());
+  assert.equal(scene.spawn('core.door', { target: { scene: 'y', door: 'b' } }).canDelete(), false);
+  assert.equal(scene.spawn('core.door').canDelete(), true, 'an old catalog door without a target');
+});

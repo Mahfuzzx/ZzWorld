@@ -268,6 +268,12 @@ export class Portal extends Structure {
     return { x: clamp(x, halfW, this.scene.width - halfW), y: this.y };
   }
 
+  // A door that leads somewhere keeps its room reachable and can't be thrown
+  // away; one that leads nowhere is just decoration and may go.
+  canDelete() {
+    return !this.target;
+  }
+
   serialize() {
     return { ...super.serialize(), door: this.door, target: this.target };
   }

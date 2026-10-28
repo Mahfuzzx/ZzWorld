@@ -12,6 +12,8 @@ const door = {
   id: 'core.door',
   extends: 'core.decor.base',
   class: 'Portal',
+  // doors come with the house (they connect rooms), not from the catalog
+  catalog: false,
   name: { tr: 'Kapı', en: 'Door' },
   size: [150, 270],
   colorSlots: { door: '#c98a4b', frame: '#ffffff' },

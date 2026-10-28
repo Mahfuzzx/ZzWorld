@@ -3,6 +3,7 @@
   "id": "core.door",
   "extends": "core.decor.base",
   "class": "Portal",
+  "catalog": false,
   "name": {
    "tr": "Kapı",
    "en": "Door"
